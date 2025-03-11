@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "744395738191",
+    "project_id": "speech-therapy-evolution-dev",
+    "storage_bucket": "speech-therapy-evolution-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:744395738191:android:29732a7210ed250f88ae3a",
+        "android_client_info": {
+          "package_name": "com.example.flutter_therapy_evolution"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbIe5NlP5b2xG3Ex6Wq8Ki23wo2U0Tlh8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
