@@ -9,6 +9,7 @@ class PrimaryButtonDs extends StatelessWidget {
   final Color foregroundColor;
   final double height;
   final double width;
+  final bool isLoading;
 
   const PrimaryButtonDs({
     super.key,
@@ -18,6 +19,7 @@ class PrimaryButtonDs extends StatelessWidget {
     this.foregroundColor = Colors.white,
     this.height = 48,
     this.width = 220,
+    this.isLoading = false,
   });
 
   @override
@@ -31,7 +33,15 @@ class PrimaryButtonDs extends StatelessWidget {
         foregroundColor: foregroundColor,
       ),
       onPressed: onPressed,
-      child: Text(title, style: theme.textTheme.labelMedium),
+      child: isLoading
+          ? const SizedBox(
+              width: 30,
+              height: 30,
+              child: CircularProgressIndicator(
+                color: Colors.white,
+              ),
+            )
+          : Text(title, style: theme.textTheme.labelMedium),
     );
   }
 }

@@ -43,7 +43,7 @@ class CustomDrawerDS extends StatelessWidget {
                   height: 60,
                   width: 60,
                   child: CircleAvatar(
-                    backgroundImage: AppImages.catChoose,
+                    backgroundImage: AppImages.logo,
                   ),
                 ),
                 title: Text(

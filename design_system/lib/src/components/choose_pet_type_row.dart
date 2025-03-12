@@ -57,7 +57,7 @@ class _ChoosePetTypeRowState extends State<ChoosePetTypeRow> {
                 isSelected: buttonStates['cachorro']!,
                 onPressed: () => toggleSelection('cachorro'),
                 title: 'Cachorro',
-                image: AppImages.dogChooseButton,
+                image: AppImages.logo,
               ),
               const Gap(10),
               SelectableButtonDs(
@@ -66,7 +66,7 @@ class _ChoosePetTypeRowState extends State<ChoosePetTypeRow> {
                 isSelected: buttonStates['gato']!,
                 onPressed: () => toggleSelection('gato'),
                 title: 'Gatos',
-                image: AppImages.catChooseButton,
+                image: AppImages.logo,
               ),
               const Gap(10),
               SelectableButtonDs(
@@ -75,7 +75,7 @@ class _ChoosePetTypeRowState extends State<ChoosePetTypeRow> {
                 isSelected: buttonStates['aves']!,
                 onPressed: () => toggleSelection('aves'),
                 title: 'Aves',
-                image: AppImages.birdChooseButton,
+                image: AppImages.logo,
               ),
               const Gap(10),
               SelectableButtonDs(
@@ -84,7 +84,7 @@ class _ChoosePetTypeRowState extends State<ChoosePetTypeRow> {
                 isSelected: buttonStates['coelhos']!,
                 onPressed: () => toggleSelection('coelhos'),
                 title: 'Coelhos',
-                image: AppImages.coelhoChooseButton,
+                image: AppImages.logo,
               ),
             ],
           ),

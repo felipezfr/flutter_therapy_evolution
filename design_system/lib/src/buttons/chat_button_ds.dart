@@ -16,7 +16,7 @@ class ChatButtonDs extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       child: const Image(
-        image: AppImages.chatIcon,
+        image: AppImages.logo,
       ),
     );
   }

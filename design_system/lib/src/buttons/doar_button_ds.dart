@@ -21,7 +21,7 @@ class DoarButtonDS extends StatelessWidget {
               width: 382,
               height: 200,
               child: Card(
-                color: AppColors.doarButtonColor,
+                color: AppColors.primaryColor,
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: Padding(
@@ -48,7 +48,7 @@ class DoarButtonDS extends StatelessWidget {
               margin: const EdgeInsets.only(left: 20),
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AppImages.doarButtonBg,
+                  image: AppImages.logo,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -63,7 +63,7 @@ class DoarButtonDS extends StatelessWidget {
               margin: const EdgeInsets.only(left: 20),
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AppImages.dog,
+                  image: AppImages.logo,
                   fit: BoxFit.cover,
                 ),
               ),
