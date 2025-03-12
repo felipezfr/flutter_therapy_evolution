@@ -44,19 +44,13 @@ class _RegisterPageState extends State<RegisterPage> {
 
     switch (result) {
       case Ok<UserEntity>():
-        print('Go to home');
+        Alerts.showSuccess(context, 'Cadastrado com sucesso!');
+        Modular.to.navigate('/home/');
       case Error<UserEntity>():
-        print('Erro');
         Alerts.showFailure(
             context, (result.error as RepositoryException).message);
       case null:
     }
-
-    // if (authViewModel.registerCommand.completed) {
-    //   Modular.to.navigate('/home/');
-    // }
-
-    print(result);
   }
 
   @override

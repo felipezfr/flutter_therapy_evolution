@@ -5,9 +5,10 @@ import '../../design_system.dart';
 
 class AppTheme {
   static final theme = ThemeData(
-    scaffoldBackgroundColor: AppColors.whiteColor,
+    scaffoldBackgroundColor: AppColors.blueLigth,
+    colorSchemeSeed: AppColors.primaryColor,
     appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.whiteColor,
+      backgroundColor: AppColors.blueLigth,
       iconTheme: IconThemeData(
         color: AppColors.primaryColor,
         size: 30,
@@ -15,6 +16,15 @@ class AppTheme {
     ),
     drawerTheme: const DrawerThemeData(
       backgroundColor: AppColors.whiteColor,
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        foregroundColor: AppColors.whiteColor,
+        backgroundColor: AppColors.primaryColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+      ),
     ),
     textTheme: TextTheme(
       labelLarge: GoogleFonts.roboto(

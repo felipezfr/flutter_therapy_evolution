@@ -7,6 +7,7 @@ class PrimaryButtonDs extends StatelessWidget {
   final VoidCallback onPressed;
   final Color backgroundColor;
   final Color foregroundColor;
+  final Color textColor;
   final double height;
   final double width;
   final bool isLoading;
@@ -17,10 +18,33 @@ class PrimaryButtonDs extends StatelessWidget {
     required this.onPressed,
     this.backgroundColor = AppColors.primaryColor,
     this.foregroundColor = Colors.white,
+    this.textColor = Colors.white,
     this.height = 48,
     this.width = 220,
     this.isLoading = false,
   });
+
+  factory PrimaryButtonDs.secondary({
+    required String title,
+    required VoidCallback onPressed,
+    Color backgroundColor = AppColors.secondaryColor,
+    Color foregroundColor = AppColors.greyDark,
+    Color textColor = AppColors.blackColor,
+    double height = 48,
+    double width = 220,
+    bool isLoading = false,
+  }) {
+    return PrimaryButtonDs(
+      onPressed: onPressed,
+      backgroundColor: backgroundColor,
+      foregroundColor: foregroundColor,
+      textColor: textColor,
+      title: title,
+      isLoading: isLoading,
+      height: height,
+      width: width,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +65,10 @@ class PrimaryButtonDs extends StatelessWidget {
                 color: Colors.white,
               ),
             )
-          : Text(title, style: theme.textTheme.labelMedium),
+          : Text(
+              title,
+              style: theme.textTheme.labelLarge?.copyWith(color: textColor),
+            ),
     );
   }
 }

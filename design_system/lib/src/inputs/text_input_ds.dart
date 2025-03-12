@@ -52,8 +52,8 @@ class _TextInputDsState extends State<TextInputDs> {
       height: widget.height,
       width: widget.width,
       child: Material(
-        borderRadius: BorderRadius.circular(5),
-        elevation: 3,
+        borderRadius: BorderRadius.circular(8),
+        elevation: 4,
         child: TextFormField(
           autovalidateMode: widget.autovalidateMode,
           keyboardType: widget.textInputType,
@@ -80,7 +80,7 @@ class _TextInputDsState extends State<TextInputDs> {
             fillColor: AppColors.whiteColor,
             border: OutlineInputBorder(
               borderSide: BorderSide.none,
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: BorderRadius.circular(8),
             ),
             prefixIcon: widget.prefixIcon,
           ),

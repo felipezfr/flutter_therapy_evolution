@@ -66,7 +66,10 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Image(image: AppImages.logo),
+                Hero(
+                  tag: 'auth-logo',
+                  child: const Image(image: AppImages.logo),
+                ),
                 const SizedBox(height: 50),
                 TextInputDs(
                   label: 'E-mail',
