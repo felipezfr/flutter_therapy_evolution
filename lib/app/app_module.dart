@@ -1,4 +1,5 @@
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_therapy_evolution/app/features/appointment/appointment_module.dart';
 import 'package:flutter_therapy_evolution/app/features/patient/patient_module.dart';
 
 import 'features/auth/auth_module.dart';
@@ -12,5 +13,6 @@ class AppModule extends Module {
     r.module('/auth', module: AuthModule());
     r.module('/home', module: HomeModule());
     r.module('/patient', module: PatientModule());
+    r.module('/schedule', module: AppointmentModule());
   }
 }

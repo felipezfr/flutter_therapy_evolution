@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../core/log/log_manager.dart';
@@ -9,8 +8,6 @@ import '../../domain/entities/{{name.snakeCase()}}_entity.dart';
 import '../../domain/repositories/i_{{name.snakeCase()}}_repository.dart';
 import '../adapters/{{name.snakeCase()}}_adapter.dart';
 
-
-
 class {{name.pascalCase()}}RepositoryImpl implements I{{name.pascalCase()}}Repository {
 
   final FirebaseFirestore _firestore;
@@ -19,8 +16,6 @@ class {{name.pascalCase()}}RepositoryImpl implements I{{name.pascalCase()}}Repos
 
   @override
   Output<{{name.pascalCase()}}Entity> fetchData() async {
-
-
     try {
       final doc = await _firestore.collection('collection').doc('doc').get();
 
@@ -33,14 +28,6 @@ class {{name.pascalCase()}}RepositoryImpl implements I{{name.pascalCase()}}Repos
       final userData = doc.data()!;
 
       return Success({{name.pascalCase()}}Adapter.fromMap(userData));
-    } on FirebaseAuthException catch (e, s) {
-      Log.error('Error {{name.pascalCase()}}', error: e, stackTrace: s);
-
-      return Failure(
-        RepositoryException(
-          message: e.message ?? 'Erro inesperado',
-        ),
-      );
     } catch (e, s) {
       Log.error('Error {{name.pascalCase()}}', error: e, stackTrace: s);
 

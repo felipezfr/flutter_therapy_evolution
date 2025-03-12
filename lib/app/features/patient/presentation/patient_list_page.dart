@@ -37,6 +37,7 @@ class _PatientListPageState extends State<PatientListPage> {
   @override
   void dispose() {
     viewModel.deletePatientCommand.removeListener(_onDeletePatient);
+    viewModel.patientsStreamCommand.dispose();
     super.dispose();
   }
 

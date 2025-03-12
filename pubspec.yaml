@@ -45,6 +45,7 @@ dependencies:
   flutter_modular: ^6.3.4
   shared_preferences: ^2.5.2
   result_dart: ^1.1.1
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:

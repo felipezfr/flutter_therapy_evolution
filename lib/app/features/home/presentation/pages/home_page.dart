@@ -26,6 +26,13 @@ class _HomePageState extends State<HomePage> {
               },
               title: 'Pacientes',
             ),
+            const SizedBox(height: 20),
+            PrimaryButtonDs(
+              onPressed: () {
+                Modular.to.pushNamed('/schedule/');
+              },
+              title: 'Agendamentos',
+            ),
             Spacer(),
             BottomSheet(sessionService: sessionService)
           ],

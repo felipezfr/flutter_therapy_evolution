@@ -1,10 +1,8 @@
-import 'package:flutter/foundation.dart';
-
 import '../../../core/command/command.dart';
 import '../domain/entities/patient_entity.dart';
 import '../domain/repositories/i_patient_repository.dart';
 
-class PatientViewmodel extends ChangeNotifier {
+class PatientViewmodel {
   final IPatientRepository _repository;
 
   PatientViewmodel(this._repository) {
@@ -16,10 +14,4 @@ class PatientViewmodel extends ChangeNotifier {
   late final Command1<void, PatientEntity> savePatientCommand;
   late final Command1<void, String> deletePatientCommand;
   late final CommandStream0<List<PatientEntity>> patientsStreamCommand;
-
-  @override
-  void dispose() {
-    patientsStreamCommand.dispose();
-    super.dispose();
-  }
 }
