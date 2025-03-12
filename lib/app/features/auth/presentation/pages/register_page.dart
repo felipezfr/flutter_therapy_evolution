@@ -4,13 +4,9 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:flutter_therapy_evolution/app/core/command/result.dart';
-import 'package:gap/gap.dart';
 
 import '../../../../core/alert/alerts.dart';
-import '../../../../core/state_management/errors/repository_exception.dart';
-import '../../domain/entities/user_entity.dart';
-import '../../domain/validatoes/register_params_validator.dart';
+import '../../domain/validators/register_params_validator.dart';
 import '../models/register_params.dart';
 import '../viewmodels/auth_viewmodel.dart';
 
@@ -40,22 +36,20 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   listener() {
-    final result = authViewModel.registerCommand.result;
-
-    switch (result) {
-      case Ok<UserEntity>():
+    authViewModel.registerCommand.result?.fold(
+      (success) {
         Alerts.showSuccess(context, 'Cadastrado com sucesso!');
         Modular.to.navigate('/home/');
-      case Error<UserEntity>():
-        Alerts.showFailure(
-            context, (result.error as RepositoryException).message);
-      case null:
-    }
+      },
+      (failure) {
+        Alerts.showFailure(context, failure.message);
+      },
+    );
   }
 
   @override
   void dispose() {
-    // authViewmodel.signUpCommand.removeListener(listener);
+    authViewModel.registerCommand.removeListener(listener);
     super.dispose();
   }
 
@@ -79,7 +73,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   'Cadastro',
                   style: theme.textTheme.displaySmall,
                 ),
-                const Gap(29),
+                const SizedBox(height: 29),
                 TextInputDs(
                   label: 'Nome',
                   width: size.width,
@@ -87,7 +81,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   validator: _validator.byField(_registerParams, 'name'),
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                 ),
-                const Gap(25),
+                const SizedBox(height: 25),
                 TextInputDs(
                   label: 'E-mail',
                   textInputType: TextInputType.emailAddress,
@@ -96,7 +90,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   validator: _validator.byField(_registerParams, 'email'),
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                 ),
-                const Gap(25),
+                const SizedBox(height: 25),
                 TextInputDs(
                   width: size.width,
                   label: 'Senha',
@@ -105,7 +99,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   validator: _validator.byField(_registerParams, 'password'),
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                 ),
-                const Gap(25),
+                const SizedBox(height: 25),
                 TextInputDs(
                   width: size.width,
                   label: 'Confirmar senha',
@@ -115,8 +109,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       _validator.byField(_registerParams, 'confirmPassword'),
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                 ),
-                const Gap(25),
-                const Gap(40),
+                const SizedBox(height: 25),
+                const SizedBox(height: 40),
                 Align(
                   alignment: Alignment.center,
                   child: ListenableBuilder(

@@ -3,11 +3,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_therapy_evolution/app/core/alert/alerts.dart';
-import 'package:flutter_therapy_evolution/app/core/command/result.dart';
-import 'package:flutter_therapy_evolution/app/core/state_management/errors/repository_exception.dart';
 
-import '../../domain/entities/user_entity.dart';
-import '../../domain/validatoes/login_params_validator.dart';
+import '../../domain/validators/login_params_validator.dart';
 import '../models/login_params.dart';
 import '../viewmodels/auth_viewmodel.dart';
 
@@ -32,16 +29,14 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   listener() {
-    final result = authViewModel.loginCommand.result;
-
-    switch (result) {
-      case Ok<UserEntity>():
+    authViewModel.loginCommand.result?.fold(
+      (success) {
         Modular.to.navigate('/home/');
-      case Error<UserEntity>():
-        Alerts.showFailure(
-            context, (result.error as RepositoryException).message);
-      case null:
-    }
+      },
+      (failure) {
+        Alerts.showFailure(context, failure.message);
+      },
+    );
   }
 
   @override

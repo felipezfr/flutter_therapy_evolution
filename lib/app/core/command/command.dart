@@ -5,17 +5,19 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:result_dart/result_dart.dart';
 
-import 'result.dart';
+import '../state_management/errors/base_exception.dart';
+import '../typedefs/result_typedef.dart';
 
 /// Defines a command action that returns a [Result] of type [T].
 /// Used by [Command0] for actions without arguments.
-typedef CommandAction0<T> = Future<Result<T>> Function();
+typedef CommandAction0<T extends Object> = Output<T> Function();
 
 /// Defines a command action that returns a [Result] of type [T].
 /// Takes an argument of type [A].
 /// Used by [Command1] for actions with one argument.
-typedef CommandAction1<T, A> = Future<Result<T>> Function(A);
+typedef CommandAction1<T extends Object, A> = Output<T> Function(A);
 
 /// Facilitates interaction with a view model.
 ///
@@ -30,24 +32,24 @@ typedef CommandAction1<T, A> = Future<Result<T>> Function(A);
 ///
 /// Consume the action result by listening to changes,
 /// then call to [clearResult] when the state is consumed.
-abstract class Command<T> extends ChangeNotifier {
+abstract class Command<T extends Object> extends ChangeNotifier {
   bool _running = false;
 
   /// Whether the action is running.
   bool get running => _running;
 
-  Result<T>? _result;
+  Result<T, BaseException>? _result;
 
   /// Whether the action completed with an error.
-  bool get error => _result is Error;
+  bool get error => _result is Failure;
 
   /// Whether the action completed successfully.
-  bool get completed => _result is Ok;
+  bool get success => _result is Success;
 
   /// The result of the most recent action.
   ///
   /// Returns `null` if the action is running or completed with an error.
-  Result<T>? get result => _result;
+  Result<T, BaseException>? get result => _result;
 
   /// Clears the most recent action's result.
   void clearResult() {
@@ -60,9 +62,7 @@ abstract class Command<T> extends ChangeNotifier {
   Future<void> _execute(CommandAction0<T> action) async {
     // Ensure the action can't launch multiple times.
     // e.g. avoid multiple taps on button
-    if (_running) {
-      return;
-    }
+    if (_running) return;
 
     // Notify listeners.
     // e.g. button shows loading state
@@ -80,7 +80,7 @@ abstract class Command<T> extends ChangeNotifier {
 }
 
 /// A [Command] that accepts no arguments.
-final class Command0<T> extends Command<T> {
+final class Command0<T extends Object> extends Command<T> {
   /// Creates a [Command0] with the provided [CommandAction0].
   Command0(this._action);
 
@@ -93,7 +93,7 @@ final class Command0<T> extends Command<T> {
 }
 
 /// A [Command] that accepts one argument.
-final class Command1<T, A> extends Command<T> {
+final class Command1<T extends Object, A> extends Command<T> {
   /// Creates a [Command1] with the provided [CommandAction1].
   Command1(this._action);
 

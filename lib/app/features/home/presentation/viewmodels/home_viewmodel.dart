@@ -1,12 +1,4 @@
-import 'dart:collection';
-
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_therapy_evolution/app/core/command/result.dart';
-
-import '../../../../core/command/command.dart';
-import '../../../auth/domain/entities/user_entity.dart';
-import '../../domain/dtos/get_pets_params.dart';
-import '../../domain/entities/pet_entity.dart';
+import 'package:flutter/foundation.dart';
 
 class HomeViewmodel extends ChangeNotifier {
   // HomeViewmodel() {

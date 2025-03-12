@@ -1,55 +1,40 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_therapy_evolution/app/features/auth/domain/dtos/user_adapter.dart';
+import 'package:flutter_therapy_evolution/app/features/auth/domain/entities/user_entity.dart';
+
+import '../local_storage/i_local_storage.dart';
+
+const _kUser = 'USER';
+
 class SessionService {
-  // final ICache _sharedPreferences;
+  final FirebaseAuth _firebaseAuth;
+  final ILocalStorage _localStorage;
 
-  // SessionService({
-  //   required ICache sharedPreferences,
-  // }) : _sharedPreferences = sharedPreferences;
+  SessionService(this._firebaseAuth, this._localStorage);
 
-  // Future<bool> saveToken(String token) async {
-  //   final response = await _sharedPreferences.setData(
-  //     params: CacheParams(key: 'token', value: token),
-  //   );
+  Future<bool> isUserLoggedIn() async {
+    return _firebaseAuth.currentUser != null;
+  }
 
-  //   return response;
-  // }
+  Future<void> logout() async {
+    await _firebaseAuth.signOut();
+    await clearAllData();
+  }
 
-  // Future<String?> getToken() async {
-  //   final response = await _sharedPreferences.getData('token');
+  Future<void> saveUser(UserEntity user) async {
+    final userMap = UserAdapter.toMap(user);
+    await _localStorage.setData(key: _kUser, value: userMap);
+  }
 
-  //   if (response == null) {
-  //     return null;
-  //   }
+  Future<UserEntity?> getUser() async {
+    final userMap = await _localStorage.getData(_kUser);
+    if (userMap == null) return null;
+    return UserAdapter.fromMap(userMap);
+  }
 
-  //   return response as String;
-  // }
-
-  // Future<bool> removeToken() async {
-  //   return await _sharedPreferences.removeData('token');
-  // }
-
-  // Future<bool> saveUser(UserEntity user) async {
-  //   final response = await _sharedPreferences.setData(
-  //     params: CacheParams(key: 'user', value: user),
-  //   );
-
-  //   return response;
-  // }
-
-  // AsyncResult<UserEntity, Exception> getUser() async {
-  //   final response = await _sharedPreferences.getData('user');
-
-  //   if (response == null) {
-  //     return Result.failure(Exception('User not found'));
-  //   }
-
-  //   return Result.success(UserModel.fromJson(response));
-  // }
-
-  // Future<bool> removeUser() async {
-  //   return await _sharedPreferences.removeData('user');
-  // }
-
-  // Future<bool> isUserLoggedIn() async {
-  //   return await getUser().isSuccess();
-  // }
+  Future<void> clearAllData() async {
+    await _localStorage.clean();
+  }
 }

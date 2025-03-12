@@ -1,5 +1,7 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_therapy_evolution/app/core/services/session_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -9,6 +11,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final sessionService = Modular.get<SessionService>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,14 +35,20 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 BottomIcon(
+                  onTap: () {},
                   iconData: Icons.home,
                   isSelected: false,
                 ),
                 BottomIcon(
+                  onTap: () {},
                   iconData: Icons.app_registration_rounded,
                   isSelected: false,
                 ),
                 BottomIcon(
+                  onTap: () async {
+                    await sessionService.logout();
+                    Modular.to.navigate('/');
+                  },
                   iconData: Icons.person_2_sharp,
                   isSelected: true,
                 ),
@@ -55,24 +65,30 @@ class _HomePageState extends State<HomePage> {
 class BottomIcon extends StatelessWidget {
   final IconData iconData;
   final bool isSelected;
+  final VoidCallback onTap;
+
   const BottomIcon({
     super.key,
     required this.iconData,
     required this.isSelected,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: isSelected ? AppColors.primaryColor : null,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Icon(
-        iconData,
-        color: isSelected ? AppColors.blueLigth : AppColors.greyDark,
-        size: 32,
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primaryColor : null,
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Icon(
+          iconData,
+          color: isSelected ? AppColors.blueLigth : AppColors.greyDark,
+          size: 32,
+        ),
       ),
     );
   }
