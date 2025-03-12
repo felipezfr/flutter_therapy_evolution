@@ -2,5 +2,8 @@ class PatientEntity {
   final String id;
   final String name;
 
-  PatientEntity(this.id, this.name);
+  PatientEntity({
+    required this.id,
+    required this.name,
+  });
 }

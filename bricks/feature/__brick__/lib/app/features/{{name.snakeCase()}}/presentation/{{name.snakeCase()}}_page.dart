@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'patient_viewmodel.dart';
+import '{{name.snakeCase()}}_viewmodel.dart';
 
 import '../../../core/alert/alerts.dart';
 
-class PatientPage extends StatefulWidget {
-  const PatientPage({super.key});
+class {{name.pascalCase()}}Page extends StatefulWidget {
+  const {{name.pascalCase()}}Page({super.key});
 
   @override
-  State<PatientPage> createState() => _PatientPageState();
+  State<{{name.pascalCase()}}Page> createState() => _{{name.pascalCase()}}PageState();
 }
 
-class _PatientPageState extends State<PatientPage> {
-  final viewModel = Modular.get<PatientViewmodel>();
+class _{{name.pascalCase()}}PageState extends State<{{name.pascalCase()}}Page> {
+  final viewModel = Modular.get<{{name.pascalCase()}}Viewmodel>();
 
   @override
   void initState() {
@@ -39,7 +39,7 @@ class _PatientPageState extends State<PatientPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Patient'),
+        title: const Text('{{name.pascalCase()}}'),
       ),
       body: Container(),
     );

@@ -5,19 +5,24 @@ import 'package:result_dart/result_dart.dart';
 import '../../../../core/log/log_manager.dart';
 import '../../../../core/state_management/errors/repository_exception.dart';
 import '../../../../core/typedefs/result_typedef.dart';
-import '../../domain/entities/patient_entity.dart';
-import '../../domain/repositories/i_patient_repository.dart';
-import '../adapters/patient_adapter.dart';
+import '../../domain/entities/{{name.snakeCase()}}_entity.dart';
+import '../../domain/repositories/i_{{name.snakeCase()}}_repository.dart';
+import '../adapters/{{name.snakeCase()}}_adapter.dart';
 
-class PatientRepositoryImpl implements IPatientRepository {
+
+
+class {{name.pascalCase()}}RepositoryImpl implements I{{name.pascalCase()}}Repository {
+
   final FirebaseFirestore _firestore;
 
-  PatientRepositoryImpl(this._firestore);
+  {{name.pascalCase()}}RepositoryImpl(this._firestore);
 
   @override
-  Output<PatientEntity> fetchData() async {
+  Output<{{name.pascalCase()}}Entity> fetchData() async {
+
+
     try {
-      final doc = await _firestore.collection('patients').doc('doc').get();
+      final doc = await _firestore.collection('collection').doc('doc').get();
 
       if (!doc.exists) {
         return Failure(RepositoryException(
@@ -27,9 +32,9 @@ class PatientRepositoryImpl implements IPatientRepository {
 
       final userData = doc.data()!;
 
-      return Success(PatientAdapter.fromMap(userData));
+      return Success({{name.pascalCase()}}Adapter.fromMap(userData));
     } on FirebaseAuthException catch (e, s) {
-      Log.error('Error Patient', error: e, stackTrace: s);
+      Log.error('Error {{name.pascalCase()}}', error: e, stackTrace: s);
 
       return Failure(
         RepositoryException(
@@ -37,7 +42,7 @@ class PatientRepositoryImpl implements IPatientRepository {
         ),
       );
     } catch (e, s) {
-      Log.error('Error Patient', error: e, stackTrace: s);
+      Log.error('Error {{name.pascalCase()}}', error: e, stackTrace: s);
 
       return Failure(
         RepositoryException(
@@ -45,5 +50,6 @@ class PatientRepositoryImpl implements IPatientRepository {
         ),
       );
     }
+
   }
 }
