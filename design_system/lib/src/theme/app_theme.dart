@@ -26,6 +26,13 @@ class AppTheme {
         ),
       ),
     ),
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: AppColors.primaryColor,
+      foregroundColor: AppColors.whiteColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+    ),
     textTheme: TextTheme(
       labelLarge: GoogleFonts.roboto(
         fontWeight: FontWeight.w400,
@@ -42,7 +49,7 @@ class AppTheme {
       ),
       titleMedium: GoogleFonts.roboto(
         fontWeight: FontWeight.w700,
-        color: AppColors.secondaryColor,
+        color: AppColors.primaryColor,
       ),
       titleSmall: GoogleFonts.mulish(
         fontWeight: FontWeight.w600,

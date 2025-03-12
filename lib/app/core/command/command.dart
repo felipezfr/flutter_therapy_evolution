@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../state_management/errors/base_exception.dart';
+import '../state_management/errors/default_exception.dart';
 import '../typedefs/result_typedef.dart';
 
 /// Defines a command action that returns a [Result] of type [T].
@@ -79,12 +80,59 @@ abstract class Command<T extends Object> extends ChangeNotifier {
   }
 }
 
+/// A [Command] command for handling streams
+abstract class _CommandStream<Output extends Object> extends ChangeNotifier {
+  _CommandStream(this._streamGetter) {
+    execute();
+  }
+
+  final Stream<Result<Output, BaseException>> Function() _streamGetter;
+  StreamSubscription<Result<Output, BaseException>>? _subscription;
+
+  bool _loading = false;
+  bool get loading => _loading;
+
+  Result<Output, BaseException>? _result;
+  Result<Output, BaseException>? get result => _result;
+
+  void execute() {
+    _loading = true;
+    _result = null;
+    notifyListeners();
+
+    _subscription?.cancel();
+    _subscription = _streamGetter().listen(
+      (newResult) {
+        _result = newResult;
+        _loading = false;
+        notifyListeners();
+      },
+      onError: (error) {
+        final exception = error is BaseException
+            ? error
+            : DefaultException(
+                message: error.toString(),
+              );
+        _result = Failure(exception);
+        _loading = false;
+        notifyListeners();
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+}
+
 /// A [Command] that accepts no arguments.
-final class Command0<T extends Object> extends Command<T> {
+final class Command0<Output extends Object> extends Command<Output> {
   /// Creates a [Command0] with the provided [CommandAction0].
   Command0(this._action);
 
-  final CommandAction0<T> _action;
+  final CommandAction0<Output> _action;
 
   /// Executes the action.
   Future<void> execute() async {
@@ -93,14 +141,20 @@ final class Command0<T extends Object> extends Command<T> {
 }
 
 /// A [Command] that accepts one argument.
-final class Command1<T extends Object, A> extends Command<T> {
+final class Command1<Output extends Object, Input> extends Command<Output> {
   /// Creates a [Command1] with the provided [CommandAction1].
   Command1(this._action);
 
-  final CommandAction1<T, A> _action;
+  final CommandAction1<Output, Input> _action;
 
   /// Executes the action with the specified [argument].
-  Future<void> execute(A argument) async {
+  Future<void> execute(Input argument) async {
     await _execute(() => _action(argument));
   }
+}
+
+/// A [Command] that accepts no arguments.
+final class CommandStream0<Output extends Object>
+    extends _CommandStream<Output> {
+  CommandStream0(super._streamGetter);
 }

@@ -1,6 +1,11 @@
+import 'package:result_dart/result_dart.dart';
+
+import '../../../../core/state_management/errors/base_exception.dart';
 import '../../../../core/typedefs/result_typedef.dart';
 import '../entities/patient_entity.dart';
 
 abstract class IPatientRepository {
-  Output<PatientEntity> fetchData();
+  Stream<Result<List<PatientEntity>, BaseException>> getPatientsStream();
+  Output<PatientEntity> savePatient(PatientEntity patient);
+  Output<Unit> deletePatient(String patientId);
 }

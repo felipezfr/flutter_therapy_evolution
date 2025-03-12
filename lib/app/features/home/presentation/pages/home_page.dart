@@ -16,17 +16,37 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-      ),
-      body: Container(
-        child: Expanded(
-          child: Center(
-            child: Text('data'),
-          ),
+      appBar: AppBar(),
+      body: SizedBox(
+        child: Column(
+          children: [
+            PrimaryButtonDs(
+              onPressed: () {
+                Modular.to.pushNamed('/patient/');
+              },
+              title: 'Pacientes',
+            ),
+            Spacer(),
+            BottomSheet(sessionService: sessionService)
+          ],
         ),
       ),
-      bottomSheet: Padding(
+    );
+  }
+}
+
+class BottomSheet extends StatelessWidget {
+  const BottomSheet({
+    super.key,
+    required this.sessionService,
+  });
+
+  final SessionService sessionService;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -54,7 +74,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            // const SizedBox(height: 20),
           ],
         ),
       ),
