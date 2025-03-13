@@ -107,7 +107,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Modular.to.pushNamed('./schedule'),
+        onPressed: () => Modular.to.pushNamed('./register'),
         child: const Icon(Icons.add),
       ),
     );
@@ -196,9 +196,23 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
                 ],
               ],
             ),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: () => _confirmDeleteAppointment(appointment),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.edit, color: Colors.blue),
+                  onPressed: () => Modular.to.pushNamed(
+                    './edit',
+                    arguments: {
+                      'appointmentEntity': appointment,
+                    },
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () => _confirmDeleteAppointment(appointment),
+                ),
+              ],
             ),
           ),
         );

@@ -27,9 +27,13 @@ class AppointmentModule extends Module {
     r.child('/', child: (context) => const AppointmentListPage());
     r.child('/schedule', child: (context) => const AppointmentSchedulePage());
     r.child(
-      '/schedule/:patientId',
+      '/register',
+      child: (context) => AppointmentSchedulePage(),
+    );
+    r.child(
+      '/edit',
       child: (context) => AppointmentSchedulePage(
-        patientId: r.args.params['patientId'],
+        appointment: r.args.data['appointmentEntity'],
       ),
     );
   }

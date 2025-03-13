@@ -9,11 +9,11 @@ import '../domain/entities/appointment_entity.dart';
 import 'appointment_viewmodel.dart';
 
 class AppointmentSchedulePage extends StatefulWidget {
-  final String? patientId;
+  final AppointmentEntity? appointment;
 
   const AppointmentSchedulePage({
     super.key,
-    this.patientId,
+    this.appointment,
   });
 
   @override
@@ -23,6 +23,8 @@ class AppointmentSchedulePage extends StatefulWidget {
 
 class _AppointmentSchedulePageState extends State<AppointmentSchedulePage> {
   final viewModel = Modular.get<AppointmentViewmodel>();
+
+  AppointmentEntity? get appointment => widget.appointment;
 
   final _formKey = GlobalKey<FormState>();
   final _notesController = TextEditingController();
@@ -37,11 +39,62 @@ class _AppointmentSchedulePageState extends State<AppointmentSchedulePage> {
   String? _selectedPatientId;
   String _appointmentStatus = 'scheduled';
 
+  bool _isEditing = false;
+  AppointmentEntity? _appointmentToEdit;
+
   @override
   void initState() {
     super.initState();
-    _selectedPatientId = widget.patientId;
+    _isEditing = widget.appointment != null;
     viewModel.saveAppointmentCommand.addListener(_saveAppointmentListener);
+
+    if (_isEditing) {
+      _loadAppointmentData();
+    }
+  }
+
+  void _loadAppointmentData() {
+    setState(() {
+      _appointmentToEdit = appointment;
+      _selectedPatientId = appointment!.patientId;
+      _typeController.text = appointment!.type;
+      _notesController.text = appointment!.notes ?? '';
+      _appointmentStatus = appointment!.status;
+
+      // Converter a data de string para DateTime
+      try {
+        _selectedDate = DateFormat('yyyy-MM-dd').parse(appointment!.date);
+      } catch (e) {
+        // Fallback para data atual se houver erro de parsing
+        _selectedDate = DateTime.now();
+      }
+
+      // Converter horários de string para TimeOfDay
+      try {
+        final startTimeParts = appointment!.startTime.split(':');
+        if (startTimeParts.length >= 2) {
+          _selectedStartTime = TimeOfDay(
+            hour: int.parse(startTimeParts[0]),
+            minute: int.parse(startTimeParts[1]),
+          );
+        }
+
+        final endTimeParts = appointment!.endTime.split(':');
+        if (endTimeParts.length >= 2) {
+          _selectedEndTime = TimeOfDay(
+            hour: int.parse(endTimeParts[0]),
+            minute: int.parse(endTimeParts[1]),
+          );
+        }
+      } catch (e) {
+        // Fallback para horários padrão se houver erro de parsing
+        _selectedStartTime = TimeOfDay.now();
+        _selectedEndTime = TimeOfDay(
+          hour: TimeOfDay.now().hour + 1,
+          minute: TimeOfDay.now().minute,
+        );
+      }
+    });
   }
 
   @override
@@ -124,7 +177,7 @@ class _AppointmentSchedulePageState extends State<AppointmentSchedulePage> {
       final currentUserId = await viewModel.getCurrentUserId();
 
       final appointment = AppointmentEntity(
-        id: '',
+        id: _isEditing ? _appointmentToEdit!.id : '',
         patientId: _selectedPatientId!,
         professionalId: currentUserId,
         date: dateFormatted,
@@ -133,8 +186,8 @@ class _AppointmentSchedulePageState extends State<AppointmentSchedulePage> {
         type: _typeController.text.trim(),
         status: _appointmentStatus,
         notes: _notesController.text.trim(),
-        reminderSent: false,
-        createdAt: DateTime.now(),
+        reminderSent: _isEditing ? _appointmentToEdit!.reminderSent : false,
+        createdAt: _isEditing ? _appointmentToEdit!.createdAt : DateTime.now(),
         updatedAt: DateTime.now(),
       );
 
@@ -146,7 +199,7 @@ class _AppointmentSchedulePageState extends State<AppointmentSchedulePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Agendar Consulta'),
+        title: Text(_isEditing ? 'Editar Consulta' : 'Agendar Consulta'),
       ),
       body: ListenableBuilder(
         listenable: viewModel.patientsStreamCommand,
@@ -312,7 +365,8 @@ class _AppointmentSchedulePageState extends State<AppointmentSchedulePage> {
             // Save button
             PrimaryButtonDs(
               onPressed: _saveAppointment,
-              title: 'Salvar agendamento',
+              title:
+                  _isEditing ? 'Atualizar agendamento' : 'Salvar agendamento',
             ),
           ],
         ),

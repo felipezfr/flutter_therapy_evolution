@@ -27,10 +27,18 @@ class AppointmentViewmodel {
   late final CommandStream0<List<PatientEntity>> patientsStreamCommand;
 
   String getPatientNameById(String patientId) {
-    final patient = patientsStreamCommand.result?.getOrNull()?.firstWhere(
-          (element) => element.id == patientId,
-        );
-    return patient?.name ?? 'Paciente não encontrado';
+    final patients = patientsStreamCommand.result?.getOrNull();
+    if (patients == null || patients.isEmpty) {
+      return 'Paciente não encontrado';
+    }
+
+    for (final patient in patients) {
+      if (patient.id == patientId) {
+        return patient.name;
+      }
+    }
+
+    return 'Paciente não encontrado';
   }
 
   Future<String> getCurrentUserId() async {
