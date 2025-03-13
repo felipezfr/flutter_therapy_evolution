@@ -34,53 +34,52 @@ class AppTheme {
       ),
     ),
     textTheme: TextTheme(
-      labelLarge: GoogleFonts.roboto(
+      labelLarge: GoogleFonts.montserrat(
         fontWeight: FontWeight.w400,
-        color: AppColors.secondaryColor,
+        color: AppColors.textBlackColor,
       ),
-      labelMedium: GoogleFonts.roboto(
+      labelMedium: GoogleFonts.montserrat(
         fontWeight: FontWeight.w400,
-        color: AppColors.whiteColor,
+        color: AppColors.textBlackColor,
       ),
-      labelSmall: GoogleFonts.mulish(
+      labelSmall: GoogleFonts.montserrat(
         fontSize: 14,
         fontWeight: FontWeight.w400,
-        color: AppColors.secondaryColor,
+        color: AppColors.textBlackColor,
       ),
-      titleMedium: GoogleFonts.roboto(
+      titleMedium: GoogleFonts.montserrat(
         fontWeight: FontWeight.w700,
         color: AppColors.primaryColor,
       ),
-      titleSmall: GoogleFonts.mulish(
+      titleSmall: GoogleFonts.montserrat(
         fontWeight: FontWeight.w600,
-        color: AppColors.blackColor,
+        color: AppColors.textBlackColor,
       ),
       bodyLarge: GoogleFonts.montserrat(
         fontWeight: FontWeight.w400,
-        color: AppColors.blackColor,
+        color: AppColors.textBlackColor,
       ),
-      bodySmall: GoogleFonts.roboto(
+      bodySmall: GoogleFonts.montserrat(
         fontWeight: FontWeight.w400,
-        color: AppColors.blackColor,
+        color: AppColors.textBlackColor,
       ),
       displaySmall: GoogleFonts.montserrat(
         fontWeight: FontWeight.bold,
         color: AppColors.primaryColor,
       ),
-      displayLarge: GoogleFonts.roboto(
+      displayLarge: GoogleFonts.montserrat(
         fontWeight: FontWeight.w700,
-        color: AppColors.whiteColor,
+        color: AppColors.textBlackColor,
         fontSize: 140,
       ),
       headlineSmall: GoogleFonts.montserrat(
         fontWeight: FontWeight.w300,
-        color: AppColors.secondaryColor,
-        fontStyle: FontStyle.italic,
+        color: AppColors.textBlackColor,
       ),
       headlineMedium: GoogleFonts.sourceSans3(
         fontSize: 24,
         fontWeight: FontWeight.w700,
-        color: AppColors.secondaryColor,
+        color: AppColors.textBlackColor,
         fontStyle: FontStyle.normal,
       ),
     ),

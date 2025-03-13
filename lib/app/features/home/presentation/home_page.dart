@@ -1,7 +1,8 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:flutter_therapy_evolution/app/core/services/session_service.dart';
+
+import 'home_viewmodel.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,7 +12,17 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final sessionService = Modular.get<SessionService>();
+  final viewModel = Modular.get<HomeViewmodel>();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +45,7 @@ class _HomePageState extends State<HomePage> {
               title: 'Agendamentos',
             ),
             Spacer(),
-            BottomSheet(sessionService: sessionService)
+            BottomSheet()
           ],
         ),
       ),
@@ -45,10 +56,7 @@ class _HomePageState extends State<HomePage> {
 class BottomSheet extends StatelessWidget {
   const BottomSheet({
     super.key,
-    required this.sessionService,
   });
-
-  final SessionService sessionService;
 
   @override
   Widget build(BuildContext context) {
@@ -73,8 +81,7 @@ class BottomSheet extends StatelessWidget {
                 ),
                 BottomIcon(
                   onTap: () async {
-                    // await sessionService.logout();
-                    // Modular.to.navigate('/');
+                    Modular.to.pushNamed('/home/profile');
                   },
                   iconData: Icons.person_2_sharp,
                   isSelected: true,

@@ -29,7 +29,7 @@ class UserAdapter {
           : DateTime.now(),
       lastLogin: map['lastLogin'] != null
           ? (map['lastLogin'] as dynamic).toDate()
-          : DateTime.now(),
+          : DateTime,
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/alert/alerts.dart';
+import '../../../core/session/logged_user.dart';
 import '../../patient/domain/entities/patient_entity.dart';
 import '../domain/entities/appointment_entity.dart';
 import 'appointment_viewmodel.dart';
@@ -174,12 +175,10 @@ class _AppointmentSchedulePageState extends State<AppointmentSchedulePage> {
       final startTimeFormatted = _selectedStartTime.format(context);
       final endTimeFormatted = _selectedEndTime.format(context);
 
-      final currentUserId = await viewModel.getCurrentUserId();
-
       final appointment = AppointmentEntity(
         id: _isEditing ? _appointmentToEdit!.id : '',
         patientId: _selectedPatientId!,
-        professionalId: currentUserId,
+        professionalId: LoggedUser.id,
         date: dateFormatted,
         startTime: startTimeFormatted,
         endTime: endTimeFormatted,

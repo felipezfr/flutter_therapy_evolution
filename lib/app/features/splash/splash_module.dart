@@ -1,7 +1,7 @@
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../core/core_module.dart';
-import '../../core/services/session_service.dart';
+import '../../core/session/session_service.dart';
 import 'presentation/splash_page.dart';
 
 class SplashModule extends Module {

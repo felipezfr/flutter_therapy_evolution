@@ -29,7 +29,7 @@ class PrimaryButtonDs extends StatelessWidget {
     required VoidCallback onPressed,
     Color backgroundColor = AppColors.secondaryColor,
     Color foregroundColor = AppColors.greyDark,
-    Color textColor = AppColors.blackColor,
+    Color textColor = AppColors.textBlackColor,
     double height = 48,
     double width = 220,
     bool isLoading = false,

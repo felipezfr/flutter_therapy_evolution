@@ -32,7 +32,11 @@ class AuthRepositoryImpl implements IAuthRepository {
           ),
         );
       }
-      return await getUserById(userCredential.user!.uid);
+      return await getUserById(userCredential.user!.uid).onSuccess(
+        (success) {
+          _saveLastLoginDate(success.id);
+        },
+      );
     } on FirebaseAuthException catch (e, s) {
       Log.error('Error login', error: e, stackTrace: s);
 
@@ -44,7 +48,7 @@ class AuthRepositoryImpl implements IAuthRepository {
       } else if (e.code == 'invalid-credential') {
         errorMessage = 'E-mail ou senha incorretos';
       } else {
-        errorMessage = 'Erro ao fazer login: ${e.message}';
+        errorMessage = 'Erro ao fazer login';
       }
 
       return Failure(RepositoryException(
@@ -134,19 +138,27 @@ class AuthRepositoryImpl implements IAuthRepository {
       }
 
       final userData = userDoc.data()!;
-
       return Success(UserAdapter.fromMap(userData));
-    } on FirebaseAuthException catch (e, s) {
+    } catch (e, s) {
       Log.error('Error getUserById', error: e, stackTrace: s);
 
       return Failure(
         RepositoryException(
-          message: e.message ?? 'Erro inesperado',
+          message: 'Erro inesperado',
         ),
       );
-    } catch (e, s) {
-      Log.error('Error getUserById', error: e, stackTrace: s);
+    }
+  }
 
+  Output<Unit> _saveLastLoginDate(String userId) async {
+    try {
+      await _firestore.collection('users').doc(userId).update({
+        'lastLogin': DateTime.now(),
+      });
+
+      return Success(unit);
+    } catch (e, s) {
+      Log.error('Error _saveLastLoginDate', error: e, stackTrace: s);
       return Failure(
         RepositoryException(
           message: 'Erro inesperado',

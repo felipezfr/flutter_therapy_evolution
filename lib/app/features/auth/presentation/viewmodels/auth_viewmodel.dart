@@ -1,4 +1,4 @@
-import 'package:flutter_therapy_evolution/app/core/services/session_service.dart';
+import 'package:flutter_therapy_evolution/app/core/session/logged_user.dart';
 import 'package:flutter_therapy_evolution/app/core/state_management/errors/base_exception.dart';
 import 'package:flutter_therapy_evolution/app/core/typedefs/result_typedef.dart';
 import 'package:flutter_therapy_evolution/app/features/auth/domain/entities/user_entity.dart';
@@ -11,9 +11,8 @@ import '../models/register_params.dart';
 
 class AuthViewmodel {
   final IAuthRepository _repository;
-  final SessionService _sessionService;
 
-  AuthViewmodel(this._repository, this._sessionService) {
+  AuthViewmodel(this._repository) {
     loginCommand = Command1(_login);
     registerCommand = Command1(_register);
   }
@@ -22,14 +21,14 @@ class AuthViewmodel {
   late final Command1<UserEntity, RegisterParams> registerCommand;
 
   Output<UserEntity> _login(LoginParams loginParams) {
-    return _repository.login(loginParams).then(_saveUser);
+    return _repository.login(loginParams).then(_setUser);
   }
 
   Output<UserEntity> _register(RegisterParams registerParams) {
-    return _repository.register(registerParams).then(_saveUser);
+    return _repository.register(registerParams).then(_setUser);
   }
 
-  Output<UserEntity> _saveUser(Result<UserEntity, BaseException> result) async {
-    return result.onSuccess((success) => _sessionService.saveUser(success));
+  Output<UserEntity> _setUser(Result<UserEntity, BaseException> result) async {
+    return result.onSuccess((success) => LoggedUser.setUserId = success.id);
   }
 }

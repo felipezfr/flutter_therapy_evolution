@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../core/log/log_manager.dart';
+import '../../../../core/session/logged_user.dart';
 import '../../../../core/state_management/errors/base_exception.dart';
 import '../../../../core/state_management/errors/repository_exception.dart';
 import '../../../../core/typedefs/result_typedef.dart';
@@ -15,10 +16,16 @@ class PatientRepositoryImpl implements IPatientRepository {
 
   PatientRepositoryImpl(this._firestore);
 
+  final String loggedUserId = LoggedUser.id;
+
   @override
   Stream<Result<List<PatientEntity>, BaseException>> getPatientsStream() {
     try {
-      return _firestore.collection('patients').snapshots().map((snapshot) {
+      return _firestore
+          .collection('patients')
+          .where('responsibleProfessional', isEqualTo: loggedUserId)
+          .snapshots()
+          .map((snapshot) {
         try {
           if (snapshot.docs.isEmpty) {
             return Success([]);
