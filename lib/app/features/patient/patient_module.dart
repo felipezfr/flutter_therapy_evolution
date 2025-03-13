@@ -1,4 +1,5 @@
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_therapy_evolution/app/features/patient/presentation/patient_detail_page.dart';
 import 'package:flutter_therapy_evolution/app/features/patient/presentation/patient_list_page.dart';
 
 import '../../core/core_module.dart';
@@ -20,6 +21,12 @@ class PatientModule extends Module {
   @override
   void routes(RouteManager r) {
     r.child('/', child: (context) => PatientListPage());
+    r.child(
+      '/detail',
+      child: (context) => PatientDetailPage(
+        patient: r.args.data['patientEntity'],
+      ),
+    );
     r.child('/register', child: (context) => PatientRegisterPage());
     r.child(
       '/edit',

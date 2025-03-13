@@ -76,6 +76,12 @@ class _PatientListPageState extends State<PatientListPage> {
     });
   }
 
+  void _navigateToDetailPage(PatientEntity patient) {
+    Modular.to.pushNamed('./detail', arguments: {
+      'patientEntity': patient,
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -159,7 +165,7 @@ class _PatientListPageState extends State<PatientListPage> {
                 ),
               ],
             ),
-            onTap: () => _navigateToEditPage(patient),
+            onTap: () => _navigateToDetailPage(patient),
           ),
         );
       },

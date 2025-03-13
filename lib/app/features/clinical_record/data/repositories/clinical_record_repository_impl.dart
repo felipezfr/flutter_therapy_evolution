@@ -131,7 +131,7 @@ class ClinicalRecordRepositoryImpl implements IClinicalRecordRepository {
   }
 
   @override
-  Output<void> saveClinicalRecord(ClinicalRecordEntity record) async {
+  Output<Unit> saveClinicalRecord(ClinicalRecordEntity record) async {
     try {
       final data = ClinicalRecordAdapter.toMap(record);
 

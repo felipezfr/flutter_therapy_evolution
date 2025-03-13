@@ -19,6 +19,9 @@ class AppointmentViewmodel {
         CommandStream0(_repository.getAppointmentsStream);
     patientsStreamCommand =
         CommandStream0(_patientRepository.getPatientsStream);
+
+    appointmentsStreamCommand.execute();
+    patientsStreamCommand.execute();
   }
 
   late final Command1<void, AppointmentEntity> saveAppointmentCommand;

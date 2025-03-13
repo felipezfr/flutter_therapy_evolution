@@ -10,6 +10,6 @@ abstract class IClinicalRecordRepository {
   Stream<Result<List<ClinicalRecordEntity>, BaseException>>
       getPatientClinicalRecordsStream(String patientId);
   Output<ClinicalRecordEntity> getClinicalRecord(String recordId);
-  Output<void> saveClinicalRecord(ClinicalRecordEntity record);
-  Output<void> deleteClinicalRecord(String recordId);
+  Output<Unit> saveClinicalRecord(ClinicalRecordEntity record);
+  Output<Unit> deleteClinicalRecord(String recordId);
 }

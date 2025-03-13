@@ -25,7 +25,6 @@ class AppointmentModule extends Module {
   @override
   void routes(RouteManager r) {
     r.child('/', child: (context) => const AppointmentListPage());
-    r.child('/schedule', child: (context) => const AppointmentSchedulePage());
     r.child(
       '/register',
       child: (context) => AppointmentSchedulePage(),

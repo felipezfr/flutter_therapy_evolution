@@ -1,5 +1,6 @@
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_therapy_evolution/app/features/appointment/appointment_module.dart';
+import 'package:flutter_therapy_evolution/app/features/clinical_record/clinical_record_module.dart';
 import 'package:flutter_therapy_evolution/app/features/patient/patient_module.dart';
 
 import 'features/auth/auth_module.dart';
@@ -14,5 +15,6 @@ class AppModule extends Module {
     r.module('/home', module: HomeModule());
     r.module('/patient', module: PatientModule());
     r.module('/schedule', module: AppointmentModule());
+    r.module('/clinical_record', module: ClinicalRecordModule());
   }
 }

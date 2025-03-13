@@ -10,8 +10,10 @@ class PatientViewmodel {
 
   PatientViewmodel(this._repository) {
     savePatientCommand = Command1(_repository.savePatient);
-    patientsStreamCommand = CommandStream0(_repository.getPatientsStream);
     deletePatientCommand = Command1(_repository.deletePatient);
+    patientsStreamCommand = CommandStream0(_repository.getPatientsStream);
+
+    patientsStreamCommand.execute();
   }
 
   late final Command1<void, PatientEntity> savePatientCommand;
