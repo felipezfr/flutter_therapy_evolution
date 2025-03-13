@@ -54,24 +54,66 @@ class PatientRepositoryImpl implements IPatientRepository {
   }
 
   @override
+  Output<PatientEntity> getPatient(String patientId) async {
+    try {
+      final docSnapshot =
+          await _firestore.collection('patients').doc(patientId).get();
+
+      if (!docSnapshot.exists) {
+        return Failure(
+          RepositoryException(
+            message: 'Paciente não encontrado',
+          ),
+        );
+      }
+
+      final data = docSnapshot.data()!;
+      data['id'] = docSnapshot.id;
+
+      return Success(PatientAdapter.fromMap(data));
+    } catch (e, s) {
+      Log.error('Error getting patient', error: e, stackTrace: s);
+      return Failure(
+        RepositoryException(
+          message: 'Erro ao buscar paciente',
+        ),
+      );
+    }
+  }
+
+  @override
   Output<PatientEntity> savePatient(PatientEntity patient) async {
     try {
       final patientMap = PatientAdapter.toMap(patient);
 
       // If id is empty, create a new document with auto-generated ID
       if (patient.id.isEmpty) {
-        final docRef = _firestore.collection('patients').doc();
+        final docRef = await _firestore.collection('patients').add(patientMap);
         final newPatient = PatientEntity(
           id: docRef.id,
           name: patient.name,
+          birthDate: patient.birthDate,
+          gender: patient.gender,
+          documentId: patient.documentId,
+          email: patient.email,
+          phone: patient.phone,
+          address: patient.address,
+          insuranceProvider: patient.insuranceProvider,
+          insuranceNumber: patient.insuranceNumber,
+          responsibleProfessional: patient.responsibleProfessional,
+          registrationDate: patient.registrationDate,
+          notes: patient.notes,
+          status: patient.status,
         );
 
-        await docRef.set(PatientAdapter.toMap(newPatient));
         return Success(newPatient);
       }
       // Otherwise update existing document
       else {
-        await _firestore.collection('patients').doc(patient.id).set(patientMap);
+        await _firestore
+            .collection('patients')
+            .doc(patient.id)
+            .update(patientMap);
         return Success(patient);
       }
     } on FirebaseAuthException catch (e, s) {
@@ -108,6 +150,23 @@ class PatientRepositoryImpl implements IPatientRepository {
       return Failure(
         RepositoryException(
           message: 'Erro ao excluir paciente',
+        ),
+      );
+    }
+  }
+
+  @override
+  Output<Unit> updatePatientStatus(String patientId, String status) async {
+    try {
+      await _firestore.collection('patients').doc(patientId).update({
+        'status': status,
+      });
+      return Success(unit);
+    } catch (e, s) {
+      Log.error('Error updating patient status', error: e, stackTrace: s);
+      return Failure(
+        RepositoryException(
+          message: 'Erro ao atualizar status do paciente',
         ),
       );
     }

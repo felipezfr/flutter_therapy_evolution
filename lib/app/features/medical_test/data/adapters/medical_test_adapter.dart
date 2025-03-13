@@ -1,20 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../domain/entities/appointment_entity.dart';
+import '../../domain/entities/medical_test_entity.dart';
 
-class AppointmentAdapter {
-  static AppointmentEntity fromMap(Map<String, dynamic> data) {
-    return AppointmentEntity(
+class MedicalTestAdapter {
+  static MedicalTestEntity fromMap(Map<String, dynamic> data) {
+    return MedicalTestEntity(
       id: data['id'] ?? '',
       patientId: data['patientId'] ?? '',
       professionalId: data['professionalId'] ?? '',
-      date: data['date'] ?? '',
-      startTime: data['startTime'] ?? '',
-      endTime: data['endTime'] ?? '',
-      type: data['type'] ?? '',
-      status: data['status'] ?? 'scheduled',
+      clinicalRecordId: data['clinicalRecordId'],
+      testType: data['testType'] ?? '',
+      requestDate: data['requestDate'] ?? '',
+      resultDate: data['resultDate'],
+      result: data['result'],
+      resultFile: data['resultFile'],
       notes: data['notes'],
-      reminderSent: data['reminderSent'] ?? false,
       createdAt: data['createdAt'] != null
           ? (data['createdAt'] as Timestamp).toDate()
           : DateTime.now(),
@@ -24,17 +24,17 @@ class AppointmentAdapter {
     );
   }
 
-  static Map<String, dynamic> toMap(AppointmentEntity entity) {
+  static Map<String, dynamic> toMap(MedicalTestEntity entity) {
     return {
       'patientId': entity.patientId,
       'professionalId': entity.professionalId,
-      'date': entity.date,
-      'startTime': entity.startTime,
-      'endTime': entity.endTime,
-      'type': entity.type,
-      'status': entity.status,
+      'clinicalRecordId': entity.clinicalRecordId,
+      'testType': entity.testType,
+      'requestDate': entity.requestDate,
+      'resultDate': entity.resultDate,
+      'result': entity.result,
+      'resultFile': entity.resultFile,
       'notes': entity.notes,
-      'reminderSent': entity.reminderSent,
       'createdAt': Timestamp.fromDate(entity.createdAt),
       'updatedAt': Timestamp.fromDate(entity.updatedAt),
     };

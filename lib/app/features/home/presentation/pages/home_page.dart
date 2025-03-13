@@ -73,8 +73,8 @@ class BottomSheet extends StatelessWidget {
                 ),
                 BottomIcon(
                   onTap: () async {
-                    await sessionService.logout();
-                    Modular.to.navigate('/');
+                    // await sessionService.logout();
+                    // Modular.to.navigate('/');
                   },
                   iconData: Icons.person_2_sharp,
                   isSelected: true,

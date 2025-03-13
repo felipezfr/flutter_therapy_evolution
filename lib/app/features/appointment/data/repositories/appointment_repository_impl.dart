@@ -15,31 +15,23 @@ class AppointmentRepositoryImpl implements IAppointmentRepository {
   AppointmentRepositoryImpl(this._firestore);
 
   @override
-  Output<AppointmentEntity> saveAppointment(
-      AppointmentEntity appointment) async {
+  Output<Unit> saveAppointment(AppointmentEntity appointment) async {
     try {
       final appointmentMap = AppointmentAdapter.toMap(appointment);
 
       // If id is empty, create a new document with auto-generated ID
       if (appointment.id.isEmpty) {
-        final docRef = _firestore.collection('appointments').doc();
-        final newAppointment = AppointmentEntity(
-          id: docRef.id,
-          patientId: appointment.patientId,
-          appointmentDateTime: appointment.appointmentDateTime,
-          notes: appointment.notes,
-        );
+        await _firestore.collection('appointments').add(appointmentMap);
 
-        await docRef.set(AppointmentAdapter.toMap(newAppointment));
-        return Success(newAppointment);
+        return Success(unit);
       }
       // Otherwise update existing document
       else {
         await _firestore
             .collection('appointments')
             .doc(appointment.id)
-            .set(appointmentMap);
-        return Success(appointment);
+            .update(appointmentMap);
+        return Success(unit);
       }
     } catch (e, s) {
       Log.error('Error saving appointment', error: e, stackTrace: s);
@@ -71,7 +63,7 @@ class AppointmentRepositoryImpl implements IAppointmentRepository {
         } catch (e, s) {
           Log.error('Error processing appointments snapshot',
               error: e, stackTrace: s);
-          return Failure<List<AppointmentEntity>, BaseException>(
+          return Failure(
             RepositoryException(
               message: 'Erro ao processar dados dos agendamentos',
             ),

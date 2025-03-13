@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_therapy_evolution/app/features/appointment/domain/entities/appointment_entity.dart';
-import 'package:intl/intl.dart';
 
 import '../../../core/alert/alerts.dart';
 import '../../patient/presentation/widgets/empty_state_widget.dart';
@@ -45,10 +44,8 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
 
   void _confirmDeleteAppointment(AppointmentEntity appointment) {
     final patientName = viewModel.getPatientNameById(appointment.patientId);
-    final appointmentDate =
-        DateFormat('dd/MM/yyyy').format(appointment.appointmentDateTime);
-    final appointmentTime =
-        DateFormat('HH:mm').format(appointment.appointmentDateTime);
+    final appointmentDate = appointment.date;
+    final appointmentTime = appointment.startTime;
 
     showDialog(
       context: context,
@@ -136,9 +133,12 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
               return const EmptyStateWidget();
             }
 
-            // Sort appointments by date (most recent first)
-            appointments.sort((a, b) =>
-                a.appointmentDateTime.compareTo(b.appointmentDateTime));
+            // Sort appointments by date
+            appointments.sort((a, b) {
+              int dateComparison = a.date.compareTo(b.date);
+              if (dateComparison != 0) return dateComparison;
+              return a.startTime.compareTo(b.startTime);
+            });
 
             return _buildAppointmentList(appointments);
           },
@@ -181,12 +181,16 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
               children: [
                 const SizedBox(height: 4),
                 Text(
-                  'Data: ${DateFormat('dd/MM/yyyy').format(appointment.appointmentDateTime)}',
+                  'Data: ${appointment.date}',
                 ),
                 Text(
-                  'Horário: ${DateFormat('HH:mm').format(appointment.appointmentDateTime)}',
+                  'Horário: ${appointment.startTime} - ${appointment.endTime}',
                 ),
-                if (appointment.notes.isNotEmpty) ...[
+                Text(
+                  'Status: ${appointment.status}',
+                ),
+                if (appointment.notes != null &&
+                    appointment.notes!.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Text('Obs: ${appointment.notes}'),
                 ],

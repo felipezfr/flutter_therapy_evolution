@@ -7,6 +7,6 @@ import '../entities/appointment_entity.dart';
 abstract class IAppointmentRepository {
   Stream<Result<List<AppointmentEntity>, BaseException>>
       getAppointmentsStream();
-  Output<AppointmentEntity> saveAppointment(AppointmentEntity appointment);
+  Output<Unit> saveAppointment(AppointmentEntity appointment);
   Output<Unit> deleteAppointment(String appointmentId);
 }

@@ -26,11 +26,16 @@ class _AppointmentSchedulePageState extends State<AppointmentSchedulePage> {
 
   final _formKey = GlobalKey<FormState>();
   final _notesController = TextEditingController();
+  final _typeController = TextEditingController();
 
   DateTime _selectedDate = DateTime.now();
-  TimeOfDay _selectedTime = TimeOfDay.now();
+  TimeOfDay _selectedStartTime = TimeOfDay.now();
+  TimeOfDay _selectedEndTime = TimeOfDay(
+    hour: TimeOfDay.now().hour + 1,
+    minute: TimeOfDay.now().minute,
+  );
   String? _selectedPatientId;
-  // List<PatientEntity> _patients = [];
+  String _appointmentStatus = 'scheduled';
 
   @override
   void initState() {
@@ -42,6 +47,7 @@ class _AppointmentSchedulePageState extends State<AppointmentSchedulePage> {
   @override
   void dispose() {
     _notesController.dispose();
+    _typeController.dispose();
     viewModel.saveAppointmentCommand.removeListener(_saveAppointmentListener);
     super.dispose();
   }
@@ -51,6 +57,7 @@ class _AppointmentSchedulePageState extends State<AppointmentSchedulePage> {
       (success) {
         Alerts.showSuccess(context, 'Agendamento salvo com sucesso!');
         _notesController.clear();
+        _typeController.clear();
         Modular.to.pop();
       },
       (failure) {
@@ -73,38 +80,62 @@ class _AppointmentSchedulePageState extends State<AppointmentSchedulePage> {
     }
   }
 
-  Future<void> _selectTime(BuildContext context) async {
+  Future<void> _selectStartTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: _selectedTime,
+      initialTime: _selectedStartTime,
     );
-    if (picked != null && picked != _selectedTime) {
+    if (picked != null && picked != _selectedStartTime) {
       setState(() {
-        _selectedTime = picked;
+        _selectedStartTime = picked;
+
+        // Automatically set end time 1 hour after start time
+        _selectedEndTime = TimeOfDay(
+          hour: picked.hour + 1,
+          minute: picked.minute,
+        );
       });
     }
   }
 
-  void _saveAppointment() {
+  Future<void> _selectEndTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: _selectedEndTime,
+    );
+    if (picked != null && picked != _selectedEndTime) {
+      setState(() {
+        _selectedEndTime = picked;
+      });
+    }
+  }
+
+  Future<void> _saveAppointment() async {
     if (_formKey.currentState!.validate()) {
       if (_selectedPatientId == null) {
         Alerts.showFailure(context, 'Selecione um paciente');
         return;
       }
 
-      final appointmentDateTime = DateTime(
-        _selectedDate.year,
-        _selectedDate.month,
-        _selectedDate.day,
-        _selectedTime.hour,
-        _selectedTime.minute,
-      );
+      final dateFormatted = DateFormat('yyyy-MM-dd').format(_selectedDate);
+      final startTimeFormatted = _selectedStartTime.format(context);
+      final endTimeFormatted = _selectedEndTime.format(context);
+
+      final currentUserId = await viewModel.getCurrentUserId();
 
       final appointment = AppointmentEntity(
         id: '',
         patientId: _selectedPatientId!,
-        appointmentDateTime: appointmentDateTime,
+        professionalId: currentUserId,
+        date: dateFormatted,
+        startTime: startTimeFormatted,
+        endTime: endTimeFormatted,
+        type: _typeController.text.trim(),
+        status: _appointmentStatus,
         notes: _notesController.text.trim(),
+        reminderSent: false,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       );
 
       viewModel.saveAppointmentCommand.execute(appointment);
@@ -132,7 +163,6 @@ class _AppointmentSchedulePageState extends State<AppointmentSchedulePage> {
 
           return patientsResult.fold(
             (patients) {
-              // _patients = patients;
               return _buildForm(patients);
             },
             (error) {
@@ -197,19 +227,74 @@ class _AppointmentSchedulePageState extends State<AppointmentSchedulePage> {
             ),
             const SizedBox(height: 16),
 
-            // Time selection
+            // Start Time selection
             InkWell(
-              onTap: () => _selectTime(context),
+              onTap: () => _selectStartTime(context),
               child: InputDecorator(
                 decoration: const InputDecoration(
-                  labelText: 'Horário',
+                  labelText: 'Horário de Início',
                   border: OutlineInputBorder(),
                   suffixIcon: Icon(Icons.access_time),
                 ),
                 child: Text(
-                  _selectedTime.format(context),
+                  _selectedStartTime.format(context),
                 ),
               ),
+            ),
+            const SizedBox(height: 16),
+
+            // End Time selection
+            InkWell(
+              onTap: () => _selectEndTime(context),
+              child: InputDecorator(
+                decoration: const InputDecoration(
+                  labelText: 'Horário de Término',
+                  border: OutlineInputBorder(),
+                  suffixIcon: Icon(Icons.access_time),
+                ),
+                child: Text(
+                  _selectedEndTime.format(context),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Appointment Type
+            TextFormField(
+              controller: _typeController,
+              decoration: const InputDecoration(
+                labelText: 'Tipo de Consulta',
+                border: OutlineInputBorder(),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Informe o tipo de consulta';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+
+            // Appointment Status
+            DropdownButtonFormField<String>(
+              decoration: const InputDecoration(
+                labelText: 'Status',
+                border: OutlineInputBorder(),
+              ),
+              value: _appointmentStatus,
+              items: const [
+                DropdownMenuItem(value: 'scheduled', child: Text('Agendado')),
+                DropdownMenuItem(value: 'confirmed', child: Text('Confirmado')),
+                DropdownMenuItem(value: 'completed', child: Text('Concluído')),
+                DropdownMenuItem(value: 'canceled', child: Text('Cancelado')),
+                DropdownMenuItem(
+                    value: 'noShow', child: Text('Não Compareceu')),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _appointmentStatus = value!;
+                });
+              },
             ),
             const SizedBox(height: 16),
 

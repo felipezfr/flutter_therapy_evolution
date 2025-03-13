@@ -1,4 +1,5 @@
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_therapy_evolution/app/core/services/session_service.dart';
 
 import '../../core/core_module.dart';
 import '../patient/data/repositories/patient_repository_impl.dart';
@@ -17,6 +18,7 @@ class AppointmentModule extends Module {
   void binds(Injector i) {
     i.addLazySingleton<IPatientRepository>(PatientRepositoryImpl.new);
     i.addLazySingleton<IAppointmentRepository>(AppointmentRepositoryImpl.new);
+    i.addLazySingleton(SessionService.new);
     i.addLazySingleton(AppointmentViewmodel.new);
   }
 

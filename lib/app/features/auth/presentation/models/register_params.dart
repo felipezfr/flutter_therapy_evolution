@@ -7,12 +7,18 @@ class RegisterParams extends ChangeNotifier {
   String password;
   String name;
   String confirmPassword;
+  String phone;
+  String specialty;
+  String licenseNumber;
 
   RegisterParams({
     required this.name,
     required this.email,
     required this.password,
     required this.confirmPassword,
+    required this.phone,
+    required this.specialty,
+    required this.licenseNumber,
   });
 
   factory RegisterParams.empty() => RegisterParams(
@@ -20,6 +26,9 @@ class RegisterParams extends ChangeNotifier {
         email: '',
         password: '',
         confirmPassword: '',
+        phone: '',
+        specialty: '',
+        licenseNumber: '',
       );
 
   setEmail(String value) {
@@ -42,11 +51,32 @@ class RegisterParams extends ChangeNotifier {
     notifyListeners();
   }
 
+  setPhone(String value) {
+    phone = value;
+    notifyListeners();
+  }
+
+  setSpecialty(String value) {
+    specialty = value;
+    notifyListeners();
+  }
+
+  setLicenseNumber(String value) {
+    licenseNumber = value;
+    notifyListeners();
+  }
+
   UserEntity toUserEntity() {
     return UserEntity(
       id: '',
       name: name,
       email: email,
+      phone: phone,
+      specialty: specialty,
+      licenseNumber: licenseNumber,
+      profilePicture: null,
+      createdAt: DateTime.now(),
+      lastLogin: DateTime.now(),
     );
   }
 

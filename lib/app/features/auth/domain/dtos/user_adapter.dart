@@ -6,6 +6,12 @@ class UserAdapter {
       'id': user.id,
       'name': user.name,
       'email': user.email,
+      'phone': user.phone,
+      'specialty': user.specialty,
+      'licenseNumber': user.licenseNumber,
+      'profilePicture': user.profilePicture,
+      'createdAt': user.createdAt,
+      'lastLogin': user.lastLogin,
     };
   }
 
@@ -14,6 +20,16 @@ class UserAdapter {
       id: map['id'] as String,
       name: map['name'] as String,
       email: map['email'] as String,
+      phone: map['phone'] ?? '',
+      specialty: map['specialty'] ?? '',
+      licenseNumber: map['licenseNumber'] ?? '',
+      profilePicture: map['profilePicture'],
+      createdAt: map['createdAt'] != null
+          ? (map['createdAt'] as dynamic).toDate()
+          : DateTime.now(),
+      lastLogin: map['lastLogin'] != null
+          ? (map['lastLogin'] as dynamic).toDate()
+          : DateTime.now(),
     );
   }
 }
