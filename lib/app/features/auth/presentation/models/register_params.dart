@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_therapy_evolution/app/features/auth/domain/dtos/user_adapter.dart';
-import 'package:flutter_therapy_evolution/app/features/auth/domain/entities/user_entity.dart';
+import 'package:flutter_therapy_evolution/app/core/entities/user_entity.dart';
 
 class RegisterParams extends ChangeNotifier {
   String email;
@@ -81,6 +80,6 @@ class RegisterParams extends ChangeNotifier {
   }
 
   Map<String, dynamic> toMap() {
-    return UserAdapter.toMap(toUserEntity());
+    return UserEntity.toMap(toUserEntity());
   }
 }

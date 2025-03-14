@@ -2,14 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../core/log/log_manager.dart';
-import '../../../../core/state_management/errors/repository_exception.dart';
+import '../../../../core/errors/repository_exception.dart';
 import '../../../../core/typedefs/result_typedef.dart';
 import '../../domain/entities/home_entity.dart';
-import '../../domain/repositories/i_home_repository.dart';
-import '../adapters/home_adapter.dart';
+import 'i_home_repository.dart';
 
 class HomeRepositoryImpl implements IHomeRepository {
-
   final FirebaseFirestore _firestore;
 
   HomeRepositoryImpl(this._firestore);
@@ -27,7 +25,7 @@ class HomeRepositoryImpl implements IHomeRepository {
 
       final userData = doc.data()!;
 
-      return Success(HomeAdapter.fromMap(userData));
+      return Success(HomeEntity.fromMap(userData));
     } catch (e, s) {
       Log.error('Error Home', error: e, stackTrace: s);
 
@@ -37,6 +35,5 @@ class HomeRepositoryImpl implements IHomeRepository {
         ),
       );
     }
-
   }
 }

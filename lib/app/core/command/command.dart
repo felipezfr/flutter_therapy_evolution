@@ -7,8 +7,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:result_dart/result_dart.dart';
 
-import '../state_management/errors/base_exception.dart';
-import '../state_management/errors/default_exception.dart';
+import '../errors/base_exception.dart';
+import '../errors/default_exception.dart';
 import '../typedefs/result_typedef.dart';
 
 /// Defines a command action that returns a [Result] of type [T].

@@ -2,7 +2,7 @@ import 'package:result_dart/result_dart.dart';
 
 import '../../../../core/command/command.dart';
 import '../../domain/entities/clinical_record_entity.dart';
-import '../../domain/repositories/i_clinical_record_repository.dart';
+import '../../data/repositories/i_clinical_record_repository.dart';
 
 class ClinicalRecordViewmodel {
   final IClinicalRecordRepository _repository;

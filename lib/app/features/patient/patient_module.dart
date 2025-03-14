@@ -2,7 +2,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../core/core_module.dart';
 import 'data/repositories/patient_repository_impl.dart';
-import 'domain/repositories/i_patient_repository.dart';
+import 'data/repositories/i_patient_repository.dart';
 import 'presentation/pages/patient_detail_page.dart';
 import 'presentation/pages/patient_list_page.dart';
 import 'presentation/pages/patient_register_page.dart';

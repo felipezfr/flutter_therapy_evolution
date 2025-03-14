@@ -4,6 +4,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_therapy_evolution/app/core/session/logged_user.dart';
 import 'package:flutter_therapy_evolution/app/core/widgets/result_handler.dart';
 import 'package:intl/intl.dart';
+import '../../domain/entities/patient_address_entity.dart';
 import '../viewmodels/patient_viewmodel.dart';
 
 import '../../domain/entities/patient_entity.dart';

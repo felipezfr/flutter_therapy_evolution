@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'prescription_entity.dart';
 
 class ClinicalRecordEntity {
@@ -32,4 +34,51 @@ class ClinicalRecordEntity {
     this.createdAt,
     this.updatedAt,
   });
+
+  static ClinicalRecordEntity fromMap(Map<String, dynamic> data) {
+    return ClinicalRecordEntity(
+      id: data['id'] ?? '',
+      patientId: data['patientId'] ?? '',
+      appointmentId: data['appointmentId'],
+      date: data['date'] ?? '',
+      chiefComplaint: data['chiefComplaint'],
+      presentIllness: data['presentIllness'],
+      physicalExam: data['physicalExam'],
+      diagnosis: data['diagnosis'],
+      plan: data['plan'],
+      prescriptions: data['prescriptions'] != null
+          ? (data['prescriptions'] as List)
+              .map((e) => PrescriptionEntity.fromMap(e))
+              .toList()
+          : null,
+      recommendations: data['recommendations'],
+      attachments: data['attachments'] != null
+          ? List<String>.from(data['attachments'])
+          : null,
+      createdAt: data['createdAt'] != null
+          ? (data['createdAt'] as Timestamp).toDate()
+          : DateTime.now(),
+      updatedAt: data['updatedAt'] != null
+          ? (data['updatedAt'] as Timestamp).toDate()
+          : DateTime.now(),
+    );
+  }
+
+  static Map<String, dynamic> toMap(ClinicalRecordEntity entity) {
+    return {
+      'patientId': entity.patientId,
+      'appointmentId': entity.appointmentId,
+      'date': entity.date,
+      'chiefComplaint': entity.chiefComplaint,
+      'presentIllness': entity.presentIllness,
+      'physicalExam': entity.physicalExam,
+      'diagnosis': entity.diagnosis,
+      'plan': entity.plan,
+      'prescriptions': entity.prescriptions
+          ?.map((e) => PrescriptionEntity.toMap(e))
+          .toList(),
+      'recommendations': entity.recommendations,
+      'attachments': entity.attachments,
+    };
+  }
 }

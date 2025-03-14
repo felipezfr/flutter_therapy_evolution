@@ -3,12 +3,11 @@ import 'package:result_dart/result_dart.dart';
 
 import '../../../../core/log/log_manager.dart';
 import '../../../../core/session/logged_user.dart';
-import '../../../../core/state_management/errors/base_exception.dart';
-import '../../../../core/state_management/errors/repository_exception.dart';
+import '../../../../core/errors/base_exception.dart';
+import '../../../../core/errors/repository_exception.dart';
 import '../../../../core/typedefs/result_typedef.dart';
 import '../../domain/entities/patient_entity.dart';
-import '../../domain/repositories/i_patient_repository.dart';
-import '../adapters/patient_adapter.dart';
+import 'i_patient_repository.dart';
 
 class PatientRepositoryImpl implements IPatientRepository {
   final FirebaseFirestore _firestore;
@@ -33,7 +32,7 @@ class PatientRepositoryImpl implements IPatientRepository {
           final patients = snapshot.docs.map((doc) {
             final data = doc.data();
             data['id'] = doc.id;
-            return PatientAdapter.fromMap(data);
+            return PatientEntity.fromMap(data);
           }).toList();
 
           return Success(patients);
@@ -62,7 +61,7 @@ class PatientRepositoryImpl implements IPatientRepository {
   @override
   Output<Unit> savePatient(PatientEntity patient) async {
     try {
-      final patientMap = PatientAdapter.toMap(patient);
+      final patientMap = PatientEntity.toMap(patient);
 
       // If id is empty, create a new document with auto-generated ID
       if (patient.id.isEmpty) {

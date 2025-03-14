@@ -52,19 +52,13 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
     super.initState();
     _isEditing = widget.appointment != null;
     _isRegisterByPatient = widget.patient != null;
-    viewModel.saveAppointmentCommand.addListener(_saveAppointmentListener);
+    viewModel.saveAppointmentCommand.addListener(_listener);
 
     if (_isEditing) {
       _loadAppointmentData();
     } else if (_isRegisterByPatient) {
       _selectPatientAndBlockDropdown();
     }
-  }
-
-  void _selectPatientAndBlockDropdown() {
-    setState(() {
-      _selectedPatientId = widget.patient!.id;
-    });
   }
 
   void _loadAppointmentData() {
@@ -115,63 +109,8 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
   void dispose() {
     _notesController.dispose();
     _typeController.dispose();
-    viewModel.saveAppointmentCommand.removeListener(_saveAppointmentListener);
+    viewModel.saveAppointmentCommand.removeListener(_listener);
     super.dispose();
-  }
-
-  void _saveAppointmentListener() {
-    ResultHandler.showAlert(
-      context: context,
-      result: viewModel.saveAppointmentCommand.result,
-      successMessage: 'Agendamento salvo com sucesso!',
-      onSuccess: (value) {
-        Modular.to.pop();
-      },
-    );
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-    );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
-    }
-  }
-
-  Future<void> _selectStartTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: _selectedStartTime,
-    );
-    if (picked != null && picked != _selectedStartTime) {
-      setState(() {
-        _selectedStartTime = picked;
-
-        // Automatically set end time 1 hour after start time
-        _selectedEndTime = TimeOfDay(
-          hour: picked.hour + 1,
-          minute: picked.minute,
-        );
-      });
-    }
-  }
-
-  Future<void> _selectEndTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: _selectedEndTime,
-    );
-    if (picked != null && picked != _selectedEndTime) {
-      setState(() {
-        _selectedEndTime = picked;
-      });
-    }
   }
 
   Future<void> _saveAppointment() async {
@@ -365,5 +304,66 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
         ),
       ),
     );
+  }
+
+  void _listener() {
+    ResultHandler.showAlert(
+      context: context,
+      result: viewModel.saveAppointmentCommand.result,
+      successMessage: 'Agendamento salvo com sucesso!',
+      onSuccess: (value) {
+        Modular.to.pop();
+      },
+    );
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+  }
+
+  Future<void> _selectStartTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: _selectedStartTime,
+    );
+    if (picked != null && picked != _selectedStartTime) {
+      setState(() {
+        _selectedStartTime = picked;
+
+        // Automatically set end time 1 hour after start time
+        _selectedEndTime = TimeOfDay(
+          hour: picked.hour + 1,
+          minute: picked.minute,
+        );
+      });
+    }
+  }
+
+  Future<void> _selectEndTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: _selectedEndTime,
+    );
+    if (picked != null && picked != _selectedEndTime) {
+      setState(() {
+        _selectedEndTime = picked;
+      });
+    }
+  }
+
+  void _selectPatientAndBlockDropdown() {
+    setState(() {
+      _selectedPatientId = widget.patient!.id;
+    });
   }
 }

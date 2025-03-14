@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_therapy_evolution/app/features/auth/domain/entities/user_entity.dart';
+import 'package:flutter_therapy_evolution/app/core/entities/user_entity.dart';
 
 class LoggedUser extends ChangeNotifier {
   static LoggedUser? _instance;

@@ -1,11 +1,9 @@
-import 'dart:developer';
-
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_therapy_evolution/app/core/widgets/result_handler.dart';
 
-import '../../../../core/alert/alerts.dart';
 import '../../domain/validators/register_params_validator.dart';
 import '../models/register_params.dart';
 import '../viewmodels/auth_viewmodel.dart';
@@ -32,24 +30,20 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   void initState() {
     super.initState();
-    authViewModel.registerCommand.addListener(listener);
+    authViewModel.registerCommand.addListener(_listener);
   }
 
-  listener() {
-    authViewModel.registerCommand.result?.fold(
-      (success) {
-        Alerts.showSuccess(context, 'Cadastrado com sucesso!');
-        Modular.to.navigate('/home/');
-      },
-      (failure) {
-        Alerts.showFailure(context, failure.message);
-      },
+  _listener() {
+    ResultHandler.showAlert(
+      context: context,
+      result: authViewModel.registerCommand.result,
+      showSuccessAlert: false,
     );
   }
 
   @override
   void dispose() {
-    authViewModel.registerCommand.removeListener(listener);
+    authViewModel.registerCommand.removeListener(_listener);
     super.dispose();
   }
 
@@ -116,13 +110,6 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: ListenableBuilder(
                     listenable: authViewModel.registerCommand,
                     builder: (context, _) {
-                      // if (authViewModel.registerCommand.running) {
-                      //   return const Center(child: CircularProgressIndicator());
-                      // }
-                      if (authViewModel.registerCommand.error) {
-                        log('Error');
-                      }
-
                       return PrimaryButtonDs(
                         title: 'Cadastrar',
                         isLoading: authViewModel.registerCommand.running,

@@ -9,7 +9,7 @@ class AppWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'Adote um Pet',
+      title: 'Evoluções clinicas',
       theme: AppTheme.theme,
       routerConfig: Modular.routerConfig,
     );

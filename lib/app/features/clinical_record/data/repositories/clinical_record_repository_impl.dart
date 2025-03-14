@@ -3,12 +3,11 @@ import 'package:result_dart/result_dart.dart';
 
 import '../../../../core/log/log_manager.dart';
 import '../../../../core/session/logged_user.dart';
-import '../../../../core/state_management/errors/base_exception.dart';
-import '../../../../core/state_management/errors/repository_exception.dart';
+import '../../../../core/errors/base_exception.dart';
+import '../../../../core/errors/repository_exception.dart';
 import '../../../../core/typedefs/result_typedef.dart';
 import '../../domain/entities/clinical_record_entity.dart';
-import '../../domain/repositories/i_clinical_record_repository.dart';
-import '../adapters/clinical_record_adapter.dart';
+import 'i_clinical_record_repository.dart';
 
 class ClinicalRecordRepositoryImpl implements IClinicalRecordRepository {
   final FirebaseFirestore _firestore;
@@ -32,7 +31,7 @@ class ClinicalRecordRepositoryImpl implements IClinicalRecordRepository {
           final doctors = snapshot.docs.map((doc) {
             final data = doc.data();
             data['id'] = doc.id;
-            return ClinicalRecordAdapter.fromMap(data);
+            return ClinicalRecordEntity.fromMap(data);
           }).toList();
 
           return Success(doctors);
@@ -78,7 +77,7 @@ class ClinicalRecordRepositoryImpl implements IClinicalRecordRepository {
           final records = snapshot.docs.map((doc) {
             final data = doc.data();
             data['id'] = doc.id;
-            return ClinicalRecordAdapter.fromMap(data);
+            return ClinicalRecordEntity.fromMap(data);
           }).toList();
 
           return Success(records);
@@ -109,7 +108,7 @@ class ClinicalRecordRepositoryImpl implements IClinicalRecordRepository {
   @override
   Output<Unit> saveClinicalRecord(ClinicalRecordEntity record) async {
     try {
-      final saveMap = ClinicalRecordAdapter.toMap(record);
+      final saveMap = ClinicalRecordEntity.toMap(record);
       saveMap.remove('id');
 
       // If id is empty, create a new document with auto-generated ID

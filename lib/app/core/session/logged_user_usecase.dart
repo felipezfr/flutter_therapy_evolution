@@ -1,7 +1,7 @@
-import 'package:flutter_therapy_evolution/app/features/auth/domain/entities/user_entity.dart';
+import 'package:flutter_therapy_evolution/app/core/entities/user_entity.dart';
 
 import '../command/command.dart';
-import '../repositories/user/i_user_repository.dart';
+import '../repositories/user/user_repository.dart';
 import 'logged_user.dart';
 
 class LoggedUserUsecase {

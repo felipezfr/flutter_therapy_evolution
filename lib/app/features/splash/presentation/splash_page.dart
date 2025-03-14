@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_therapy_evolution/app/core/session/logged_user.dart';
-import 'package:flutter_therapy_evolution/app/core/session/session_service.dart';
+
+import '../../auth/data/repositories/auth_repository.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -11,23 +12,22 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  final sessionService = Modular.get<SessionService>();
-
-  // final logged = LoggedUser();
+  final authRepository = Modular.get<IAuthRepository>();
 
   @override
   void initState() {
     super.initState();
-    initialize();
+    _userIsAuthenticatedListener();
+    authRepository.addListener(_userIsAuthenticatedListener);
   }
 
-  Future<void> initialize() async {
-    final isUserLoggedIn = await sessionService.isUserLoggedIn();
+  Future<void> _userIsAuthenticatedListener() async {
+    final isAuthenticated = await authRepository.isAuthenticated;
 
-    if (isUserLoggedIn) {
-      final loggedUserId = await sessionService.userLoggedId();
-      LoggedUser.setUserId = loggedUserId;
-
+    if (isAuthenticated) {
+      final userId = await authRepository.userLoggedId;
+      authRepository.saveLastLoginDate(userId);
+      LoggedUser.setUserId = userId;
       Modular.to.navigate('/home/');
     } else {
       Modular.to.navigate('/auth/');

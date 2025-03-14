@@ -2,7 +2,7 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:flutter_therapy_evolution/app/core/alert/alerts.dart';
+import 'package:flutter_therapy_evolution/app/core/widgets/result_handler.dart';
 
 import '../../domain/validators/login_params_validator.dart';
 import '../models/login_params.dart';
@@ -25,23 +25,20 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    authViewModel.loginCommand.addListener(listener);
+    authViewModel.loginCommand.addListener(_listener);
   }
 
-  listener() {
-    authViewModel.loginCommand.result?.fold(
-      (success) {
-        Modular.to.navigate('/home/');
-      },
-      (failure) {
-        Alerts.showFailure(context, failure.message);
-      },
+  _listener() {
+    ResultHandler.showAlert(
+      context: context,
+      result: authViewModel.loginCommand.result,
+      showSuccessAlert: false,
     );
   }
 
   @override
   void dispose() {
-    authViewModel.loginCommand.removeListener(listener);
+    authViewModel.loginCommand.removeListener(_listener);
     super.dispose();
   }
 

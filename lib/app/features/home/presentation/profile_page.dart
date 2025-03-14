@@ -2,8 +2,8 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_therapy_evolution/app/core/session/logged_user.dart';
-import 'package:flutter_therapy_evolution/app/core/session/session_service.dart';
-import 'package:flutter_therapy_evolution/app/features/auth/domain/entities/user_entity.dart';
+import 'package:flutter_therapy_evolution/app/core/entities/user_entity.dart';
+import 'package:flutter_therapy_evolution/app/features/auth/data/repositories/auth_repository.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -13,7 +13,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final sessionService = Modular.get<SessionService>();
+  final authRepository = Modular.get<IAuthRepository>();
 
   void _logoutDialog() {
     showDialog(
@@ -28,8 +28,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           TextButton(
             onPressed: () async {
-              await sessionService.logout();
-              Modular.to.navigate('/');
+              await authRepository.logout();
             },
             child: const Text(
               'Sair',

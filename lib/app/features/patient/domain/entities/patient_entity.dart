@@ -1,3 +1,5 @@
+import 'patient_address_entity.dart';
+
 class PatientEntity {
   final String id;
   final String name;
@@ -30,24 +32,45 @@ class PatientEntity {
     this.notes,
     required this.status,
   });
-}
 
-class PatientAddress {
-  final String street;
-  final String number;
-  final String? complement;
-  final String district;
-  final String city;
-  final String state;
-  final String zipCode;
+  static PatientEntity fromMap(Map<String, dynamic> data) {
+    return PatientEntity(
+      id: data['id'] ?? '',
+      name: data['name'] ?? '',
+      birthDate: data['birthDate'] != null
+          ? (data['birthDate'] as dynamic).toDate()
+          : DateTime.now(),
+      gender: data['gender'] ?? '',
+      documentId: data['documentId'] ?? '',
+      email: data['email'] ?? '',
+      phone: data['phone'] ?? '',
+      address: PatientAddress.fromMap(data['address'] ?? {}),
+      insuranceProvider: data['insuranceProvider'],
+      insuranceNumber: data['insuranceNumber'],
+      responsibleProfessional: data['responsibleProfessional'] ?? '',
+      registrationDate: data['registrationDate'] != null
+          ? (data['registrationDate'] as dynamic).toDate()
+          : DateTime.now(),
+      notes: data['notes'],
+      status: data['status'] ?? 'active',
+    );
+  }
 
-  PatientAddress({
-    required this.street,
-    required this.number,
-    this.complement,
-    required this.district,
-    required this.city,
-    required this.state,
-    required this.zipCode,
-  });
+  static Map<String, dynamic> toMap(PatientEntity entity) {
+    return {
+      'name': entity.name,
+      'birthDate': entity.birthDate,
+      'gender': entity.gender,
+      'documentId': entity.documentId,
+      'email': entity.email,
+      'phone': entity.phone,
+      'address': PatientAddress.toMap(entity.address),
+      'insuranceProvider': entity.insuranceProvider,
+      'insuranceNumber': entity.insuranceNumber,
+      'responsibleProfessional': entity.responsibleProfessional,
+      'registrationDate': entity.registrationDate,
+      'notes': entity.notes,
+      'status': entity.status,
+    };
+  }
 }

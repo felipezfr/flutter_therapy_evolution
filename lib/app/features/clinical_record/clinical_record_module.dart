@@ -2,7 +2,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../core/core_module.dart';
 import 'data/repositories/clinical_record_repository_impl.dart';
-import 'domain/repositories/i_clinical_record_repository.dart';
+import 'data/repositories/i_clinical_record_repository.dart';
 import 'presentation/pages/patient_clinical_record_page.dart';
 import 'presentation/viewmodels/clinical_record_viewmodel.dart';
 import 'presentation/pages/patient_clinical_record_register.dart';

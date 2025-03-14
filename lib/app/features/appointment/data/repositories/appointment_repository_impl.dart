@@ -3,11 +3,10 @@ import 'package:result_dart/result_dart.dart';
 
 import '../../../../core/log/log_manager.dart';
 import '../../../../core/session/logged_user.dart';
-import '../../../../core/state_management/errors/repository_exception.dart';
+import '../../../../core/errors/repository_exception.dart';
 import '../../../../core/typedefs/result_typedef.dart';
 import '../../domain/entities/appointment_entity.dart';
-import '../../domain/repositories/i_appointment_repository.dart';
-import '../adapters/appointment_adapter.dart';
+import 'i_appointment_repository.dart';
 
 class AppointmentRepositoryImpl implements IAppointmentRepository {
   final FirebaseFirestore _firestore;
@@ -33,7 +32,7 @@ class AppointmentRepositoryImpl implements IAppointmentRepository {
           final doctors = snapshot.docs.map((doc) {
             final data = doc.data();
             data['id'] = doc.id;
-            return AppointmentAdapter.fromMap(data);
+            return AppointmentEntity.fromMap(data);
           }).toList();
 
           return Success(doctors);
@@ -78,7 +77,7 @@ class AppointmentRepositoryImpl implements IAppointmentRepository {
           final doctors = snapshot.docs.map((doc) {
             final data = doc.data();
             data['id'] = doc.id;
-            return AppointmentAdapter.fromMap(data);
+            return AppointmentEntity.fromMap(data);
           }).toList();
 
           return Success(doctors);
@@ -107,7 +106,7 @@ class AppointmentRepositoryImpl implements IAppointmentRepository {
   @override
   Output<Unit> saveAppointment(AppointmentEntity appointment) async {
     try {
-      final saveMap = AppointmentAdapter.toMap(appointment);
+      final saveMap = AppointmentEntity.toMap(appointment);
       saveMap.remove('id');
 
       // If id is empty, create a new document with auto-generated ID

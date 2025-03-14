@@ -1,7 +1,7 @@
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../core/typedefs/result_typedef.dart';
-import '../entities/appointment_entity.dart';
+import '../../domain/entities/appointment_entity.dart';
 
 abstract class IAppointmentRepository {
   OutputStream<List<AppointmentEntity>> getAllAppointmentsStream();

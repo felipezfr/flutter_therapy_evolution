@@ -1,24 +1,57 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_therapy_evolution/app/core/log/log_manager.dart';
-import 'package:flutter_therapy_evolution/app/core/state_management/errors/repository_exception.dart';
-import 'package:flutter_therapy_evolution/app/features/auth/domain/dtos/user_adapter.dart';
+import 'package:flutter_therapy_evolution/app/core/errors/repository_exception.dart';
 import 'package:flutter_therapy_evolution/app/features/auth/presentation/models/login_params.dart';
 import 'package:result_dart/result_dart.dart';
 
+import '../../../../core/session/logged_user.dart';
+import '../../../../core/errors/auth_exception.dart';
 import '../../../../core/typedefs/result_typedef.dart';
-import '../../domain/entities/user_entity.dart';
-import '../../domain/repositories/auth_repository_interface.dart';
+import 'auth_repository.dart';
 import '../../presentation/models/register_params.dart';
 
-class AuthRepositoryImpl implements IAuthRepository {
+class AuthRepositoryImpl extends IAuthRepository {
   final FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
 
   AuthRepositoryImpl(this._auth, this._firestore);
 
   @override
-  Output<UserEntity> login(LoginParams loginParams) async {
+  Future<bool> get isAuthenticated async {
+    return _auth.currentUser != null;
+  }
+
+  @override
+  Future<String> get userLoggedId async {
+    return _auth.currentUser!.uid;
+  }
+
+  // @override
+  // Output<String> userLoggedId() async {
+  //   try {
+  //     final userId = _auth.currentUser?.uid;
+  //     return Success(userId!);
+  //   } catch (e) {
+  //     return Failure(AuthException(message: 'Usuário não está logado'));
+  //   }
+  // }
+
+  @override
+  Output<void> logout() async {
+    try {
+      LoggedUser.logOut();
+      await _auth.signOut();
+      return Success(unit);
+    } catch (e) {
+      return Failure(AuthException(message: 'Erro ao fazer logout'));
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  @override
+  Output<Unit> login(LoginParams loginParams) async {
     try {
       final userCredential = await _auth.signInWithEmailAndPassword(
         email: loginParams.email,
@@ -32,11 +65,12 @@ class AuthRepositoryImpl implements IAuthRepository {
           ),
         );
       }
-      return await getUserById(userCredential.user!.uid).onSuccess(
-        (success) {
-          _saveLastLoginDate(success.id);
-        },
-      );
+      return Success(unit);
+      // return await _getUserById(userCredential.user!.uid).onSuccess(
+      //   (success) {
+      //     _saveLastLoginDate(success.id);
+      //   },
+      // );
     } on FirebaseAuthException catch (e, s) {
       Log.error('Error login', error: e, stackTrace: s);
 
@@ -62,11 +96,13 @@ class AuthRepositoryImpl implements IAuthRepository {
           message: 'Erro inesperado ao fazer login',
         ),
       );
+    } finally {
+      notifyListeners();
     }
   }
 
   @override
-  Output<UserEntity> register(RegisterParams registerParams) async {
+  Output<Unit> register(RegisterParams registerParams) async {
     UserCredential? userCredential;
 
     try {
@@ -78,19 +114,18 @@ class AuthRepositoryImpl implements IAuthRepository {
 
       if (userCredential.user == null) {
         return Failure(
-          RepositoryException(
-            message: 'Erro ao criar usuário',
-            errorCode: 'user-creation-failed',
-          ),
+          RepositoryException(message: 'Erro ao criar usuário'),
         );
       }
 
-      final userData = registerParams.toMap();
-      userData['id'] = userCredential.user!.uid;
+      return Success(unit);
 
-      await _firestore.collection('users').doc(userData['id']).set(userData);
+      // final userData = registerParams.toMap();
+      // userData['id'] = userCredential.user!.uid;
 
-      return Success(UserAdapter.fromMap(userData));
+      // await _firestore.collection('users').doc(userData['id']).set(userData);
+
+      // return Success(UserEntity.fromMap(userData));
     } on FirebaseAuthException catch (e, s) {
       Log.error('Error register', error: e, stackTrace: s);
 
@@ -123,34 +158,13 @@ class AuthRepositoryImpl implements IAuthRepository {
           message: 'Erro inesperado ao criar conta',
         ),
       );
+    } finally {
+      notifyListeners();
     }
   }
 
   @override
-  Output<UserEntity> getUserById(String userId) async {
-    try {
-      final userDoc = await _firestore.collection('users').doc(userId).get();
-
-      if (!userDoc.exists) {
-        return Failure(RepositoryException(
-          message: 'Dados do usuário não encontrados',
-        ));
-      }
-
-      final userData = userDoc.data()!;
-      return Success(UserAdapter.fromMap(userData));
-    } catch (e, s) {
-      Log.error('Error getUserById', error: e, stackTrace: s);
-
-      return Failure(
-        RepositoryException(
-          message: 'Erro inesperado',
-        ),
-      );
-    }
-  }
-
-  Output<Unit> _saveLastLoginDate(String userId) async {
+  Output<Unit> saveLastLoginDate(String userId) async {
     try {
       await _firestore.collection('users').doc(userId).update({
         'lastLogin': DateTime.now(),

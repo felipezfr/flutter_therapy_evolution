@@ -1,4 +1,5 @@
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_therapy_evolution/app/core/core_module.dart';
 import 'package:flutter_therapy_evolution/app/features/appointment/appointment_module.dart';
 import 'package:flutter_therapy_evolution/app/features/clinical_record/clinical_record_module.dart';
 import 'package:flutter_therapy_evolution/app/features/patient/patient_module.dart';
@@ -8,6 +9,8 @@ import 'features/home/home_module.dart';
 import 'features/splash/splash_module.dart';
 
 class AppModule extends Module {
+  @override
+  List<Module> get imports => [CoreModule()];
   @override
   void routes(r) {
     r.module('/', module: SplashModule());

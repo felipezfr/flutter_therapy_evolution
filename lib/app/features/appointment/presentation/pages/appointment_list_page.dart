@@ -23,7 +23,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
     super.initState();
 
     viewModel.allAppointmentsStreamCommand.execute();
-    viewModel.deleteAppointmentCommand.addListener(_onDeleteAppointment);
+    viewModel.deleteAppointmentCommand.addListener(_listener);
   }
 
   @override
@@ -31,7 +31,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
     //List All appointments
     viewModel.allAppointmentsStreamCommand.dispose();
     //Delete
-    viewModel.deleteAppointmentCommand.removeListener(_onDeleteAppointment);
+    viewModel.deleteAppointmentCommand.removeListener(_listener);
     super.dispose();
   }
 
@@ -124,7 +124,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
     );
   }
 
-  void _onDeleteAppointment() {
+  void _listener() {
     ResultHandler.showAlert(
       context: context,
       result: viewModel.deleteAppointmentCommand.result,
