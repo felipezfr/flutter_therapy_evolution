@@ -61,7 +61,7 @@ class CommandStreamListenableBuilder<Out> extends StatelessWidget {
           },
           (error) {
             return ErrorIndicatorWidget(
-              message: emptyMessage ?? error.message,
+              message: errorMessage ?? error.message,
               refresh: refresh,
             );
           },

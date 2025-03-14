@@ -3,7 +3,6 @@ import 'package:result_dart/result_dart.dart';
 
 import '../../../../core/log/log_manager.dart';
 import '../../../../core/session/logged_user.dart';
-import '../../../../core/errors/base_exception.dart';
 import '../../../../core/errors/repository_exception.dart';
 import '../../../../core/typedefs/result_typedef.dart';
 import '../../domain/entities/patient_entity.dart';
@@ -14,14 +13,14 @@ class PatientRepositoryImpl implements IPatientRepository {
 
   PatientRepositoryImpl(this._firestore);
 
-  final String loggedUserId = LoggedUser.id;
-
   @override
   OutputStream<List<PatientEntity>> getPatientsStream() {
     try {
       return _firestore
           .collection('patients')
-          .where('responsibleProfessional', isEqualTo: loggedUserId)
+          .where('userId', isEqualTo: LoggedUser.id)
+          .where('isDeleted', isEqualTo: false)
+          .orderBy('createdAt', descending: true)
           .snapshots()
           .map((snapshot) {
         try {
@@ -39,7 +38,7 @@ class PatientRepositoryImpl implements IPatientRepository {
         } catch (e, s) {
           Log.error('Error processing patients snapshot',
               error: e, stackTrace: s);
-          return Failure<List<PatientEntity>, BaseException>(
+          return Failure(
             RepositoryException(
               message: 'Erro ao processar dados dos pacientes',
             ),
@@ -48,6 +47,7 @@ class PatientRepositoryImpl implements IPatientRepository {
       });
     } catch (e, s) {
       Log.error('Error creating patients stream', error: e, stackTrace: s);
+
       return Stream.value(
         Failure(
           RepositoryException(
@@ -61,20 +61,23 @@ class PatientRepositoryImpl implements IPatientRepository {
   @override
   Output<Unit> savePatient(PatientEntity patient) async {
     try {
-      final patientMap = PatientEntity.toMap(patient);
+      final saveMap = PatientEntity.toMap(patient);
+      saveMap.remove('id');
 
       // If id is empty, create a new document with auto-generated ID
       if (patient.id.isEmpty) {
-        await _firestore.collection('patients').add(patientMap);
+        saveMap['userId'] = LoggedUser.id;
+        saveMap['isDeleted'] = false;
+        saveMap['createdAt'] = DateTime.now();
+        saveMap['updatedAt'] = DateTime.now();
 
+        await _firestore.collection('patients').add(saveMap);
         return Success(unit);
       }
       // Otherwise update existing document
       else {
-        await _firestore
-            .collection('patients')
-            .doc(patient.id)
-            .update(patientMap);
+        saveMap['updatedAt'] = DateTime.now();
+        await _firestore.collection('patients').doc(patient.id).update(saveMap);
         return Success(unit);
       }
     } catch (e, s) {
@@ -90,7 +93,11 @@ class PatientRepositoryImpl implements IPatientRepository {
   @override
   Output<Unit> deletePatient(String patientId) async {
     try {
-      await _firestore.collection('patients').doc(patientId).delete();
+      final deleteMap = {
+        'isDeleted': true,
+        'deletedAt': DateTime.now(),
+      };
+      await _firestore.collection('patients').doc(patientId).update(deleteMap);
       return Success(unit);
     } catch (e, s) {
       Log.error('Error deleting patient', error: e, stackTrace: s);

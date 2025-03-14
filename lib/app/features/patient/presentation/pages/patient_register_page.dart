@@ -1,7 +1,6 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:flutter_therapy_evolution/app/core/session/logged_user.dart';
 import 'package:flutter_therapy_evolution/app/core/widgets/result_handler.dart';
 import 'package:intl/intl.dart';
 import '../../domain/entities/patient_address_entity.dart';
@@ -143,7 +142,6 @@ class _PatientRegisterPageState extends State<PatientRegisterPage> {
         insuranceNumber: _insuranceNumberController.text.trim().isEmpty
             ? null
             : _insuranceNumberController.text.trim(),
-        responsibleProfessional: LoggedUser.id,
         registrationDate:
             _isEditMode ? patient!.registrationDate : DateTime.now(),
         notes: _notesController.text.trim().isEmpty

@@ -22,6 +22,7 @@ class AppointmentRepositoryImpl implements IAppointmentRepository {
           .collection('appointments')
           .where('userId', isEqualTo: LoggedUser.id)
           .where('isDeleted', isEqualTo: false)
+          .orderBy('createdAt', descending: true)
           .snapshots()
           .map((snapshot) {
         try {

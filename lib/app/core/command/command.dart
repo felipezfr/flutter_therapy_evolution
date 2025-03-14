@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_therapy_evolution/app/core/log/log_manager.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../errors/base_exception.dart';
@@ -114,6 +115,7 @@ abstract class CommandStream<Out extends Object> extends ChangeNotifier {
         notifyListeners();
       },
       onError: (error) {
+        Log.error('Eror CommandStream $Out', error: error);
         final exception = error is BaseException
             ? error
             : DefaultException(
