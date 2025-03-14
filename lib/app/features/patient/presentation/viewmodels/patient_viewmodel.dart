@@ -2,7 +2,7 @@ import 'package:result_dart/result_dart.dart';
 
 import '../../../../core/command/command.dart';
 import '../../domain/entities/patient_entity.dart';
-import '../../data/repositories/i_patient_repository.dart';
+import '../../data/repositories/patient_repository.dart';
 
 class PatientViewmodel {
   final IPatientRepository _repository;

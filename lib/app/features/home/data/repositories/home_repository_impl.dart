@@ -5,7 +5,7 @@ import '../../../../core/log/log_manager.dart';
 import '../../../../core/errors/repository_exception.dart';
 import '../../../../core/typedefs/result_typedef.dart';
 import '../../domain/entities/home_entity.dart';
-import 'i_home_repository.dart';
+import 'home_repository.dart';
 
 class HomeRepositoryImpl implements IHomeRepository {
   final FirebaseFirestore _firestore;

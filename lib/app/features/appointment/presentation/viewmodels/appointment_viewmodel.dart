@@ -2,9 +2,9 @@ import 'package:result_dart/result_dart.dart';
 
 import '../../../../core/command/command.dart';
 import '../../../patient/domain/entities/patient_entity.dart';
-import '../../../patient/data/repositories/i_patient_repository.dart';
+import '../../../patient/data/repositories/patient_repository.dart';
 import '../../domain/entities/appointment_entity.dart';
-import '../../data/repositories/i_appointment_repository.dart';
+import '../../data/repositories/appointment_repository.dart';
 
 class AppointmentViewmodel {
   final IAppointmentRepository _repository;

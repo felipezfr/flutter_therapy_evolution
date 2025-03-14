@@ -2,7 +2,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../core/core_module.dart';
 import 'data/repositories/{{name.camelCase()}}_repository_impl.dart';
-import 'domain/repositories/i_{{name.camelCase()}}_repository.dart';
+import 'data/repositories/{{name.camelCase()}}_repository.dart';
 import 'presentation/pages/{{name.camelCase()}}_detail_page.dart';
 import 'presentation/pages/{{name.camelCase()}}_list_page.dart';
 import 'presentation/pages/{{name.camelCase()}}_register_page.dart';

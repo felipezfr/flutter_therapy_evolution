@@ -26,21 +26,20 @@ class _PatientClinicalRecordPageState extends State<PatientClinicalRecordPage> {
   @override
   void initState() {
     super.initState();
-    viewModel.patientClinicalRecordStream.execute(patient.id);
-    viewModel.deletePatientClinicalRecordCommand
-        .addListener(_onDeleteClinicalRecord);
+    viewModel.clinicalRecordStream.execute(patient.id);
+    viewModel.deleteClinicalRecordCommand.addListener(_onDeleteClinicalRecord);
   }
 
   @override
   void dispose() {
-    viewModel.patientClinicalRecordStream.dispose();
-    viewModel.deletePatientClinicalRecordCommand
+    viewModel.clinicalRecordStream.dispose();
+    viewModel.deleteClinicalRecordCommand
         .removeListener(_onDeleteClinicalRecord);
     super.dispose();
   }
 
   void _onDeleteClinicalRecord() {
-    viewModel.deletePatientClinicalRecordCommand.result?.fold(
+    viewModel.deleteClinicalRecordCommand.result?.fold(
       (success) {
         Alerts.showSuccess(context, 'Evolução excluída com sucesso!');
       },
@@ -69,8 +68,7 @@ class _PatientClinicalRecordPageState extends State<PatientClinicalRecordPage> {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              viewModel.deletePatientClinicalRecordCommand
-                  .execute(clinicalRecord.id);
+              viewModel.deleteClinicalRecordCommand.execute(clinicalRecord.id);
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Excluir'),
@@ -103,7 +101,7 @@ class _PatientClinicalRecordPageState extends State<PatientClinicalRecordPage> {
         title: const Text('Evoluções do paciente'),
       ),
       body: CommandStreamListenableBuilder<List<ClinicalRecordEntity>>(
-        stream: viewModel.patientClinicalRecordStream,
+        stream: viewModel.clinicalRecordStream,
         emptyMessage: 'Nenhum evolução cadastrada',
         emptyIconData: Icons.app_registration_rounded,
         builder: (context, value) {

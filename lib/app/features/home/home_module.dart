@@ -6,7 +6,7 @@ import 'package:flutter_therapy_evolution/app/features/home/presentation/profile
 
 import '../../core/core_module.dart';
 import 'data/repositories/home_repository_impl.dart';
-import 'data/repositories/i_home_repository.dart';
+import 'data/repositories/home_repository.dart';
 import 'presentation/home_page.dart';
 import 'presentation/home_viewmodel.dart';
 

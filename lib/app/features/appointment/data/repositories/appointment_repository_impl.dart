@@ -6,7 +6,7 @@ import '../../../../core/session/logged_user.dart';
 import '../../../../core/errors/repository_exception.dart';
 import '../../../../core/typedefs/result_typedef.dart';
 import '../../domain/entities/appointment_entity.dart';
-import 'i_appointment_repository.dart';
+import 'appointment_repository.dart';
 
 class AppointmentRepositoryImpl implements IAppointmentRepository {
   final FirebaseFirestore _firestore;

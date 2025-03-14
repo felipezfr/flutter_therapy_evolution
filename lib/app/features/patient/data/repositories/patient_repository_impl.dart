@@ -6,7 +6,7 @@ import '../../../../core/session/logged_user.dart';
 import '../../../../core/errors/repository_exception.dart';
 import '../../../../core/typedefs/result_typedef.dart';
 import '../../domain/entities/patient_entity.dart';
-import 'i_patient_repository.dart';
+import 'patient_repository.dart';
 
 class PatientRepositoryImpl implements IPatientRepository {
   final FirebaseFirestore _firestore;

@@ -1,8 +1,8 @@
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../core/command/command.dart';
+import '../../data/repositories/{{name.camelCase()}}_repository.dart';
 import '../../domain/entities/{{name.camelCase()}}_entity.dart';
-import '../../domain/repositories/i_{{name.camelCase()}}_repository.dart';
 
 class {{name.pascalCase()}}Viewmodel {
   final I{{name.pascalCase()}}Repository _repository;

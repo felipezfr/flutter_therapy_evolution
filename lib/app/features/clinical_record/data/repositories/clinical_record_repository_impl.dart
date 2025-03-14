@@ -7,7 +7,7 @@ import '../../../../core/errors/base_exception.dart';
 import '../../../../core/errors/repository_exception.dart';
 import '../../../../core/typedefs/result_typedef.dart';
 import '../../domain/entities/clinical_record_entity.dart';
-import 'i_clinical_record_repository.dart';
+import 'clinical_record_repository.dart';
 
 class ClinicalRecordRepositoryImpl implements IClinicalRecordRepository {
   final FirebaseFirestore _firestore;
@@ -15,12 +15,13 @@ class ClinicalRecordRepositoryImpl implements IClinicalRecordRepository {
   ClinicalRecordRepositoryImpl(this._firestore);
 
   @override
-  OutputStream<List<ClinicalRecordEntity>> getClinicalRecordsStream() {
+  OutputStream<List<ClinicalRecordEntity>> getAllClinicalRecordsStream() {
     try {
       return _firestore
           .collection('clinicalRecords')
           .where('userId', isEqualTo: LoggedUser.id)
           .where('isDeleted', isEqualTo: false)
+          .orderBy('createdAt', descending: true)
           .snapshots()
           .map((snapshot) {
         try {
@@ -65,8 +66,9 @@ class ClinicalRecordRepositoryImpl implements IClinicalRecordRepository {
       return _firestore
           .collection('clinicalRecords')
           .where('userId', isEqualTo: LoggedUser.id)
-          .where('isDeleted', isEqualTo: false)
           .where('patientId', isEqualTo: patientId)
+          .where('isDeleted', isEqualTo: false)
+          .orderBy('createdAt', descending: true)
           .snapshots()
           .map((snapshot) {
         try {

@@ -4,7 +4,7 @@ import '../../../../core/typedefs/result_typedef.dart';
 import '../../domain/entities/clinical_record_entity.dart';
 
 abstract class IClinicalRecordRepository {
-  OutputStream<List<ClinicalRecordEntity>> getClinicalRecordsStream();
+  OutputStream<List<ClinicalRecordEntity>> getAllClinicalRecordsStream();
   OutputStream<List<ClinicalRecordEntity>> getPatientClinicalRecordsStream(
       String patientId);
   Output<Unit> saveClinicalRecord(ClinicalRecordEntity record);

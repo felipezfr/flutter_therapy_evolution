@@ -1,13 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:result_dart/result_dart.dart';
 
+import '../../../../core/errors/repository_exception.dart';
 import '../../../../core/log/log_manager.dart';
 import '../../../../core/session/logged_user.dart';
-import '../../../../core/state_management/errors/repository_exception.dart';
 import '../../../../core/typedefs/result_typedef.dart';
 import '../../domain/entities/{{name.camelCase()}}_entity.dart';
-import '../../domain/repositories/i_{{name.camelCase()}}_repository.dart';
-import '../adapters/{{name.camelCase()}}_adapter.dart';
+import '{{name.camelCase()}}_repository.dart';
 
 class {{name.pascalCase()}}RepositoryImpl implements I{{name.pascalCase()}}Repository {
   final FirebaseFirestore _firestore;
@@ -33,7 +32,7 @@ class {{name.pascalCase()}}RepositoryImpl implements I{{name.pascalCase()}}Repos
           final {{name.camelCase()}}s = snapshot.docs.map((doc) {
             final data = doc.data();
             data['id'] = doc.id;
-            return {{name.pascalCase()}}Adapter.fromMap(data);
+            return {{name.pascalCase()}}Entity.fromMap(data);
           }).toList();
 
           return Success({{name.camelCase()}}s);
@@ -62,7 +61,7 @@ class {{name.pascalCase()}}RepositoryImpl implements I{{name.pascalCase()}}Repos
   @override
   Output<Unit> save{{name.pascalCase()}}({{name.pascalCase()}}Entity {{name.camelCase()}}) async {
     try {
-      final saveMap = DoctorAdapter.toMap(doctor);
+      final saveMap = {{name.pascalCase()}}Entity.toMap({{name.camelCase()}});
       saveMap.remove('id');
 
       // If id is empty, create a new document with auto-generated ID
@@ -101,7 +100,7 @@ class {{name.pascalCase()}}RepositoryImpl implements I{{name.pascalCase()}}Repos
         'isDeleted': true,
         'deletedAt': DateTime.now(),
       };
-      await _firestore.collection('{{name.camelCase()}}s').doc(doctorId).update(deleteMap);
+      await _firestore.collection('{{name.camelCase()}}s').doc({{name.camelCase()}}Id).update(deleteMap);
       return Success(unit);
     } catch (e, s) {
       Log.error('Error deleting {{name.camelCase()}}', error: e, stackTrace: s);
