@@ -1,10 +1,11 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_therapy_evolution/app/core/command/command_stream_listenable_builder.dart';
+import 'package:flutter_therapy_evolution/app/core/widgets/result_handler.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/alert/alerts.dart';
-import '../../../../core/session/logged_user.dart';
 import '../../../patient/domain/entities/patient_entity.dart';
 import '../../domain/entities/appointment_entity.dart';
 import '../viewmodels/appointment_viewmodel.dart';
@@ -119,15 +120,12 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
   }
 
   void _saveAppointmentListener() {
-    viewModel.saveAppointmentCommand.result?.fold(
-      (success) {
-        Alerts.showSuccess(context, 'Agendamento salvo com sucesso!');
-        _notesController.clear();
-        _typeController.clear();
+    ResultHandler.showAlert(
+      context: context,
+      result: viewModel.saveAppointmentCommand.result,
+      successMessage: 'Agendamento salvo com sucesso!',
+      onSuccess: (value) {
         Modular.to.pop();
-      },
-      (failure) {
-        Alerts.showFailure(context, failure.message);
       },
     );
   }
@@ -190,7 +188,6 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
       final appointment = AppointmentEntity(
         id: _isEditing ? _appointmentToEdit!.id : '',
         patientId: _selectedPatientId!,
-        professionalId: LoggedUser.id,
         date: dateFormatted,
         startTime: startTimeFormatted,
         endTime: endTimeFormatted,
@@ -198,8 +195,6 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
         status: _appointmentStatus,
         notes: _notesController.text.trim(),
         reminderSent: _isEditing ? _appointmentToEdit!.reminderSent : false,
-        createdAt: _isEditing ? _appointmentToEdit!.createdAt : DateTime.now(),
-        updatedAt: DateTime.now(),
       );
 
       viewModel.saveAppointmentCommand.execute(appointment);
@@ -212,29 +207,15 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
       appBar: AppBar(
         title: Text(_isEditing ? 'Editar Consulta' : 'Agendar Consulta'),
       ),
-      body: ListenableBuilder(
-        listenable: viewModel.patientsStreamCommand,
-        builder: (context, _) {
-          if (viewModel.patientsStreamCommand.running) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final patientsResult = viewModel.patientsStreamCommand.result;
-
-          if (patientsResult == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          return patientsResult.fold(
-            (patients) {
-              return _buildForm(patients);
-            },
-            (error) {
-              return Center(
-                child: Text('Erro ao carregar pacientes: ${error.message}'),
-              );
-            },
-          );
+      body: CommandStreamListenableBuilder<List<PatientEntity>>(
+        stream: viewModel.patientsStreamCommand,
+        emptyMessage: 'Voce ainda não possui nenhum paciente cadastrado',
+        emptyHowRegisterMessage:
+            'Vá para a tela de pacientes e cadastre seu primeiro paciente',
+        emptyIconData: Icons.person_add_disabled,
+        errorMessage: 'Erro ao carregar pacientes',
+        builder: (context, value) {
+          return _buildForm(value);
         },
       ),
     );

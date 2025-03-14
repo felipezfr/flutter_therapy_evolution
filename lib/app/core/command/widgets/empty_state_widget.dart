@@ -36,9 +36,10 @@ class EmptyStateWidget extends StatelessWidget {
                 color: AppColors.primaryColor,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 14),
             Text(
               howRegisterMessage ?? 'Clique no botão + para adicionar',
+              textAlign: TextAlign.center,
               style: TextStyle(
                 color: AppColors.primaryColor,
               ),

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../core/log/log_manager.dart';
+import '../../../../core/session/logged_user.dart';
 import '../../../../core/state_management/errors/base_exception.dart';
 import '../../../../core/state_management/errors/repository_exception.dart';
 import '../../../../core/typedefs/result_typedef.dart';
@@ -15,11 +16,12 @@ class ClinicalRecordRepositoryImpl implements IClinicalRecordRepository {
   ClinicalRecordRepositoryImpl(this._firestore);
 
   @override
-  Stream<Result<List<ClinicalRecordEntity>, BaseException>>
-      getClinicalRecordsStream() {
+  OutputStream<List<ClinicalRecordEntity>> getClinicalRecordsStream() {
     try {
       return _firestore
           .collection('clinicalRecords')
+          .where('userId', isEqualTo: LoggedUser.id)
+          .where('isDeleted', isEqualTo: false)
           .snapshots()
           .map((snapshot) {
         try {
@@ -27,17 +29,17 @@ class ClinicalRecordRepositoryImpl implements IClinicalRecordRepository {
             return Success([]);
           }
 
-          final records = snapshot.docs.map((doc) {
+          final doctors = snapshot.docs.map((doc) {
             final data = doc.data();
             data['id'] = doc.id;
             return ClinicalRecordAdapter.fromMap(data);
           }).toList();
 
-          return Success(records);
+          return Success(doctors);
         } catch (e, s) {
-          Log.error('Error processing clinical records snapshot',
+          Log.error('Error processing clinical snapshot',
               error: e, stackTrace: s);
-          return Failure<List<ClinicalRecordEntity>, BaseException>(
+          return Failure(
             RepositoryException(
               message: 'Erro ao processar dados dos registros clínicos',
             ),
@@ -63,6 +65,8 @@ class ClinicalRecordRepositoryImpl implements IClinicalRecordRepository {
     try {
       return _firestore
           .collection('clinicalRecords')
+          .where('userId', isEqualTo: LoggedUser.id)
+          .where('isDeleted', isEqualTo: false)
           .where('patientId', isEqualTo: patientId)
           .snapshots()
           .map((snapshot) {
@@ -81,7 +85,7 @@ class ClinicalRecordRepositoryImpl implements IClinicalRecordRepository {
         } catch (e, s) {
           Log.error('Error processing patient clinical records snapshot',
               error: e, stackTrace: s);
-          return Failure<List<ClinicalRecordEntity>, BaseException>(
+          return Failure(
             RepositoryException(
               message:
                   'Erro ao processar dados dos registros clínicos do paciente',
@@ -103,48 +107,28 @@ class ClinicalRecordRepositoryImpl implements IClinicalRecordRepository {
   }
 
   @override
-  Output<ClinicalRecordEntity> getClinicalRecord(String recordId) async {
-    try {
-      final docSnapshot =
-          await _firestore.collection('clinicalRecords').doc(recordId).get();
-
-      if (!docSnapshot.exists) {
-        return Failure(
-          RepositoryException(
-            message: 'Registro clínico não encontrado',
-          ),
-        );
-      }
-
-      final data = docSnapshot.data()!;
-      data['id'] = docSnapshot.id;
-
-      return Success(ClinicalRecordAdapter.fromMap(data));
-    } catch (e, s) {
-      Log.error('Error getting clinical record', error: e, stackTrace: s);
-      return Failure(
-        RepositoryException(
-          message: 'Erro ao buscar registro clínico',
-        ),
-      );
-    }
-  }
-
-  @override
   Output<Unit> saveClinicalRecord(ClinicalRecordEntity record) async {
     try {
-      final data = ClinicalRecordAdapter.toMap(record);
+      final saveMap = ClinicalRecordAdapter.toMap(record);
+      saveMap.remove('id');
 
+      // If id is empty, create a new document with auto-generated ID
       if (record.id.isEmpty) {
-        // Create new record
-        await _firestore.collection('clinicalRecords').add(data);
+        saveMap['userId'] = LoggedUser.id;
+        saveMap['isDeleted'] = false;
+        saveMap['createdAt'] = DateTime.now();
+        saveMap['updatedAt'] = DateTime.now();
+
+        await _firestore.collection('clinicalRecords').add(saveMap);
         return Success(unit);
-      } else {
-        // Update existing record
+      }
+      // update existing document
+      else {
+        saveMap['updatedAt'] = DateTime.now();
         await _firestore
             .collection('clinicalRecords')
             .doc(record.id)
-            .update(data);
+            .update(saveMap);
         return Success(unit);
       }
     } catch (e, s) {
@@ -160,7 +144,14 @@ class ClinicalRecordRepositoryImpl implements IClinicalRecordRepository {
   @override
   Output<Unit> deleteClinicalRecord(String recordId) async {
     try {
-      await _firestore.collection('clinicalRecords').doc(recordId).delete();
+      final deleteMap = {
+        'isDeleted': true,
+        'deletedAt': DateTime.now(),
+      };
+      await _firestore
+          .collection('clinicalRecords')
+          .doc(recordId)
+          .update(deleteMap);
       return const Success(unit);
     } catch (e, s) {
       Log.error('Error deleting clinical record', error: e, stackTrace: s);

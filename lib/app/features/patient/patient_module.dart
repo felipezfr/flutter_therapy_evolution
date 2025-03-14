@@ -1,12 +1,12 @@
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:flutter_therapy_evolution/app/features/patient/presentation/patient_detail_page.dart';
-import 'package:flutter_therapy_evolution/app/features/patient/presentation/patient_list_page.dart';
 
 import '../../core/core_module.dart';
 import 'data/repositories/patient_repository_impl.dart';
 import 'domain/repositories/i_patient_repository.dart';
-import 'presentation/patient_register_page.dart';
-import 'presentation/patient_viewmodel.dart';
+import 'presentation/pages/patient_detail_page.dart';
+import 'presentation/pages/patient_list_page.dart';
+import 'presentation/pages/patient_register_page.dart';
+import 'presentation/viewmodels/patient_viewmodel.dart';
 
 class PatientModule extends Module {
   @override

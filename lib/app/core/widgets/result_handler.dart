@@ -13,7 +13,7 @@ class ResultHandler {
     String? failureMessage,
     bool showSuccessAlert = true,
     bool showFailureAlert = true,
-    Function(Out)? onSuccess,
+    Function(Out value)? onSuccess,
   }) {
     if (result == null) return;
 

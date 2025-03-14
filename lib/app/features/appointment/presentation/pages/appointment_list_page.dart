@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:flutter_therapy_evolution/app/core/session/logged_user.dart';
 import 'package:flutter_therapy_evolution/app/core/widgets/delete_dialog.dart';
 import 'package:flutter_therapy_evolution/app/features/appointment/domain/entities/appointment_entity.dart';
 import '../../../../core/command/command_stream_listenable_builder.dart';
@@ -23,7 +22,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
   void initState() {
     super.initState();
 
-    viewModel.allAppointmentsStreamCommand.execute(LoggedUser.id);
+    viewModel.allAppointmentsStreamCommand.execute();
     viewModel.deleteAppointmentCommand.addListener(_onDeleteAppointment);
   }
 

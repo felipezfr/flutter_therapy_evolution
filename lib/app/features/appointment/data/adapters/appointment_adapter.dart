@@ -7,7 +7,6 @@ class AppointmentAdapter {
     return AppointmentEntity(
       id: data['id'] ?? '',
       patientId: data['patientId'] ?? '',
-      professionalId: data['professionalId'] ?? '',
       date: data['date'] ?? '',
       startTime: data['startTime'] ?? '',
       endTime: data['endTime'] ?? '',
@@ -27,7 +26,6 @@ class AppointmentAdapter {
   static Map<String, dynamic> toMap(AppointmentEntity entity) {
     return {
       'patientId': entity.patientId,
-      'professionalId': entity.professionalId,
       'date': entity.date,
       'startTime': entity.startTime,
       'endTime': entity.endTime,
@@ -35,8 +33,6 @@ class AppointmentAdapter {
       'status': entity.status,
       'notes': entity.notes,
       'reminderSent': entity.reminderSent,
-      'createdAt': Timestamp.fromDate(entity.createdAt),
-      'updatedAt': Timestamp.fromDate(entity.updatedAt),
     };
   }
 }

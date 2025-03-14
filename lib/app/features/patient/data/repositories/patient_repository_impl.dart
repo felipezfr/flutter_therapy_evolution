@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../core/log/log_manager.dart';
@@ -19,7 +18,7 @@ class PatientRepositoryImpl implements IPatientRepository {
   final String loggedUserId = LoggedUser.id;
 
   @override
-  Stream<Result<List<PatientEntity>, BaseException>> getPatientsStream() {
+  OutputStream<List<PatientEntity>> getPatientsStream() {
     try {
       return _firestore
           .collection('patients')
@@ -61,59 +60,15 @@ class PatientRepositoryImpl implements IPatientRepository {
   }
 
   @override
-  Output<PatientEntity> getPatient(String patientId) async {
-    try {
-      final docSnapshot =
-          await _firestore.collection('patients').doc(patientId).get();
-
-      if (!docSnapshot.exists) {
-        return Failure(
-          RepositoryException(
-            message: 'Paciente não encontrado',
-          ),
-        );
-      }
-
-      final data = docSnapshot.data()!;
-      data['id'] = docSnapshot.id;
-
-      return Success(PatientAdapter.fromMap(data));
-    } catch (e, s) {
-      Log.error('Error getting patient', error: e, stackTrace: s);
-      return Failure(
-        RepositoryException(
-          message: 'Erro ao buscar paciente',
-        ),
-      );
-    }
-  }
-
-  @override
-  Output<PatientEntity> savePatient(PatientEntity patient) async {
+  Output<Unit> savePatient(PatientEntity patient) async {
     try {
       final patientMap = PatientAdapter.toMap(patient);
 
       // If id is empty, create a new document with auto-generated ID
       if (patient.id.isEmpty) {
-        final docRef = await _firestore.collection('patients').add(patientMap);
-        final newPatient = PatientEntity(
-          id: docRef.id,
-          name: patient.name,
-          birthDate: patient.birthDate,
-          gender: patient.gender,
-          documentId: patient.documentId,
-          email: patient.email,
-          phone: patient.phone,
-          address: patient.address,
-          insuranceProvider: patient.insuranceProvider,
-          insuranceNumber: patient.insuranceNumber,
-          responsibleProfessional: patient.responsibleProfessional,
-          registrationDate: patient.registrationDate,
-          notes: patient.notes,
-          status: patient.status,
-        );
+        await _firestore.collection('patients').add(patientMap);
 
-        return Success(newPatient);
+        return Success(unit);
       }
       // Otherwise update existing document
       else {
@@ -121,15 +76,8 @@ class PatientRepositoryImpl implements IPatientRepository {
             .collection('patients')
             .doc(patient.id)
             .update(patientMap);
-        return Success(patient);
+        return Success(unit);
       }
-    } on FirebaseAuthException catch (e, s) {
-      Log.error('Error saving patient', error: e, stackTrace: s);
-      return Failure(
-        RepositoryException(
-          message: e.message ?? 'Erro ao salvar paciente',
-        ),
-      );
     } catch (e, s) {
       Log.error('Error saving patient', error: e, stackTrace: s);
       return Failure(
@@ -145,35 +93,11 @@ class PatientRepositoryImpl implements IPatientRepository {
     try {
       await _firestore.collection('patients').doc(patientId).delete();
       return Success(unit);
-    } on FirebaseAuthException catch (e, s) {
-      Log.error('Error deleting patient', error: e, stackTrace: s);
-      return Failure(
-        RepositoryException(
-          message: e.message ?? 'Erro ao excluir paciente',
-        ),
-      );
     } catch (e, s) {
       Log.error('Error deleting patient', error: e, stackTrace: s);
       return Failure(
         RepositoryException(
           message: 'Erro ao excluir paciente',
-        ),
-      );
-    }
-  }
-
-  @override
-  Output<Unit> updatePatientStatus(String patientId, String status) async {
-    try {
-      await _firestore.collection('patients').doc(patientId).update({
-        'status': status,
-      });
-      return Success(unit);
-    } catch (e, s) {
-      Log.error('Error updating patient status', error: e, stackTrace: s);
-      return Failure(
-        RepositoryException(
-          message: 'Erro ao atualizar status do paciente',
         ),
       );
     }

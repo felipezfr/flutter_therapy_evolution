@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_therapy_evolution/app/core/widgets/result_handler.dart';
 import 'package:flutter_therapy_evolution/app/features/appointment/domain/entities/appointment_entity.dart';
 import 'package:flutter_therapy_evolution/app/features/patient/domain/entities/patient_entity.dart';
 
-import '../../../../core/alert/alerts.dart';
 import '../../../../core/command/command_stream_listenable_builder.dart';
+import '../../../../core/widgets/delete_dialog.dart';
 import '../viewmodels/appointment_viewmodel.dart';
 
 class PatientAppointmentListPage extends StatefulWidget {
@@ -143,13 +144,10 @@ class _PatientAppointmentListPageState
   }
 
   void _onDeleteAppointment() {
-    viewModel.deleteAppointmentCommand.result?.fold(
-      (success) {
-        Alerts.showSuccess(context, 'Agendamento excluído com sucesso!');
-      },
-      (failure) {
-        Alerts.showFailure(context, failure.message);
-      },
+    ResultHandler.showAlert(
+      context: context,
+      result: viewModel.deleteAppointmentCommand.result,
+      successMessage: 'Agendamento excluído com sucesso!',
     );
   }
 
@@ -158,31 +156,14 @@ class _PatientAppointmentListPageState
     final appointmentDate = appointment.date;
     final appointmentTime = appointment.startTime;
 
-    showDialog(
+    DeleteDialog.showDeleteConfirmation(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Excluir Agendamento',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        content: Text(
-          'Deseja realmente excluir o agendamento de $patientName em $appointmentDate às $appointmentTime?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              viewModel.deleteAppointmentCommand.execute(appointment.id);
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Excluir'),
-          ),
-        ],
-      ),
+      title: 'Excluir Agendamento',
+      entityName:
+          'o agendamento de $patientName em $appointmentDate às $appointmentTime?',
+      onConfirm: () {
+        viewModel.deleteAppointmentCommand.execute(appointment.id);
+      },
     );
   }
 }

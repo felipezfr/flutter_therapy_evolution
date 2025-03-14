@@ -44,6 +44,13 @@ class _HomePageState extends State<HomePage> {
               },
               title: 'Agendamentos',
             ),
+            const SizedBox(height: 20),
+            PrimaryButtonDs(
+              onPressed: () {
+                Modular.to.pushNamed('/doctor/');
+              },
+              title: 'Medicos',
+            ),
             Spacer(),
             BottomSheet()
           ],

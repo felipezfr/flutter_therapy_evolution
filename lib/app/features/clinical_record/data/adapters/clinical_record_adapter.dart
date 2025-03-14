@@ -8,7 +8,6 @@ class ClinicalRecordAdapter {
     return ClinicalRecordEntity(
       id: data['id'] ?? '',
       patientId: data['patientId'] ?? '',
-      professionalId: data['professionalId'] ?? '',
       appointmentId: data['appointmentId'],
       date: data['date'] ?? '',
       chiefComplaint: data['chiefComplaint'],
@@ -37,7 +36,6 @@ class ClinicalRecordAdapter {
   static Map<String, dynamic> toMap(ClinicalRecordEntity entity) {
     return {
       'patientId': entity.patientId,
-      'professionalId': entity.professionalId,
       'appointmentId': entity.appointmentId,
       'date': entity.date,
       'chiefComplaint': entity.chiefComplaint,
@@ -50,8 +48,6 @@ class ClinicalRecordAdapter {
           .toList(),
       'recommendations': entity.recommendations,
       'attachments': entity.attachments,
-      'createdAt': Timestamp.fromDate(entity.createdAt),
-      'updatedAt': Timestamp.fromDate(entity.updatedAt),
     };
   }
 }
