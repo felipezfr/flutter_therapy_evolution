@@ -1,12 +1,12 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 
-class EmptyStateWidget extends StatelessWidget {
+class EmptyIndicatorWidget extends StatelessWidget {
   final String? howRegisterMessage;
   final String? emptyMessage;
   final IconData? iconData;
 
-  const EmptyStateWidget({
+  const EmptyIndicatorWidget({
     super.key,
     this.howRegisterMessage,
     this.emptyMessage,

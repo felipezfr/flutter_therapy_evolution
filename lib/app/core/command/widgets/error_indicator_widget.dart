@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class ErrorStateWidget extends StatelessWidget {
+class ErrorIndicatorWidget extends StatelessWidget {
   final String? message;
   final VoidCallback? refresh;
 
-  const ErrorStateWidget({
+  const ErrorIndicatorWidget({
     super.key,
     this.message,
     this.refresh,

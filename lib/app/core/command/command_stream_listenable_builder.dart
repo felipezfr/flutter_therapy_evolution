@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'widgets/empty_state_widget.dart';
-import 'widgets/error_state_widget.dart';
+import 'widgets/empty_indicator_widget.dart';
 import 'command.dart';
+import 'widgets/error_indicator_widget.dart';
 
 class CommandStreamListenableBuilder<Out> extends StatelessWidget {
   final CommandStream stream;
@@ -40,7 +40,7 @@ class CommandStreamListenableBuilder<Out> extends StatelessWidget {
         final streamResult = stream.result;
 
         if (streamResult == null) {
-          return EmptyStateWidget(
+          return EmptyIndicatorWidget(
             emptyMessage: emptyMessage,
             iconData: emptyIconData,
             howRegisterMessage: emptyHowRegisterMessage,
@@ -50,7 +50,7 @@ class CommandStreamListenableBuilder<Out> extends StatelessWidget {
         return streamResult.fold(
           (result) {
             if (result is List && result.isEmpty) {
-              return EmptyStateWidget(
+              return EmptyIndicatorWidget(
                 emptyMessage: emptyMessage,
                 iconData: emptyIconData,
                 howRegisterMessage: emptyHowRegisterMessage,
@@ -60,7 +60,7 @@ class CommandStreamListenableBuilder<Out> extends StatelessWidget {
             return builder(context, result as Out);
           },
           (error) {
-            return ErrorStateWidget(
+            return ErrorIndicatorWidget(
               message: emptyMessage ?? error.message,
               refresh: refresh,
             );
