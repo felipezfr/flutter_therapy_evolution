@@ -520,16 +520,10 @@ class _PatientRegisterPageState extends State<PatientRegisterPage> {
             ),
             const SizedBox(height: 24),
 
-            ListenableBuilder(
-              listenable: viewModel.savePatientCommand,
-              builder: (context, child) {
-                return PrimaryButtonDs(
-                  isLoading: viewModel.savePatientCommand.running,
-                  onPressed: _savePatient,
-                  title:
-                      _isEditMode ? 'Salvar Alterações' : 'Cadastrar Paciente',
-                );
-              },
+            PrimaryButtonDs(
+              isLoading: viewModel.savePatientCommand.running,
+              onPressed: _savePatient,
+              title: _isEditMode ? 'Salvar Alterações' : 'Cadastrar Paciente',
             ),
             const SizedBox(height: 32),
           ],

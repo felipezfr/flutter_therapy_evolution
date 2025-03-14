@@ -44,10 +44,14 @@ class AppointmentRepositoryImpl implements IAppointmentRepository {
   }
 
   @override
-  Stream<Result<List<AppointmentEntity>, BaseException>>
-      getAppointmentsStream() {
+  Stream<Result<List<AppointmentEntity>, BaseException>> getAppointmentsStream(
+      String userId) {
     try {
-      return _firestore.collection('appointments').snapshots().map((snapshot) {
+      return _firestore
+          .collection('appointments')
+          .where('professionalId', isEqualTo: userId)
+          .snapshots()
+          .map((snapshot) {
         try {
           if (snapshot.docs.isEmpty) {
             return Success([]);
@@ -92,6 +96,49 @@ class AppointmentRepositoryImpl implements IAppointmentRepository {
       return Failure(
         RepositoryException(
           message: 'Erro ao excluir agendamento',
+        ),
+      );
+    }
+  }
+
+  @override
+  Stream<Result<List<AppointmentEntity>, BaseException>>
+      getPatientAppointmentsStream(String patientId) {
+    try {
+      return _firestore
+          .collection('appointments')
+          .where('patientId', isEqualTo: patientId)
+          .snapshots()
+          .map((snapshot) {
+        try {
+          if (snapshot.docs.isEmpty) {
+            return Success([]);
+          }
+
+          final appointments = snapshot.docs.map((doc) {
+            final data = doc.data();
+            data['id'] = doc.id;
+            return AppointmentAdapter.fromMap(data);
+          }).toList();
+
+          return Success(appointments);
+        } catch (e, s) {
+          Log.error('Error processing appointments snapshot',
+              error: e, stackTrace: s);
+          return Failure(
+            RepositoryException(
+              message: 'Erro ao processar dados dos agendamentos',
+            ),
+          );
+        }
+      });
+    } catch (e, s) {
+      Log.error('Error creating appointments stream', error: e, stackTrace: s);
+      return Stream.value(
+        Failure(
+          RepositoryException(
+            message: 'Erro ao criar stream de agendamentos',
+          ),
         ),
       );
     }

@@ -3,26 +3,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:intl/intl.dart';
 
-import '../../../core/alert/alerts.dart';
-import '../../../core/session/logged_user.dart';
-import '../../patient/domain/entities/patient_entity.dart';
-import '../domain/entities/appointment_entity.dart';
-import 'appointment_viewmodel.dart';
+import '../../../../core/alert/alerts.dart';
+import '../../../../core/session/logged_user.dart';
+import '../../../patient/domain/entities/patient_entity.dart';
+import '../../domain/entities/appointment_entity.dart';
+import '../viewmodels/appointment_viewmodel.dart';
 
-class AppointmentSchedulePage extends StatefulWidget {
+class AppointmentRegisterPage extends StatefulWidget {
   final AppointmentEntity? appointment;
+  final PatientEntity? patient; //Used to set patient
 
-  const AppointmentSchedulePage({
+  const AppointmentRegisterPage({
     super.key,
     this.appointment,
+    this.patient,
   });
 
   @override
-  State<AppointmentSchedulePage> createState() =>
-      _AppointmentSchedulePageState();
+  State<AppointmentRegisterPage> createState() =>
+      _AppointmentRegisterPageState();
 }
 
-class _AppointmentSchedulePageState extends State<AppointmentSchedulePage> {
+class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
   final viewModel = Modular.get<AppointmentViewmodel>();
 
   AppointmentEntity? get appointment => widget.appointment;
@@ -41,17 +43,27 @@ class _AppointmentSchedulePageState extends State<AppointmentSchedulePage> {
   String _appointmentStatus = 'scheduled';
 
   bool _isEditing = false;
+  bool _isRegisterByPatient = false;
   AppointmentEntity? _appointmentToEdit;
 
   @override
   void initState() {
     super.initState();
     _isEditing = widget.appointment != null;
+    _isRegisterByPatient = widget.patient != null;
     viewModel.saveAppointmentCommand.addListener(_saveAppointmentListener);
 
     if (_isEditing) {
       _loadAppointmentData();
+    } else if (_isRegisterByPatient) {
+      _selectPatientAndBlockDropdown();
     }
+  }
+
+  void _selectPatientAndBlockDropdown() {
+    setState(() {
+      _selectedPatientId = widget.patient!.id;
+    });
   }
 
   void _loadAppointmentData() {
@@ -203,7 +215,7 @@ class _AppointmentSchedulePageState extends State<AppointmentSchedulePage> {
       body: ListenableBuilder(
         listenable: viewModel.patientsStreamCommand,
         builder: (context, _) {
-          if (viewModel.patientsStreamCommand.loading) {
+          if (viewModel.patientsStreamCommand.running) {
             return const Center(child: CircularProgressIndicator());
           }
 
@@ -364,6 +376,7 @@ class _AppointmentSchedulePageState extends State<AppointmentSchedulePage> {
             // Save button
             PrimaryButtonDs(
               onPressed: _saveAppointment,
+              isLoading: viewModel.saveAppointmentCommand.running,
               title:
                   _isEditing ? 'Atualizar agendamento' : 'Salvar agendamento',
             ),

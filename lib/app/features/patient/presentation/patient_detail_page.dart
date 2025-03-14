@@ -81,8 +81,15 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
             ),
             const SizedBox(height: 20),
             PrimaryButtonDs(
-              title: 'Atendimentos',
-              onPressed: () {},
+              title: 'Agendamentos',
+              onPressed: () {
+                Modular.to.pushNamed(
+                  '/appointment/patient',
+                  arguments: {
+                    'patientEntity': patient,
+                  },
+                );
+              },
             ),
           ],
         ),

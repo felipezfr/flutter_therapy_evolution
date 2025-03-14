@@ -86,17 +86,23 @@ abstract class Command<Out extends Object> extends ChangeNotifier {
 }
 
 /// A [Command] command for handling streams
-abstract class _CommandStream<Out extends Object> extends ChangeNotifier {
+abstract class CommandStream<Out extends Object> extends ChangeNotifier {
   StreamSubscription<Result<Out, BaseException>>? _subscription;
 
-  bool _loading = false;
-  bool get loading => _loading;
+  bool _running = false;
+  bool get running => _running;
+
+  /// Whether the action completed with an error.
+  bool get error => _result is Failure;
+
+  /// Whether the action completed successfully.
+  bool get success => _result is Success;
 
   Result<Out, BaseException>? _result;
   Result<Out, BaseException>? get result => _result;
 
   void _execute(CommandActionStream0<Out> streamGetter) {
-    _loading = true;
+    _running = true;
     _result = null;
     notifyListeners();
 
@@ -104,7 +110,7 @@ abstract class _CommandStream<Out extends Object> extends ChangeNotifier {
     _subscription = streamGetter().listen(
       (newResult) {
         _result = newResult;
-        _loading = false;
+        _running = false;
         notifyListeners();
       },
       onError: (error) {
@@ -114,7 +120,7 @@ abstract class _CommandStream<Out extends Object> extends ChangeNotifier {
                 message: error.toString(),
               );
         _result = Failure(exception);
-        _loading = false;
+        _running = false;
         notifyListeners();
       },
     );
@@ -153,7 +159,7 @@ final class Command1<Out extends Object, In> extends Command<Out> {
   }
 }
 
-final class CommandStream0<Out extends Object> extends _CommandStream<Out> {
+final class CommandStream0<Out extends Object> extends CommandStream<Out> {
   final CommandActionStream0<Out> _actionStream;
 
   CommandStream0(this._actionStream);
@@ -165,7 +171,7 @@ final class CommandStream0<Out extends Object> extends _CommandStream<Out> {
 }
 
 /// A [Command] that accepts no arguments.
-final class CommandStream1<Out extends Object, In> extends _CommandStream<Out> {
+final class CommandStream1<Out extends Object, In> extends CommandStream<Out> {
   final CommandActionStream1<Out, In> _actionStream;
 
   CommandStream1(this._actionStream);

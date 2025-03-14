@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 20),
             PrimaryButtonDs(
               onPressed: () {
-                Modular.to.pushNamed('/schedule/');
+                Modular.to.pushNamed('/appointment/');
               },
               title: 'Agendamentos',
             ),

@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_therapy_evolution/app/features/patient/domain/entities/patient_entity.dart';
 import '../../../core/alert/alerts.dart';
-import '../../patient/presentation/widgets/empty_state_widget.dart';
-import '../../patient/presentation/widgets/error_state_widget.dart';
+import '../../../core/command/command_stream_listenable_builder.dart';
 import '../domain/entities/clinical_record_entity.dart';
 import 'clinical_record_viewmodel.dart';
 
@@ -103,32 +102,12 @@ class _PatientClinicalRecordPageState extends State<PatientClinicalRecordPage> {
       appBar: AppBar(
         title: const Text('Evoluções do paciente'),
       ),
-      body: ListenableBuilder(
-        listenable: viewModel.patientClinicalRecordStream,
-        builder: (context, _) {
-          if (viewModel.patientClinicalRecordStream.loading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final result = viewModel.patientClinicalRecordStream.result;
-
-          if (result == null) {
-            return EmptyStateWidget();
-          }
-
-          return result.fold(
-            (patients) {
-              if (patients.isEmpty) {
-                return EmptyStateWidget();
-              }
-              return _buildPatientRecordList(patients);
-            },
-            (error) {
-              return ErrorStateWidget(
-                message: error.message,
-              );
-            },
-          );
+      body: CommandStreamListenableBuilder<List<ClinicalRecordEntity>>(
+        stream: viewModel.patientClinicalRecordStream,
+        emptyMessage: 'Nenhum evolução cadastrada',
+        emptyIconData: Icons.app_registration_rounded,
+        builder: (context, value) {
+          return _buildPatientRecordList(value);
         },
       ),
       floatingActionButton: FloatingActionButton(

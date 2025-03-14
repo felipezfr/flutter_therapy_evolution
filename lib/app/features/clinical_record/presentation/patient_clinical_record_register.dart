@@ -239,17 +239,10 @@ class _PatientClinicalRecordRegisterPageState
                 maxLines: 5,
               ),
               const SizedBox(height: 24),
-              ListenableBuilder(
-                listenable: viewModel.savePatientClinicalRecordCommand,
-                builder: (context, _) {
-                  return PrimaryButtonDs(
-                    isLoading:
-                        viewModel.savePatientClinicalRecordCommand.running,
-                    title:
-                        isEditMode ? 'Atualizar Evolução' : 'Salvar Evolução',
-                    onPressed: _saveClinicalRecord,
-                  );
-                },
+              PrimaryButtonDs(
+                isLoading: viewModel.savePatientClinicalRecordCommand.running,
+                title: isEditMode ? 'Atualizar Evolução' : 'Salvar Evolução',
+                onPressed: _saveClinicalRecord,
               ),
             ],
           ),

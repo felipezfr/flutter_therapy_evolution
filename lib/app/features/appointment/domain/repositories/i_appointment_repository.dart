@@ -5,8 +5,10 @@ import '../../../../core/typedefs/result_typedef.dart';
 import '../entities/appointment_entity.dart';
 
 abstract class IAppointmentRepository {
+  Stream<Result<List<AppointmentEntity>, BaseException>> getAppointmentsStream(
+      String userId);
   Stream<Result<List<AppointmentEntity>, BaseException>>
-      getAppointmentsStream();
+      getPatientAppointmentsStream(String patientId);
   Output<Unit> saveAppointment(AppointmentEntity appointment);
   Output<Unit> deleteAppointment(String appointmentId);
 }

@@ -1,13 +1,14 @@
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_therapy_evolution/app/features/appointment/presentation/pages/patient_appointment_list_page.dart';
 
 import '../../core/core_module.dart';
 import '../patient/data/repositories/patient_repository_impl.dart';
 import '../patient/domain/repositories/i_patient_repository.dart';
-import 'presentation/appointment_list_page.dart';
-import 'presentation/appointment_schedule_page.dart';
+import 'presentation/pages/appointment_list_page.dart';
+import 'presentation/pages/appointment_register_page.dart';
 import 'data/repositories/appointment_repository_impl.dart';
 import 'domain/repositories/i_appointment_repository.dart';
-import 'presentation/appointment_viewmodel.dart';
+import 'presentation/viewmodels/appointment_viewmodel.dart';
 
 class AppointmentModule extends Module {
   @override
@@ -24,13 +25,21 @@ class AppointmentModule extends Module {
   void routes(RouteManager r) {
     r.child('/', child: (context) => const AppointmentListPage());
     r.child(
+      '/patient',
+      child: (context) => PatientAppointmentListPage(
+        patient: r.args.data?['patientEntity'],
+      ),
+    );
+    r.child(
       '/register',
-      child: (context) => AppointmentSchedulePage(),
+      child: (context) => AppointmentRegisterPage(
+        patient: r.args.data?['patientEntity'],
+      ),
     );
     r.child(
       '/edit',
-      child: (context) => AppointmentSchedulePage(
-        appointment: r.args.data['appointmentEntity'],
+      child: (context) => AppointmentRegisterPage(
+        appointment: r.args.data?['appointmentEntity'],
       ),
     );
   }

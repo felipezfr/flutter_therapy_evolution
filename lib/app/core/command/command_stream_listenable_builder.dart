@@ -1,0 +1,72 @@
+import 'package:flutter/material.dart';
+
+import 'widgets/empty_state_widget.dart';
+import 'widgets/error_state_widget.dart';
+import 'command.dart';
+
+class CommandStreamListenableBuilder<Out> extends StatelessWidget {
+  final CommandStream stream;
+  final Widget Function(BuildContext context, Out value) builder;
+
+  //Empty state message
+  final String? emptyMessage;
+  final String? emptyHowRegisterMessage;
+  final IconData? emptyIconData;
+
+  //Error state message
+  final String? errorMessage;
+  final void Function()? refresh;
+
+  const CommandStreamListenableBuilder({
+    super.key,
+    required this.stream,
+    required this.builder,
+    this.emptyMessage,
+    this.errorMessage,
+    this.emptyHowRegisterMessage,
+    this.emptyIconData,
+    this.refresh,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: stream,
+      builder: (context, _) {
+        if (stream.running) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final streamResult = stream.result;
+
+        if (streamResult == null) {
+          return EmptyStateWidget(
+            emptyMessage: emptyMessage,
+            iconData: emptyIconData,
+            howRegisterMessage: emptyHowRegisterMessage,
+          );
+        }
+
+        return streamResult.fold(
+          (result) {
+            if (result is List && result.isEmpty) {
+              return EmptyStateWidget(
+                emptyMessage: emptyMessage,
+                iconData: emptyIconData,
+                howRegisterMessage: emptyHowRegisterMessage,
+              );
+            }
+
+            return builder(context, result as Out);
+          },
+          (error) {
+            return ErrorStateWidget(
+              message: emptyMessage ?? error.message,
+              refresh: refresh,
+            );
+          },
+        );
+      },
+    );
+  }
+}

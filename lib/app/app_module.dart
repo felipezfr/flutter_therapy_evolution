@@ -14,7 +14,7 @@ class AppModule extends Module {
     r.module('/auth', module: AuthModule());
     r.module('/home', module: HomeModule());
     r.module('/patient', module: PatientModule());
-    r.module('/schedule', module: AppointmentModule());
+    r.module('/appointment', module: AppointmentModule());
     r.module('/clinical_record', module: ClinicalRecordModule());
   }
 }

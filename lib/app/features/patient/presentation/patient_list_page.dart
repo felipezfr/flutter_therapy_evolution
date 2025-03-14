@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:flutter_therapy_evolution/app/features/patient/presentation/widgets/error_state_widget.dart';
+import 'package:flutter_therapy_evolution/app/core/widgets/result_handler.dart';
+import '../../../core/command/command_stream_listenable_builder.dart';
+import '../../../core/widgets/delete_dialog.dart';
 import 'patient_viewmodel.dart';
 
-import '../../../core/alert/alerts.dart';
 import '../domain/entities/patient_entity.dart';
-import 'widgets/empty_state_widget.dart';
 
 class PatientListPage extends StatefulWidget {
   const PatientListPage({super.key});
@@ -23,17 +23,6 @@ class _PatientListPageState extends State<PatientListPage> {
     viewModel.deletePatientCommand.addListener(_onDeletePatient);
   }
 
-  void _onDeletePatient() {
-    viewModel.deletePatientCommand.result?.fold(
-      (success) {
-        Alerts.showSuccess(context, 'Paciente excluído com sucesso!');
-      },
-      (failure) {
-        Alerts.showFailure(context, failure.message);
-      },
-    );
-  }
-
   @override
   void dispose() {
     viewModel.deletePatientCommand.removeListener(_onDeletePatient);
@@ -41,32 +30,22 @@ class _PatientListPageState extends State<PatientListPage> {
     super.dispose();
   }
 
-  void _confirmDeletePatient(PatientEntity patient) {
-    showDialog(
+  void _onDeletePatient() {
+    ResultHandler.showAlert(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Excluir Paciente',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        content: Text(
-          'Deseja realmente excluir o paciente ${patient.name}?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              viewModel.deletePatientCommand.execute(patient.id);
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Excluir'),
-          ),
-        ],
-      ),
+      result: viewModel.deletePatientCommand.result,
+      successMessage: 'Paciente excluído com sucesso!',
+    );
+  }
+
+  void _confirmDeletePatient(PatientEntity patient) {
+    DeleteDialog.showDeleteConfirmation(
+      context: context,
+      title: 'Excluir Paciente',
+      entityName: 'o paciente ${patient.name}',
+      onConfirm: () {
+        viewModel.deletePatientCommand.execute(patient.id);
+      },
     );
   }
 
@@ -82,42 +61,26 @@ class _PatientListPageState extends State<PatientListPage> {
     });
   }
 
+  void _navigateToRegisterPage() {
+    Modular.to.pushNamed('./register');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Pacientes'),
       ),
-      body: ListenableBuilder(
-        listenable: viewModel.patientsStreamCommand,
-        builder: (context, _) {
-          if (viewModel.patientsStreamCommand.loading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final result = viewModel.patientsStreamCommand.result;
-
-          if (result == null) {
-            return EmptyStateWidget();
-          }
-
-          return result.fold(
-            (patients) {
-              if (patients.isEmpty) {
-                return EmptyStateWidget();
-              }
-              return _buildPatientList(patients);
-            },
-            (error) {
-              return ErrorStateWidget(
-                message: error.message,
-              );
-            },
-          );
+      body: CommandStreamListenableBuilder<List<PatientEntity>>(
+        stream: viewModel.patientsStreamCommand,
+        emptyMessage: 'Nenhum evolução cadastrada',
+        emptyIconData: Icons.app_registration_rounded,
+        builder: (context, value) {
+          return _buildPatientList(value);
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Modular.to.pushNamed('./register'),
+        onPressed: _navigateToRegisterPage,
         child: const Icon(Icons.add),
       ),
     );
