@@ -56,9 +56,7 @@ class _PatientListPageState extends State<PatientListPage> {
   }
 
   void _navigateToDetailPage(PatientEntity patient) {
-    Modular.to.pushNamed('./detail', arguments: {
-      'patientEntity': patient,
-    });
+    Modular.to.pushNamed('./detail/${patient.id}');
   }
 
   void _navigateToRegisterPage() {

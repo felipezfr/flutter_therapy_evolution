@@ -22,9 +22,9 @@ class PatientModule extends Module {
   void routes(RouteManager r) {
     r.child('/', child: (context) => PatientListPage());
     r.child(
-      '/detail',
+      '/detail/:patientId',
       child: (context) => PatientDetailPage(
-        patient: r.args.data['patientEntity'],
+        patientId: r.args.params['patientId'],
       ),
     );
     r.child('/register', child: (context) => PatientRegisterPage());

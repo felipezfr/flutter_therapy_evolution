@@ -9,6 +9,7 @@ class PatientViewmodel {
 
   PatientViewmodel(this._repository) {
     patientsStreamCommand = CommandStream0(_repository.getPatientsStream);
+    patientStreamCommand = CommandStream1(_repository.getPatientStream);
     savePatientCommand = Command1(_repository.savePatient);
     deletePatientCommand = Command1(_repository.deletePatient);
 
@@ -16,6 +17,7 @@ class PatientViewmodel {
   }
 
   late final CommandStream0<List<PatientEntity>> patientsStreamCommand;
+  late final CommandStream1<PatientEntity, String> patientStreamCommand;
   late final Command1<Unit, PatientEntity> savePatientCommand;
   late final Command1<Unit, String> deletePatientCommand;
 }

@@ -5,6 +5,7 @@ import '../../domain/entities/patient_entity.dart';
 
 abstract class IPatientRepository {
   OutputStream<List<PatientEntity>> getPatientsStream();
+  OutputStream<PatientEntity> getPatientStream(String patientId);
   Output<Unit> savePatient(PatientEntity patient);
   Output<Unit> deletePatient(String patientId);
 }

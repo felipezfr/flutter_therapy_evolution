@@ -53,6 +53,10 @@ class _PatientAppointmentListPageState
     );
   }
 
+  void _navigateToDetailPage(AppointmentEntity appointment) {
+    Modular.to.pushNamed('./detail/${appointment.id}');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,6 +91,7 @@ class _PatientAppointmentListPageState
           elevation: 2,
           margin: const EdgeInsets.only(bottom: 16),
           child: ListTile(
+            onTap: () => _navigateToDetailPage(appointment),
             contentPadding: const EdgeInsets.all(16),
             leading: CircleAvatar(
               backgroundColor: Theme.of(context).primaryColor,

@@ -87,30 +87,6 @@ class _PatientClinicalRecordRegisterPageState
     super.dispose();
   }
 
-  Future<void> _saveClinicalRecord() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    final clinicalRecord = ClinicalRecordEntity(
-      id: isEditMode ? widget.clinicalRecord!.id : '',
-      patientId: patient.id,
-      date: isEditMode
-          ? widget.clinicalRecord!.date
-          : DateTime.now().toIso8601String(),
-      chiefComplaint: _chiefComplaintController.text,
-      presentIllness: _presentIllnessController.text,
-      physicalExam: _physicalExamController.text,
-      diagnosis: _diagnosisController.text,
-      plan: _planController.text,
-      prescriptions: _prescriptions,
-      recommendations: _recommendationsController.text,
-      attachments: _attachments,
-    );
-
-    await viewModel.savePatientClinicalRecordCommand.execute(clinicalRecord);
-  }
-
   void _saveClinicalRecordListener() {
     ResultHandler.showAlert(
       context: context,
@@ -121,33 +97,6 @@ class _PatientClinicalRecordRegisterPageState
       onSuccess: (value) {
         Modular.to.pop();
       },
-    );
-  }
-
-  Widget _buildFormField({
-    required String label,
-    required TextEditingController controller,
-    int maxLines = 1,
-    bool isRequired = false,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextFormField(
-        controller: controller,
-        maxLines: maxLines,
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
-        ),
-        validator: isRequired
-            ? (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Este campo é obrigatório';
-                }
-                return null;
-              }
-            : null,
-      ),
     );
   }
 
@@ -239,6 +188,57 @@ class _PatientClinicalRecordRegisterPageState
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Future<void> _saveClinicalRecord() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    final clinicalRecord = ClinicalRecordEntity(
+      id: isEditMode ? widget.clinicalRecord!.id : '',
+      patientId: patient.id,
+      date: isEditMode
+          ? widget.clinicalRecord!.date
+          : DateTime.now().toIso8601String(),
+      chiefComplaint: _chiefComplaintController.text,
+      presentIllness: _presentIllnessController.text,
+      physicalExam: _physicalExamController.text,
+      diagnosis: _diagnosisController.text,
+      plan: _planController.text,
+      prescriptions: _prescriptions,
+      recommendations: _recommendationsController.text,
+      attachments: _attachments,
+    );
+
+    await viewModel.savePatientClinicalRecordCommand.execute(clinicalRecord);
+  }
+
+  Widget _buildFormField({
+    required String label,
+    required TextEditingController controller,
+    int maxLines = 1,
+    bool isRequired = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        maxLines: maxLines,
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+        ),
+        validator: isRequired
+            ? (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Este campo é obrigatório';
+                }
+                return null;
+              }
+            : null,
       ),
     );
   }

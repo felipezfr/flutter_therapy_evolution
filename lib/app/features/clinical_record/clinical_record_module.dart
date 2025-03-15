@@ -1,9 +1,11 @@
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_therapy_evolution/app/features/patient/data/repositories/patient_repository.dart';
+import 'package:flutter_therapy_evolution/app/features/patient/data/repositories/patient_repository_impl.dart';
 
 import '../../core/core_module.dart';
 import 'data/repositories/clinical_record_repository_impl.dart';
 import 'data/repositories/clinical_record_repository.dart';
-import 'presentation/pages/patient_clinical_record_page.dart';
+import 'presentation/pages/patient_clinical_record_list_page.dart';
 import 'presentation/viewmodels/clinical_record_viewmodel.dart';
 import 'presentation/pages/patient_clinical_record_register.dart';
 
@@ -15,15 +17,16 @@ class ClinicalRecordModule extends Module {
   void binds(Injector i) {
     i.addLazySingleton<IClinicalRecordRepository>(
         ClinicalRecordRepositoryImpl.new);
+    i.addLazySingleton<IPatientRepository>(PatientRepositoryImpl.new);
     i.addLazySingleton(ClinicalRecordViewmodel.new);
   }
 
   @override
   void routes(RouteManager r) {
     r.child(
-      '/patient',
+      '/patient/:patientId',
       child: (context) =>
-          PatientClinicalRecordPage(patient: r.args.data['patientEntity']),
+          PatientClinicalRecordListPage(patientId: r.args.params['patientId']),
     );
 
     r.child(

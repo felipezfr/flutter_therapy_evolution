@@ -59,6 +59,40 @@ class PatientRepositoryImpl implements IPatientRepository {
   }
 
   @override
+  OutputStream<PatientEntity> getPatientStream(String patientId) {
+    try {
+      return _firestore
+          .collection('patients')
+          .doc(patientId)
+          .snapshots()
+          .map((snapshot) {
+        try {
+          final data = snapshot.data();
+          data!['id'] = snapshot.id;
+          return Success(PatientEntity.fromMap(data));
+        } catch (e, s) {
+          Log.error('Error processing patient snapshot',
+              error: e, stackTrace: s);
+          return Failure(
+            RepositoryException(
+              message: 'Erro ao processar dados do paciente',
+            ),
+          );
+        }
+      });
+    } catch (e, s) {
+      Log.error('Error creating patient stream', error: e, stackTrace: s);
+      return Stream.value(
+        Failure(
+          RepositoryException(
+            message: 'Erro ao criar stream do paciente',
+          ),
+        ),
+      );
+    }
+  }
+
+  @override
   Output<Unit> savePatient(PatientEntity patient) async {
     try {
       final saveMap = PatientEntity.toMap(patient);

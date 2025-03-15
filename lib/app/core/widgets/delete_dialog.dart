@@ -4,7 +4,7 @@ class DeleteDialog {
   /// Exibe um diálogo de confirmação de exclusão genérico
   static Future<bool> showDeleteConfirmation({
     required BuildContext context,
-    required String title,
+    String? title,
     required String entityName,
     String cancelButtonText = 'Cancelar',
     String confirmButtonText = 'Excluir',
@@ -15,7 +15,7 @@ class DeleteDialog {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          title,
+          title ?? 'Excluir Evolução',
           style: Theme.of(context).textTheme.titleMedium,
         ),
         content: Text(

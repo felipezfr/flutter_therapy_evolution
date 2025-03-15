@@ -1,37 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_therapy_evolution/app/core/widgets/delete_dialog.dart';
+import 'package:flutter_therapy_evolution/app/core/widgets/result_handler.dart';
 import 'package:flutter_therapy_evolution/app/features/patient/domain/entities/patient_entity.dart';
-import '../../../../core/alert/alerts.dart';
 import '../../../../core/command/command_stream_listenable_builder.dart';
 import '../../domain/entities/clinical_record_entity.dart';
 import '../viewmodels/clinical_record_viewmodel.dart';
 
-class PatientClinicalRecordPage extends StatefulWidget {
-  final PatientEntity patient;
-  const PatientClinicalRecordPage({
+class PatientClinicalRecordListPage extends StatefulWidget {
+  final String patientId;
+  const PatientClinicalRecordListPage({
     super.key,
-    required this.patient,
+    required this.patientId,
   });
 
   @override
-  State<PatientClinicalRecordPage> createState() =>
-      _PatientClinicalRecordPageState();
+  State<PatientClinicalRecordListPage> createState() =>
+      _PatientClinicalRecordListPageState();
 }
 
-class _PatientClinicalRecordPageState extends State<PatientClinicalRecordPage> {
+class _PatientClinicalRecordListPageState
+    extends State<PatientClinicalRecordListPage> {
   final viewModel = Modular.get<ClinicalRecordViewmodel>();
 
-  PatientEntity get patient => widget.patient;
+  PatientEntity? patient;
 
   @override
   void initState() {
     super.initState();
-    viewModel.clinicalRecordStream.execute(patient.id);
+    viewModel.patientStreamCommand.execute(widget.patientId);
+    viewModel.clinicalRecordStream.execute(widget.patientId);
     viewModel.deleteClinicalRecordCommand.addListener(_onDeleteClinicalRecord);
   }
 
   @override
   void dispose() {
+    viewModel.patientStreamCommand.dispose();
     viewModel.clinicalRecordStream.dispose();
     viewModel.deleteClinicalRecordCommand
         .removeListener(_onDeleteClinicalRecord);
@@ -39,57 +43,21 @@ class _PatientClinicalRecordPageState extends State<PatientClinicalRecordPage> {
   }
 
   void _onDeleteClinicalRecord() {
-    viewModel.deleteClinicalRecordCommand.result?.fold(
-      (success) {
-        Alerts.showSuccess(context, 'Evolução excluída com sucesso!');
-      },
-      (failure) {
-        Alerts.showFailure(context, failure.message);
-      },
-    );
-  }
-
-  void _confirmDeleteClinicalRecord(ClinicalRecordEntity clinicalRecord) {
-    showDialog(
+    ResultHandler.showAlert(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Excluir Evolução',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        content: Text(
-          'Deseja realmente excluir a evolução de ${patient.name} do dia ${clinicalRecord.date}?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              viewModel.deleteClinicalRecordCommand.execute(clinicalRecord.id);
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Excluir'),
-          ),
-        ],
-      ),
+      result: viewModel.deleteClinicalRecordCommand.result,
+      successMessage: 'Evolução excluída com sucesso!',
     );
   }
 
-  void _navigateToRegisterPage() {
-    Modular.to.pushNamed('./register', arguments: {
-      'patientEntity': patient,
-    });
-  }
-
-  void _navigateToEditPage(ClinicalRecordEntity clinicalRecord) {
-    Modular.to.pushNamed(
-      './edit',
-      arguments: {
-        'patientEntity': patient,
-        'clinicalRecordEntity': clinicalRecord
+  void _confirmDeleteClinicalRecord(
+      ClinicalRecordEntity clinicalRecord, PatientEntity patient) {
+    DeleteDialog.showDeleteConfirmation(
+      context: context,
+      entityName:
+          'a evolução de ${patient.name} do dia ${clinicalRecord.date}?',
+      onConfirm: () {
+        viewModel.deleteClinicalRecordCommand.execute(clinicalRecord.id);
       },
     );
   }
@@ -100,23 +68,33 @@ class _PatientClinicalRecordPageState extends State<PatientClinicalRecordPage> {
       appBar: AppBar(
         title: const Text('Evoluções do paciente'),
       ),
-      body: CommandStreamListenableBuilder<List<ClinicalRecordEntity>>(
-        stream: viewModel.clinicalRecordStream,
-        emptyMessage: 'Nenhum evolução cadastrada',
-        emptyIconData: Icons.app_registration_rounded,
-        builder: (context, value) {
-          return _buildPatientRecordList(value);
+      body: CommandStreamListenableBuilder<PatientEntity>(
+        stream: viewModel.patientStreamCommand,
+        emptyMessage: 'Paciente não encontrado',
+        emptyIconData: Icons.error,
+        emptyHowRegisterMessage: '',
+        builder: (context, patientValue) {
+          patient = patientValue;
+          return CommandStreamListenableBuilder<List<ClinicalRecordEntity>>(
+            stream: viewModel.clinicalRecordStream,
+            emptyMessage: 'Nenhum evolução cadastrada',
+            emptyIconData: Icons.app_registration_rounded,
+            builder: (context, clinicalRecord) {
+              return _buildPatientRecordList(clinicalRecord, patientValue);
+            },
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _navigateToRegisterPage,
+        onPressed: () => _navigateToRegisterPage(patient),
         child: const Icon(Icons.add),
       ),
     );
   }
 
   Widget _buildPatientRecordList(
-      List<ClinicalRecordEntity> patientClinicalRecords) {
+      List<ClinicalRecordEntity> patientClinicalRecords,
+      PatientEntity patient) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: patientClinicalRecords.length,
@@ -142,7 +120,7 @@ class _PatientClinicalRecordPageState extends State<PatientClinicalRecordPage> {
               children: [
                 if (patientClinicalRecord.chiefComplaint != null)
                   Text(
-                      'Queixa Principal: ${patientClinicalRecord.chiefComplaint}'),
+                      'Queixa Principal do: ${patientClinicalRecord.chiefComplaint}'),
                 if (patientClinicalRecord.presentIllness != null)
                   Text('Doença Atual: ${patientClinicalRecord.presentIllness}'),
                 if (patientClinicalRecord.diagnosis != null)
@@ -161,18 +139,35 @@ class _PatientClinicalRecordPageState extends State<PatientClinicalRecordPage> {
               children: [
                 IconButton(
                   icon: const Icon(Icons.edit, color: Colors.blue),
-                  onPressed: () => _navigateToEditPage(patientClinicalRecord),
+                  onPressed: () =>
+                      _navigateToEditPage(patientClinicalRecord, patient),
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () =>
-                      _confirmDeleteClinicalRecord(patientClinicalRecord),
+                  onPressed: () => _confirmDeleteClinicalRecord(
+                      patientClinicalRecord, patient),
                 ),
               ],
             ),
-            onTap: () => _navigateToEditPage(patientClinicalRecord),
           ),
         );
+      },
+    );
+  }
+
+  void _navigateToRegisterPage(PatientEntity? patient) {
+    Modular.to.pushNamed('../register', arguments: {
+      'patientEntity': patient,
+    });
+  }
+
+  void _navigateToEditPage(
+      ClinicalRecordEntity clinicalRecord, PatientEntity patient) {
+    Modular.to.pushNamed(
+      '../edit',
+      arguments: {
+        'patientEntity': patient,
+        'clinicalRecordEntity': clinicalRecord
       },
     );
   }
