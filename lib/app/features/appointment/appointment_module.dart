@@ -26,9 +26,9 @@ class AppointmentModule extends Module {
   void routes(RouteManager r) {
     r.child('/', child: (context) => const AppointmentListPage());
     r.child(
-      '/patient',
+      '/patient/:patientId',
       child: (context) => PatientAppointmentListPage(
-        patient: r.args.data?['patientEntity'],
+        patientId: r.args.params['patientId'],
       ),
     );
     r.child(

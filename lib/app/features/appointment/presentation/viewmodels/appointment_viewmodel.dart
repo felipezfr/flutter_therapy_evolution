@@ -24,6 +24,7 @@ class AppointmentViewmodel {
     //Adicional data
     patientAppointmentsStreamCommand =
         CommandStream1(_repository.getPatientAppointmentsStream);
+    patientStreamCommand = CommandStream1(_patientRepository.getPatientStream);
     //Get adicional data
     patientsStreamCommand.execute();
   }
@@ -41,6 +42,7 @@ class AppointmentViewmodel {
   late final Command1<Unit, String> deleteAppointmentCommand;
   //Adicional data
   late final CommandStream0<List<PatientEntity>> patientsStreamCommand;
+  late final CommandStream1<PatientEntity, String> patientStreamCommand;
 
   String getPatientNameById(String patientId) {
     final patients = patientsStreamCommand.result?.getOrNull();

@@ -9,11 +9,11 @@ import '../../../../core/widgets/delete_dialog.dart';
 import '../viewmodels/appointment_viewmodel.dart';
 
 class PatientAppointmentListPage extends StatefulWidget {
-  final PatientEntity patient;
+  final String patientId;
 
   const PatientAppointmentListPage({
     super.key,
-    required this.patient,
+    required this.patientId,
   });
 
   @override
@@ -25,13 +25,12 @@ class _PatientAppointmentListPageState
     extends State<PatientAppointmentListPage> {
   final viewModel = Modular.get<AppointmentViewmodel>();
 
-  PatientEntity get patient => widget.patient;
-
   @override
   void initState() {
     super.initState();
 
-    viewModel.patientAppointmentsStreamCommand.execute(patient.id);
+    viewModel.patientAppointmentsStreamCommand.execute(widget.patientId);
+    viewModel.patientStreamCommand.execute(widget.patientId);
     viewModel.deleteAppointmentCommand.addListener(_onDeleteAppointment);
   }
 
@@ -39,47 +38,42 @@ class _PatientAppointmentListPageState
   void dispose() {
     //List patient appointments
     viewModel.patientAppointmentsStreamCommand.dispose();
+    viewModel.patientStreamCommand.execute(widget.patientId);
     //Delete appointment
     viewModel.deleteAppointmentCommand.removeListener(_onDeleteAppointment);
     super.dispose();
   }
 
-  void _navigateToRegisterAppointment() {
-    Modular.to.pushNamed(
-      './register',
-      arguments: {
-        'patientEntity': patient,
+  @override
+  Widget build(BuildContext context) {
+    //TODO Ajustar para scafold ficar antes, se der erro fica tudo preto
+    return CommandStreamListenableBuilder<PatientEntity>(
+      stream: viewModel.patientStreamCommand,
+      builder: (context, patient) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('Agendamentos de ${patient.name}'),
+          ),
+          body: CommandStreamListenableBuilder<List<AppointmentEntity>>(
+            stream: viewModel.patientAppointmentsStreamCommand,
+            emptyMessage:
+                '${patient.name} não possui nenhum agendamento cadastrado',
+            emptyIconData: Icons.calendar_month_rounded,
+            builder: (context, value) {
+              return _buildAppointmentList(value, patient);
+            },
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () => _navigateToRegisterAppointment(patient),
+            child: const Icon(Icons.add),
+          ),
+        );
       },
     );
   }
 
-  void _navigateToDetailPage(AppointmentEntity appointment) {
-    Modular.to.pushNamed('./detail/${appointment.id}');
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Agendamentos de ${patient.name}'),
-      ),
-      body: CommandStreamListenableBuilder<List<AppointmentEntity>>(
-        stream: viewModel.patientAppointmentsStreamCommand,
-        emptyMessage:
-            '${patient.name} não possui nenhum agendamento cadastrado',
-        emptyIconData: Icons.calendar_month_rounded,
-        builder: (context, value) {
-          return _buildAppointmentList(value);
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _navigateToRegisterAppointment,
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-
-  Widget _buildAppointmentList(List<AppointmentEntity> appointments) {
+  Widget _buildAppointmentList(
+      List<AppointmentEntity> appointments, PatientEntity patient) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: appointments.length,
@@ -128,14 +122,8 @@ class _PatientAppointmentListPageState
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.blue),
-                  onPressed: () => Modular.to.pushNamed(
-                    './edit',
-                    arguments: {
-                      'appointmentEntity': appointment,
-                    },
-                  ),
-                ),
+                    icon: const Icon(Icons.edit, color: Colors.blue),
+                    onPressed: () => _navigateToEditAppointment(appointment)),
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () => _confirmDeleteAppointment(appointment),
@@ -146,6 +134,28 @@ class _PatientAppointmentListPageState
         );
       },
     );
+  }
+
+  void _navigateToRegisterAppointment(PatientEntity patient) {
+    Modular.to.pushNamed(
+      '../register',
+      arguments: {
+        'patientEntity': patient,
+      },
+    );
+  }
+
+  void _navigateToEditAppointment(AppointmentEntity appointment) {
+    Modular.to.pushNamed(
+      '../edit',
+      arguments: {
+        'appointmentEntity': appointment,
+      },
+    );
+  }
+
+  void _navigateToDetailPage(AppointmentEntity appointment) {
+    Modular.to.pushNamed('../detail/${appointment.id}');
   }
 
   void _onDeleteAppointment() {
