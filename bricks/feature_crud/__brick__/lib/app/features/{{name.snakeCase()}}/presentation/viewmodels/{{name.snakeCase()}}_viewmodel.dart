@@ -9,6 +9,7 @@ class {{name.pascalCase()}}Viewmodel {
 
   {{name.pascalCase()}}Viewmodel(this._repository) {
     {{name.camelCase()}}sStreamCommand = CommandStream0(_repository.get{{name.pascalCase()}}sStream);
+    {{name.camelCase()}}StreamCommand = CommandStream1(_repository.get{{name.pascalCase()}}Stream);
     save{{name.pascalCase()}}Command = Command1(_repository.save{{name.pascalCase()}});
     delete{{name.pascalCase()}}Command = Command1(_repository.delete{{name.pascalCase()}});
 
@@ -16,6 +17,7 @@ class {{name.pascalCase()}}Viewmodel {
   }
 
   late final CommandStream0<List<{{name.pascalCase()}}Entity>> {{name.camelCase()}}sStreamCommand;
+  late final CommandStream1<{{name.pascalCase()}}Entity, String> {{name.camelCase()}}StreamCommand;
   late final Command1<Unit, {{name.pascalCase()}}Entity> save{{name.pascalCase()}}Command;
   late final Command1<Unit, String> delete{{name.pascalCase()}}Command;
 }

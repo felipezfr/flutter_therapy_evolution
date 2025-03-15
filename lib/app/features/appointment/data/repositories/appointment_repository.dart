@@ -7,6 +7,8 @@ abstract class IAppointmentRepository {
   OutputStream<List<AppointmentEntity>> getAllAppointmentsStream();
   OutputStream<List<AppointmentEntity>> getPatientAppointmentsStream(
       String patientId);
+  OutputStream<AppointmentEntity> getAppointmentStream(String appointmentId);
+
   Output<Unit> saveAppointment(AppointmentEntity appointment);
   Output<Unit> deleteAppointment(String appointmentId);
 }

@@ -1,31 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:flutter_therapy_evolution/app/features/{{name.camelCase()}}/domain/entities/{{name.camelCase()}}_entity.dart';
+import 'package:flutter_therapy_evolution/app/features/appointment/domain/entities/appointment_entity.dart';
 
 import '../../../../core/command/command_stream_listenable_builder.dart';
-import '../viewmodels/{{name.camelCase()}}_viewmodel.dart';
+import '../viewmodels/appointment_viewmodel.dart';
 
-class {{name.pascalCase()}}DetailPage extends StatefulWidget {
-  final String {{name.camelCase()}}Id;
+class AppointmentDetailPage extends StatefulWidget {
+  final String appointmentId;
 
-  const {{name.pascalCase()}}DetailPage({super.key, required this.{{name.camelCase()}}Id});
+  const AppointmentDetailPage({super.key, required this.appointmentId});
 
   @override
-  State<{{name.pascalCase()}}DetailPage> createState() => _{{name.pascalCase()}}DetailPageState();
+  State<AppointmentDetailPage> createState() => _AppointmentDetailPageState();
 }
 
-class _{{name.pascalCase()}}DetailPageState extends State<{{name.pascalCase()}}DetailPage> {
-  final viewModel = Modular.get<{{name.pascalCase()}}Viewmodel>();
+class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
+  final viewModel = Modular.get<AppointmentViewmodel>();
 
   @override
   void initState() {
     super.initState();
-    viewModel.{{name.camelCase()}}StreamCommand.execute(widget.{{name.camelCase()}}Id);
+    viewModel.appointmentStreamCommand.execute(widget.appointmentId);
   }
 
   @override
   void dispose() {
-    viewModel.{{name.camelCase()}}StreamCommand.dispose();
+    viewModel.appointmentStreamCommand.dispose();
     super.dispose();
   }
 
@@ -39,24 +39,24 @@ class _{{name.pascalCase()}}DetailPageState extends State<{{name.pascalCase()}}D
         title: Text('Detalhes'),
         centerTitle: true,
       ),
-      body: CommandStreamListenableBuilder<{{name.pascalCase()}}Entity>(
-        stream: viewModel.{{name.camelCase()}}StreamCommand,
+      body: CommandStreamListenableBuilder<AppointmentEntity>(
+        stream: viewModel.appointmentStreamCommand,
         builder: (context, value) {
-          final {{name.pascalCase()}}Entity {{name.camelCase()}} = value;
+          final AppointmentEntity appointment = value;
           return Column(
             children: [
               Card(
                 margin: const EdgeInsets.all(8.0),
                 child: ListTile(
                   title: Text(
-                    {{name.camelCase()}}.name,
+                    appointment.startTime,
                     style: theme.textTheme.titleLarge,
                   ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Id: ${{{name.camelCase()}}.id}',
+                        'Id: ${appointment.id}',
                         style: theme.textTheme.bodyMedium,
                       ),
                     ],

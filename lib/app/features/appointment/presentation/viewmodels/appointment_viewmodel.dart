@@ -16,6 +16,8 @@ class AppointmentViewmodel {
         CommandStream0(_repository.getAllAppointmentsStream);
     patientsStreamCommand =
         CommandStream0(_patientRepository.getPatientsStream);
+    //Detail Appointment
+    appointmentStreamCommand = CommandStream1(_repository.getAppointmentStream);
     //Create update delete
     saveAppointmentCommand = Command1(_repository.saveAppointment);
     deleteAppointmentCommand = Command1(_repository.deleteAppointment);
@@ -31,6 +33,9 @@ class AppointmentViewmodel {
       allAppointmentsStreamCommand;
   late final CommandStream1<List<AppointmentEntity>, String>
       patientAppointmentsStreamCommand;
+  //Detail Appointment
+  late final CommandStream1<AppointmentEntity, String> appointmentStreamCommand;
+
   //Create update delete
   late final Command1<Unit, AppointmentEntity> saveAppointmentCommand;
   late final Command1<Unit, String> deleteAppointmentCommand;

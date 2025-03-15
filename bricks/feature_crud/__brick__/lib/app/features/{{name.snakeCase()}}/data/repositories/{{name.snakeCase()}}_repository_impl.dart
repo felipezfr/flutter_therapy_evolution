@@ -59,6 +59,40 @@ class {{name.pascalCase()}}RepositoryImpl implements I{{name.pascalCase()}}Repos
   }
 
   @override
+  OutputStream<{{name.pascalCase()}}Entity> get{{name.pascalCase()}}Stream(String {{name.camelCase()}}Id) {
+    try {
+      return _firestore
+          .collection('{{name.camelCase()}}s')
+          .doc({{name.camelCase()}}Id)
+          .snapshots()
+          .map((snapshot) {
+        try {
+          final data = snapshot.data();
+          data!['id'] = snapshot.id;
+          return Success({{name.pascalCase()}}Entity.fromMap(data));
+        } catch (e, s) {
+          Log.error('Error processing {{name.camelCase()}} snapshot',
+              error: e, stackTrace: s);
+          return Failure(
+            RepositoryException(
+              message: 'Erro ao processar dados do {{name.camelCase()}}',
+            ),
+          );
+        }
+      });
+    } catch (e, s) {
+      Log.error('Error creating {{name.camelCase()}} stream', error: e, stackTrace: s);
+      return Stream.value(
+        Failure(
+          RepositoryException(
+            message: 'Erro ao criar stream de {{name.camelCase()}}',
+          ),
+        ),
+      );
+    }
+  }
+
+  @override
   Output<Unit> save{{name.pascalCase()}}({{name.pascalCase()}}Entity {{name.camelCase()}}) async {
     try {
       final saveMap = {{name.pascalCase()}}Entity.toMap({{name.camelCase()}});

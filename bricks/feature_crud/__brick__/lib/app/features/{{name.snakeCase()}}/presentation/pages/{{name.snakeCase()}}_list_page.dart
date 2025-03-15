@@ -56,9 +56,7 @@ class _{{name.pascalCase()}}ListPageState extends State<{{name.pascalCase()}}Lis
   }
 
   void _navigateToDetailPage({{name.pascalCase()}}Entity {{name.camelCase()}}) {
-    Modular.to.pushNamed('./detail', arguments: {
-      '{{name.camelCase()}}Entity': {{name.camelCase()}},
-    });
+    Modular.to.pushNamed('./detail/${{{name.camelCase()}}.id}');
   }
 
   void _navigateToRegisterPage() {

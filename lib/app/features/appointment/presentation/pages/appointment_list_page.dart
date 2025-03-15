@@ -50,7 +50,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Modular.to.pushNamed('./register'),
+        onPressed: _navigateToRegisterPage,
         child: const Icon(Icons.add),
       ),
     );
@@ -69,6 +69,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
           margin: const EdgeInsets.only(bottom: 16),
           child: ListTile(
             contentPadding: const EdgeInsets.all(16),
+            onTap: () => _navigateToDetailPage(appointment),
             leading: CircleAvatar(
               backgroundColor: Theme.of(context).primaryColor,
               child: const Icon(Icons.calendar_today, color: Colors.white),
@@ -105,12 +106,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
               children: [
                 IconButton(
                   icon: const Icon(Icons.edit, color: Colors.blue),
-                  onPressed: () => Modular.to.pushNamed(
-                    './edit',
-                    arguments: {
-                      'appointmentEntity': appointment,
-                    },
-                  ),
+                  onPressed: () => _navigateToEditPage(appointment),
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
@@ -122,6 +118,20 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
         );
       },
     );
+  }
+
+  void _navigateToEditPage(AppointmentEntity appointment) {
+    Modular.to.pushNamed('./edit', arguments: {
+      'appointmentEntity': appointment,
+    });
+  }
+
+  void _navigateToDetailPage(AppointmentEntity appointment) {
+    Modular.to.pushNamed('./detail/${appointment.id}');
+  }
+
+  void _navigateToRegisterPage() {
+    Modular.to.pushNamed('./register');
   }
 
   void _listener() {

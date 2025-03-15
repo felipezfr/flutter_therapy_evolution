@@ -22,9 +22,9 @@ class {{name.pascalCase()}}Module extends Module {
   void routes(RouteManager r) {
     r.child('/', child: (context) => {{name.pascalCase()}}ListPage());
     r.child(
-      '/detail',
+      '/detail/:{{name.camelCase()}}Id',
       child: (context) => {{name.pascalCase()}}DetailPage(
-        {{name.camelCase()}}: r.args.data['{{name.camelCase()}}Entity'],
+        {{name.camelCase()}}Id: r.args.params['{{name.camelCase()}}Id'],
       ),
     );
     r.child('/register', child: (context) => {{name.pascalCase()}}RegisterPage());

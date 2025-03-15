@@ -4,6 +4,7 @@ import 'package:flutter_therapy_evolution/app/features/appointment/presentation/
 import '../../core/core_module.dart';
 import '../patient/data/repositories/patient_repository_impl.dart';
 import '../patient/data/repositories/patient_repository.dart';
+import 'presentation/pages/appointment_detail_page.dart';
 import 'presentation/pages/appointment_list_page.dart';
 import 'presentation/pages/appointment_register_page.dart';
 import 'data/repositories/appointment_repository_impl.dart';
@@ -28,6 +29,12 @@ class AppointmentModule extends Module {
       '/patient',
       child: (context) => PatientAppointmentListPage(
         patient: r.args.data?['patientEntity'],
+      ),
+    );
+    r.child(
+      '/detail/:appointmentId',
+      child: (context) => AppointmentDetailPage(
+        appointmentId: r.args.params['appointmentId'],
       ),
     );
     r.child(

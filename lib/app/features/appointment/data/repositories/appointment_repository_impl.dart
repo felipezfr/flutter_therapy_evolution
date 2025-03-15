@@ -60,6 +60,40 @@ class AppointmentRepositoryImpl implements IAppointmentRepository {
   }
 
   @override
+  OutputStream<AppointmentEntity> getAppointmentStream(String appointmentId) {
+    try {
+      return _firestore
+          .collection('appointments')
+          .doc(appointmentId)
+          .snapshots()
+          .map((snapshot) {
+        try {
+          final data = snapshot.data();
+          data!['id'] = snapshot.id;
+          return Success(AppointmentEntity.fromMap(data));
+        } catch (e, s) {
+          Log.error('Error processing appointment snapshot',
+              error: e, stackTrace: s);
+          return Failure(
+            RepositoryException(
+              message: 'Erro ao processar dados do agendamento',
+            ),
+          );
+        }
+      });
+    } catch (e, s) {
+      Log.error('Error creating appointment stream', error: e, stackTrace: s);
+      return Stream.value(
+        Failure(
+          RepositoryException(
+            message: 'Erro ao criar stream do agendamento',
+          ),
+        ),
+      );
+    }
+  }
+
+  @override
   OutputStream<List<AppointmentEntity>> getPatientAppointmentsStream(
       String patientId) {
     try {

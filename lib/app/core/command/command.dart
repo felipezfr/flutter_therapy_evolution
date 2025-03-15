@@ -129,9 +129,10 @@ abstract class CommandStream<Out extends Object> extends ChangeNotifier {
   }
 
   @override
+  // ignore: must_call_super
   void dispose() {
     _subscription?.cancel();
-    super.dispose();
+    //When calling super.Discose() it is not possible to perform the stream again
   }
 }
 
