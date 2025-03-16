@@ -108,6 +108,42 @@ class ClinicalRecordRepositoryImpl implements IClinicalRecordRepository {
   }
 
   @override
+  OutputStream<ClinicalRecordEntity> getClinicalRecordStream(
+      String clinicalRecordId) {
+    try {
+      return _firestore
+          .collection('clinicalRecords')
+          .doc(clinicalRecordId)
+          .snapshots()
+          .map((snapshot) {
+        try {
+          final data = snapshot.data();
+          data!['id'] = snapshot.id;
+          return Success(ClinicalRecordEntity.fromMap(data));
+        } catch (e, s) {
+          Log.error('Error processing clinical records snapshot',
+              error: e, stackTrace: s);
+          return Failure(
+            RepositoryException(
+              message: 'Erro ao processar dados do registro clínico',
+            ),
+          );
+        }
+      });
+    } catch (e, s) {
+      Log.error('Error creating clinical record stream',
+          error: e, stackTrace: s);
+      return Stream.value(
+        Failure(
+          RepositoryException(
+            message: 'Erro ao criar stream do registro clínicos do paciente',
+          ),
+        ),
+      );
+    }
+  }
+
+  @override
   Output<Unit> saveClinicalRecord(ClinicalRecordEntity record) async {
     try {
       final saveMap = ClinicalRecordEntity.toMap(record);

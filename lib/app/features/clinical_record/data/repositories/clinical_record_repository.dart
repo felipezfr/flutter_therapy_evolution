@@ -7,6 +7,8 @@ abstract class IClinicalRecordRepository {
   OutputStream<List<ClinicalRecordEntity>> getAllClinicalRecordsStream();
   OutputStream<List<ClinicalRecordEntity>> getPatientClinicalRecordsStream(
       String patientId);
+  OutputStream<ClinicalRecordEntity> getClinicalRecordStream(
+      String clinicalRecordId);
   Output<Unit> saveClinicalRecord(ClinicalRecordEntity record);
   Output<Unit> deleteClinicalRecord(String recordId);
 }

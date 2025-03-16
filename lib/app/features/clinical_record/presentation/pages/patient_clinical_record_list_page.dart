@@ -29,14 +29,14 @@ class _PatientClinicalRecordListPageState
   void initState() {
     super.initState();
     viewModel.patientStreamCommand.execute(widget.patientId);
-    viewModel.clinicalRecordStream.execute(widget.patientId);
+    viewModel.patinetClinicalRecordStream.execute(widget.patientId);
     viewModel.deleteClinicalRecordCommand.addListener(_onDeleteClinicalRecord);
   }
 
   @override
   void dispose() {
     viewModel.patientStreamCommand.dispose();
-    viewModel.clinicalRecordStream.dispose();
+    viewModel.patinetClinicalRecordStream.dispose();
     viewModel.deleteClinicalRecordCommand
         .removeListener(_onDeleteClinicalRecord);
     super.dispose();
@@ -76,7 +76,7 @@ class _PatientClinicalRecordListPageState
         builder: (context, patientValue) {
           patient = patientValue;
           return CommandStreamListenableBuilder<List<ClinicalRecordEntity>>(
-            stream: viewModel.clinicalRecordStream,
+            stream: viewModel.patinetClinicalRecordStream,
             emptyMessage: 'Nenhum evolução cadastrada',
             emptyIconData: Icons.app_registration_rounded,
             builder: (context, clinicalRecord) {
@@ -108,6 +108,7 @@ class _PatientClinicalRecordListPageState
           ),
           child: ListTile(
             contentPadding: const EdgeInsets.all(16),
+            onTap: () => _navigateToDetailPage(patientClinicalRecord.id),
             title: Text(
               patientClinicalRecord.date,
               style: const TextStyle(
@@ -153,6 +154,10 @@ class _PatientClinicalRecordListPageState
         );
       },
     );
+  }
+
+  void _navigateToDetailPage(String clinicalRecordId) {
+    Modular.to.pushNamed('../detail/$clinicalRecordId');
   }
 
   void _navigateToRegisterPage(PatientEntity? patient) {

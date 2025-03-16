@@ -11,15 +11,17 @@ class ClinicalRecordViewmodel {
   final IPatientRepository _patientRepository;
 
   ClinicalRecordViewmodel(this._repository, this._patientRepository) {
-    clinicalRecordStream =
+    patinetClinicalRecordStream =
         CommandStream1(_repository.getPatientClinicalRecordsStream);
+    clinicalRecordStream = CommandStream1(_repository.getClinicalRecordStream);
     patientStreamCommand = CommandStream1(_patientRepository.getPatientStream);
     savePatientClinicalRecordCommand = Command1(_repository.saveClinicalRecord);
     deleteClinicalRecordCommand = Command1(_repository.deleteClinicalRecord);
   }
 
   late final CommandStream1<List<ClinicalRecordEntity>, String>
-      clinicalRecordStream;
+      patinetClinicalRecordStream;
+  late final CommandStream1<ClinicalRecordEntity, String> clinicalRecordStream;
   late final CommandStream1<PatientEntity, String> patientStreamCommand;
   late final Command1<Unit, ClinicalRecordEntity>
       savePatientClinicalRecordCommand;
