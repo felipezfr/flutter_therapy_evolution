@@ -31,7 +31,7 @@ class {{name.pascalCase()}}Module extends Module {
     r.child(
       '/edit',
       child: (context) =>
-          {{name.pascalCase()}}RegisterPage({{name.camelCase()}}: r.args.data['{{name.camelCase()}}Entity']),
+          {{name.pascalCase()}}RegisterPage({{name.camelCase()}}: r.args.data?['{{name.camelCase()}}Entity']),
     );
   }
 }

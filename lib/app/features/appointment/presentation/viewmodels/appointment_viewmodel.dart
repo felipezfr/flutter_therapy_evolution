@@ -14,16 +14,16 @@ class AppointmentViewmodel {
     //List
     allAppointmentsStreamCommand =
         CommandStream0(_repository.getAllAppointmentsStream);
-    patientsStreamCommand =
-        CommandStream0(_patientRepository.getPatientsStream);
+    patientAppointmentsStreamCommand =
+        CommandStream1(_repository.getPatientAppointmentsStream);
     //Detail Appointment
     appointmentStreamCommand = CommandStream1(_repository.getAppointmentStream);
     //Create update delete
     saveAppointmentCommand = Command1(_repository.saveAppointment);
     deleteAppointmentCommand = Command1(_repository.deleteAppointment);
     //Adicional data
-    patientAppointmentsStreamCommand =
-        CommandStream1(_repository.getPatientAppointmentsStream);
+    patientsStreamCommand =
+        CommandStream0(_patientRepository.getPatientsStream);
     patientStreamCommand = CommandStream1(_patientRepository.getPatientStream);
     //Get adicional data
     patientsStreamCommand.execute();

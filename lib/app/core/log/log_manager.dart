@@ -1,18 +1,23 @@
-import 'dart:developer' as developer;
+import 'package:logger/logger.dart';
 
 class Log {
+  static final logger = Logger();
+
   static void error(
     String message, {
     Object? error,
     StackTrace? stackTrace,
     String? label,
   }) {
-    // Log padrão
-    developer.log(
-      message,
-      error: error,
-      stackTrace: stackTrace,
-      name: label ?? 'ERROR',
-    );
+    logger.e(message, error: error, stackTrace: stackTrace);
+  }
+
+  static void info(
+    String message, {
+    Object? error,
+    StackTrace? stackTrace,
+    String? label,
+  }) {
+    logger.i(message, error: error, stackTrace: stackTrace);
   }
 }

@@ -84,6 +84,11 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
                 ),
                 const SizedBox(height: 20),
                 PrimaryButtonDs(
+                  title: 'Consultas',
+                  onPressed: () => _navigateToConsultation(patient),
+                ),
+                const SizedBox(height: 20),
+                PrimaryButtonDs(
                   title: 'Evoluções',
                   onPressed: () => _navigateToClinicalRecord(patient),
                 ),
@@ -98,6 +103,10 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
         ),
       ),
     );
+  }
+
+  void _navigateToConsultation(PatientEntity patient) {
+    Modular.to.pushNamed('/consultation/patient/${patient.id}');
   }
 
   void _navigateAppointment(PatientEntity patient) {
