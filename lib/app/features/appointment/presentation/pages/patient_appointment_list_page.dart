@@ -106,7 +106,7 @@ class _PatientAppointmentListPageState
                   'Data: ${appointment.date}',
                 ),
                 Text(
-                  'Horário: ${appointment.startTime} - ${appointment.endTime}',
+                  'Horário: ${appointment.date}',
                 ),
                 Text(
                   'Status: ${appointment.status}',
@@ -169,13 +169,14 @@ class _PatientAppointmentListPageState
   void _confirmDeleteAppointment(AppointmentEntity appointment) {
     final patientName = viewModel.getPatientNameById(appointment.patientId);
     final appointmentDate = appointment.date;
-    final appointmentTime = appointment.startTime;
+    // final appointmentTime = appointment.startTime;
 
     DeleteDialog.showDeleteConfirmation(
       context: context,
       title: 'Excluir Agendamento',
       entityName:
-          'o agendamento de $patientName em $appointmentDate às $appointmentTime?',
+          //TODO AJUSTAR HORA
+          'o agendamento de $patientName em $appointmentDate às ...?',
       onConfirm: () {
         viewModel.deleteAppointmentCommand.execute(appointment.id);
       },

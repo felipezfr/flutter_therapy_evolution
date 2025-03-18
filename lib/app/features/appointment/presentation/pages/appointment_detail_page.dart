@@ -49,7 +49,7 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                 margin: const EdgeInsets.all(8.0),
                 child: ListTile(
                   title: Text(
-                    appointment.startTime,
+                    appointment.date.day.toString(),
                     style: theme.textTheme.titleLarge,
                   ),
                   subtitle: Column(

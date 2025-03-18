@@ -104,6 +104,15 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
     // final size = MediaQuery.sizeOf(context);
     // final theme = Theme.of(context);
 
+    final appointmentsFiltered = appointments
+        .where(
+          (element) =>
+              element.date.year == selectedDate.year &&
+              element.date.month == selectedDate.month &&
+              element.date.day == selectedDate.day,
+        )
+        .toList();
+
     return Column(
       children: [
         Padding(
@@ -139,9 +148,9 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
         Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-            itemCount: appointments.length,
+            itemCount: appointmentsFiltered.length,
             itemBuilder: (context, index) {
-              final appointment = appointments[index];
+              final appointment = appointmentsFiltered[index];
               final patient = viewModel.getPatientById(appointment.patientId);
 
               final isNow = index == 0 ? true : false;
@@ -206,13 +215,12 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
   void _confirmDeleteAppointment(AppointmentEntity appointment) {
     final patientName = viewModel.getPatientNameById(appointment.patientId);
     final appointmentDate = appointment.date;
-    final appointmentTime = appointment.startTime;
 
     DeleteDialog.showDeleteConfirmation(
       context: context,
       title: 'Excluir Agendamento',
       entityName:
-          'o agendamento de $patientName em $appointmentDate às $appointmentTime?',
+          'o agendamento de $patientName em $appointmentDate às ${appointmentDate.hour}?',
       onConfirm: () {
         viewModel.deleteAppointmentCommand.execute(appointment.id);
       },

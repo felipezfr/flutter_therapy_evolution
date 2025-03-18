@@ -1,5 +1,6 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../../domain/entities/appointment_entity.dart';
 
@@ -12,6 +13,8 @@ class TimeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final endData =
+        appointment.date.add(Duration(minutes: appointment.durationMinutes));
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -21,7 +24,7 @@ class TimeWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           children: [
             Text(
-              appointment.startTime,
+              DateFormat('HH:mm').format(appointment.date),
               style: TextStyle(
                 color: AppColors.primaryColor,
                 fontWeight: FontWeight.bold,
@@ -29,7 +32,7 @@ class TimeWidget extends StatelessWidget {
               ),
             ),
             Text(
-              appointment.endTime,
+              DateFormat('HH:mm').format(endData),
               style: TextStyle(
                 color: AppColors.greyDark,
                 fontWeight: FontWeight.bold,

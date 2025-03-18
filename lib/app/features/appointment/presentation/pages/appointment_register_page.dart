@@ -71,7 +71,7 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
 
       // Converter a data de string para DateTime
       try {
-        _selectedDate = DateFormat('yyyy-MM-dd').parse(appointment!.date);
+        _selectedDate = appointment!.date;
       } catch (e) {
         // Fallback para data atual se houver erro de parsing
         _selectedDate = DateTime.now();
@@ -79,21 +79,16 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
 
       // Converter horários de string para TimeOfDay
       try {
-        final startTimeParts = appointment!.startTime.split(':');
-        if (startTimeParts.length >= 2) {
-          _selectedStartTime = TimeOfDay(
-            hour: int.parse(startTimeParts[0]),
-            minute: int.parse(startTimeParts[1]),
-          );
-        }
+        _selectedStartTime = TimeOfDay(
+          hour: appointment!.date.hour,
+          minute: appointment!.date.minute,
+        );
 
-        final endTimeParts = appointment!.endTime.split(':');
-        if (endTimeParts.length >= 2) {
-          _selectedEndTime = TimeOfDay(
-            hour: int.parse(endTimeParts[0]),
-            minute: int.parse(endTimeParts[1]),
-          );
-        }
+        //TODO Ajustar
+        _selectedEndTime = TimeOfDay(
+          hour: appointment!.date.hour,
+          minute: appointment!.date.minute,
+        );
       } catch (e) {
         // Fallback para horários padrão se houver erro de parsing
         _selectedStartTime = TimeOfDay.now();
@@ -120,16 +115,21 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
         return;
       }
 
-      final dateFormatted = DateFormat('yyyy-MM-dd').format(_selectedDate);
-      final startTimeFormatted = _selectedStartTime.format(context);
-      final endTimeFormatted = _selectedEndTime.format(context);
+      DateTime date = DateTime(
+        _selectedDate.year,
+        _selectedDate.month,
+        _selectedDate.day,
+        _selectedStartTime.hour,
+        _selectedStartTime.minute,
+      );
+      // dateFormatted = dateFormatted. + _selectedStartTime.hour;
+      // final endTimeFormatted = _selectedEndTime.format(context);
 
       final appointment = AppointmentEntity(
         id: _isEditing ? _appointmentToEdit!.id : '',
         patientId: _selectedPatientId!,
-        date: dateFormatted,
-        startTime: startTimeFormatted,
-        endTime: endTimeFormatted,
+        date: date,
+        durationMinutes: 60, //TODO AJUSTAR
         type: _typeController.text.trim(),
         status: _appointmentStatus,
         notes: _notesController.text.trim(),
