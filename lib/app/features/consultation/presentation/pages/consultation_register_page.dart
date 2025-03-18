@@ -1,6 +1,7 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_therapy_evolution/app/core/alert/alerts.dart';
 import 'package:flutter_therapy_evolution/app/core/widgets/result_handler.dart';
 
 import '../../../patient/domain/entities/patient_entity.dart';
@@ -60,17 +61,21 @@ class _ConsultationRegisterPageState extends State<ConsultationRegisterPage> {
 
   void _saveConsultation() {
     if (_formKey.currentState!.validate()) {
-      final patientId = widget.patient?.id != null
-          ? widget.patient!.id
-          : widget.consultation!.id;
+      try {
+        final patientId = widget.patient?.id != null
+            ? widget.patient!.id
+            : widget.consultation!.patientId;
 
-      final newConsultation = ConsultationEntity(
-        id: _isEditMode ? consultation!.id : '',
-        patientId: patientId,
-        name: _nameController.text,
-      );
+        final newConsultation = ConsultationEntity(
+          id: _isEditMode ? consultation!.id : '',
+          patientId: patientId,
+          name: _nameController.text,
+        );
 
-      viewModel.saveConsultationCommand.execute(newConsultation);
+        viewModel.saveConsultationCommand.execute(newConsultation);
+      } catch (e) {
+        Alerts.showFailure(context, 'Erro ao salvar');
+      }
     }
   }
 
