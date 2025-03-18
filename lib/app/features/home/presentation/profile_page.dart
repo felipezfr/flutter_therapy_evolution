@@ -5,6 +5,8 @@ import 'package:flutter_therapy_evolution/app/core/session/logged_user.dart';
 import 'package:flutter_therapy_evolution/app/core/entities/user_entity.dart';
 import 'package:flutter_therapy_evolution/app/features/auth/data/repositories/auth_repository.dart';
 
+import 'widgets/custom_bottom_navigator_bar.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -134,7 +136,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ElevatedButton.icon(
                     icon: const Icon(
                       Icons.logout,
-                      color: AppColors.blueLigth,
+                      color: AppColors.primaryLigth,
                     ),
                     label: Text('Sair da conta'),
                     onPressed: _logoutDialog,
@@ -145,6 +147,7 @@ class _ProfilePageState extends State<ProfilePage> {
           },
         ),
       ),
+      bottomNavigationBar: CustomBottomNavigationBar(),
     );
   }
 

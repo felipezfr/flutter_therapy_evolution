@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import 'home_viewmodel.dart';
+import 'widgets/custom_bottom_navigator_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -29,6 +30,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(),
       body: SizedBox(
+        width: MediaQuery.of(context).size.width,
         child: Column(
           children: [
             PrimaryButtonDs(
@@ -52,85 +54,10 @@ class _HomePageState extends State<HomePage> {
               title: 'Consultas',
             ),
             Spacer(),
-            BottomSheet()
           ],
         ),
       ),
-    );
-  }
-}
-
-class BottomSheet extends StatelessWidget {
-  const BottomSheet({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                BottomIcon(
-                  onTap: () {},
-                  iconData: Icons.home,
-                  isSelected: false,
-                ),
-                BottomIcon(
-                  onTap: () {},
-                  iconData: Icons.app_registration_rounded,
-                  isSelected: false,
-                ),
-                BottomIcon(
-                  onTap: () async {
-                    Modular.to.pushNamed('/home/profile');
-                  },
-                  iconData: Icons.person_2_sharp,
-                  isSelected: true,
-                ),
-              ],
-            ),
-            // const SizedBox(height: 20),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class BottomIcon extends StatelessWidget {
-  final IconData iconData;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const BottomIcon({
-    super.key,
-    required this.iconData,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primaryColor : null,
-          borderRadius: BorderRadius.circular(18),
-        ),
-        child: Icon(
-          iconData,
-          color: isSelected ? AppColors.blueLigth : AppColors.greyDark,
-          size: 32,
-        ),
-      ),
+      bottomNavigationBar: CustomBottomNavigationBar(),
     );
   }
 }

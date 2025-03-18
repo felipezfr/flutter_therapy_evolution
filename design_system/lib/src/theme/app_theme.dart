@@ -5,16 +5,16 @@ import '../../design_system.dart';
 
 class AppTheme {
   static final theme = ThemeData(
-    scaffoldBackgroundColor: AppColors.blueLigth,
+    scaffoldBackgroundColor: AppColors.whiteColor,
     colorSchemeSeed: AppColors.primaryColor,
     appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.blueLigth,
+      backgroundColor: AppColors.whiteColor,
       iconTheme: IconThemeData(
         color: AppColors.primaryColor,
         size: 30,
       ),
     ),
-    drawerTheme: const DrawerThemeData(
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: AppColors.whiteColor,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(

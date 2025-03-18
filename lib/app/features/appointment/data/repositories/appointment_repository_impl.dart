@@ -18,10 +18,19 @@ class AppointmentRepositoryImpl implements IAppointmentRepository {
   @override
   OutputStream<List<AppointmentEntity>> getAllAppointmentsStream() {
     try {
+      // Timestamp dataInicio = Timestamp.fromDate(
+      //   DateTime(2025, 2, 13),
+      // );
+      // Timestamp dataFim = Timestamp.fromDate(
+      //   DateTime(2025, 5, 18, 23, 59, 59),
+      // );
+
       return _firestore
           .collection('appointments')
           .where('userId', isEqualTo: LoggedUser.id)
           .where('isDeleted', isEqualTo: false)
+          // .where('data', isGreaterThanOrEqualTo: dataInicio)
+          // .where('data', isLessThanOrEqualTo: dataFim)
           .orderBy('createdAt', descending: true)
           .snapshots()
           .map((snapshot) {

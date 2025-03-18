@@ -5,9 +5,11 @@ import 'package:flutter_therapy_evolution/app/core/widgets/delete_dialog.dart';
 import 'package:flutter_therapy_evolution/app/features/appointment/domain/entities/appointment_entity.dart';
 import '../../../../core/command/command_stream_listenable_builder.dart';
 import '../../../../core/widgets/result_handler.dart';
+import '../../../home/presentation/widgets/custom_bottom_navigator_bar.dart';
 import '../viewmodels/appointment_viewmodel.dart';
 import 'widgets/appointment_card.dart';
 import 'widgets/calendar_strip.dart';
+import 'widgets/day_header_widget.dart';
 import 'widgets/time_widget.dart';
 
 class AppointmentListPage extends StatefulWidget {
@@ -21,6 +23,8 @@ class AppointmentListPage extends StatefulWidget {
 
 class _AppointmentListPageState extends State<AppointmentListPage> {
   final viewModel = Modular.get<AppointmentViewmodel>();
+
+  DateTime selectedDate = DateTime.now();
 
   @override
   void initState() {
@@ -42,28 +46,57 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Todos agendamentos'),
-      ),
-      body: Column(
-        children: [
-          CalendarStrip(),
-          Expanded(
-            child: CommandStreamListenableBuilder<List<AppointmentEntity>>(
-              stream: viewModel.allAppointmentsStreamCommand,
-              emptyMessage: 'Voce não possui nenhum agendamento cadastrado',
-              emptyIconData: Icons.calendar_month_rounded,
-              builder: (context, value) {
-                return _buildAppointmentList(value);
-              },
+      backgroundColor: AppColors.primaryLigth,
+      body: SafeArea(
+        child: Column(
+          children: [
+            DayHeaderWidget(
+              date: selectedDate,
             ),
-          ),
-        ],
+            const SizedBox(height: 14),
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.whiteColor,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(28),
+                    topRight: Radius.circular(28),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 18),
+                    CalendarStrip(
+                      onDateSelected: (date) {
+                        setState(() {
+                          selectedDate = date;
+                        });
+                      },
+                    ),
+                    Expanded(
+                      child: CommandStreamListenableBuilder<
+                          List<AppointmentEntity>>(
+                        stream: viewModel.allAppointmentsStreamCommand,
+                        emptyMessage:
+                            'Voce não possui nenhum agendamento cadastrado',
+                        emptyIconData: Icons.calendar_month_rounded,
+                        builder: (context, value) {
+                          return _buildAppointmentList(value);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToRegisterPage,
         child: const Icon(Icons.add),
       ),
+      bottomNavigationBar: CustomBottomNavigationBar(),
     );
   }
 
@@ -74,7 +107,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -84,17 +117,19 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
                   'Horário',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textGreyColor,
+                    color: AppColors.greyDark,
                   ),
                 ),
               ),
               Flexible(
                 flex: 5,
-                child: Text(
-                  '',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textGreyColor,
+                child: Center(
+                  child: Text(
+                    'Consultas',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.greyDark,
+                    ),
                   ),
                 ),
               ),

@@ -23,6 +23,7 @@ class TimeWidget extends StatelessWidget {
             Text(
               appointment.startTime,
               style: TextStyle(
+                color: AppColors.primaryColor,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
@@ -30,7 +31,7 @@ class TimeWidget extends StatelessWidget {
             Text(
               appointment.endTime,
               style: TextStyle(
-                color: AppColors.textGreyColor,
+                color: AppColors.greyDark,
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
               ),
@@ -38,7 +39,7 @@ class TimeWidget extends StatelessWidget {
           ],
         ),
         VerticalDivider(
-          color: AppColors.textGreyColor,
+          color: AppColors.secondaryColor,
           thickness: 2,
         ),
       ],

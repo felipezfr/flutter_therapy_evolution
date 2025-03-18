@@ -25,10 +25,9 @@ class AppointmentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cardColor =
-        isSelected ? AppColors.primaryColor : AppColors.textGreyColor;
-    // final cardColor = isSelected ? Color(0xFF4DC591) : AppColors.textGreyColor;
+        isSelected ? AppColors.primaryColor : AppColors.primaryLigth;
     final textCardColor =
-        isSelected ? AppColors.whiteColor : AppColors.textBlackColor;
+        isSelected ? AppColors.whiteColor : AppColors.greyDark;
 
     return Container(
       decoration: BoxDecoration(

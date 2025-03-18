@@ -5,7 +5,7 @@ class AppColors {
   static const Color secondaryColor = Color(0xFFD9EFF0);
   static const Color greyDark = Color(0xFF2D3434);
   static const Color greyLigth = Color(0xFFCFD3D3);
-  static const Color blueLigth = Color(0xFFE6F4F5);
+  static const Color primaryLigth = Color(0xFFE6F4F5);
 
   static const Color whiteColor = Color(0xFFFFFFFF);
   static const Color textBlackColor = Color(0xFF000000);
@@ -15,8 +15,4 @@ class AppColors {
   static const Color grayHint = Color(0xFFC1C0C9);
   static const Color beige = Color(0xFFF7F7F7);
   static const Color green = Color(0xFF7ED321);
-
-  // Butons
-
-  static const Color textGreyColor = Color(0xFFBCC1CD);
 }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class CalendarStrip extends StatefulWidget {
-  final Function(DateTime)? onDateSelected;
+  final Function(DateTime date)? onDateSelected;
   final DateTime? initialDate;
 
   const CalendarStrip({
@@ -93,7 +93,7 @@ class _CalendarStripState extends State<CalendarStrip> {
               margin: const EdgeInsets.symmetric(horizontal: 2),
               decoration: BoxDecoration(
                 color: isSelected ? AppColors.primaryColor : Colors.transparent,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(18),
                 border: isToday && !isSelected
                     ? Border.all(
                         color: AppColors.primaryColor,
