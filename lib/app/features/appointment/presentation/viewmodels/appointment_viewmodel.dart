@@ -59,4 +59,20 @@ class AppointmentViewmodel {
 
     return 'Paciente não encontrado';
   }
+
+  PatientEntity? getPatientById(String patientId) {
+    final patients = patientsStreamCommand.result?.getOrNull();
+
+    if (patients == null || patients.isEmpty) {
+      return null;
+    }
+
+    for (final patient in patients) {
+      if (patient.id == patientId) {
+        return patient;
+      }
+    }
+
+    return null;
+  }
 }

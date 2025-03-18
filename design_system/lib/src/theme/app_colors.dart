@@ -18,5 +18,5 @@ class AppColors {
 
   // Butons
 
-  static const Color textGreyColor = Color(0xFF767676);
+  static const Color textGreyColor = Color(0xFFBCC1CD);
 }

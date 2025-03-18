@@ -1,3 +1,4 @@
+import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_therapy_evolution/app/core/widgets/delete_dialog.dart';
@@ -5,6 +6,9 @@ import 'package:flutter_therapy_evolution/app/features/appointment/domain/entiti
 import '../../../../core/command/command_stream_listenable_builder.dart';
 import '../../../../core/widgets/result_handler.dart';
 import '../viewmodels/appointment_viewmodel.dart';
+import 'widgets/appointment_card.dart';
+import 'widgets/calendar_strip.dart';
+import 'widgets/time_widget.dart';
 
 class AppointmentListPage extends StatefulWidget {
   const AppointmentListPage({
@@ -41,13 +45,20 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
       appBar: AppBar(
         title: Text('Todos agendamentos'),
       ),
-      body: CommandStreamListenableBuilder<List<AppointmentEntity>>(
-        stream: viewModel.allAppointmentsStreamCommand,
-        emptyMessage: 'Voce não possui nenhum agendamento cadastrado',
-        emptyIconData: Icons.calendar_month_rounded,
-        builder: (context, value) {
-          return _buildAppointmentList(value);
-        },
+      body: Column(
+        children: [
+          CalendarStrip(),
+          Expanded(
+            child: CommandStreamListenableBuilder<List<AppointmentEntity>>(
+              stream: viewModel.allAppointmentsStreamCommand,
+              emptyMessage: 'Voce não possui nenhum agendamento cadastrado',
+              emptyIconData: Icons.calendar_month_rounded,
+              builder: (context, value) {
+                return _buildAppointmentList(value);
+              },
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToRegisterPage,
@@ -57,66 +68,81 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
   }
 
   Widget _buildAppointmentList(List<AppointmentEntity> appointments) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: appointments.length,
-      itemBuilder: (context, index) {
-        final appointment = appointments[index];
-        final patientName = viewModel.getPatientNameById(appointment.patientId);
+    // final size = MediaQuery.sizeOf(context);
+    // final theme = Theme.of(context);
 
-        return Card(
-          elevation: 2,
-          margin: const EdgeInsets.only(bottom: 16),
-          child: ListTile(
-            contentPadding: const EdgeInsets.all(16),
-            onTap: () => _navigateToDetailPage(appointment),
-            leading: CircleAvatar(
-              backgroundColor: Theme.of(context).primaryColor,
-              child: const Icon(Icons.calendar_today, color: Colors.white),
-            ),
-            title: Text(
-              patientName,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                flex: 1,
+                child: Text(
+                  'Horário',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textGreyColor,
+                  ),
+                ),
               ),
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 4),
-                Text(
-                  'Data: ${appointment.date}',
+              Flexible(
+                flex: 5,
+                child: Text(
+                  '',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textGreyColor,
+                  ),
                 ),
-                Text(
-                  'Horário: ${appointment.startTime} - ${appointment.endTime}',
-                ),
-                Text(
-                  'Status: ${appointment.status}',
-                ),
-                if (appointment.notes != null &&
-                    appointment.notes!.isNotEmpty) ...[
-                  const SizedBox(height: 4),
-                  Text('Obs: ${appointment.notes}'),
-                ],
-              ],
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.blue),
-                  onPressed: () => _navigateToEditPage(appointment),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => _confirmDeleteAppointment(appointment),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        );
-      },
+        ),
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+            itemCount: appointments.length,
+            itemBuilder: (context, index) {
+              final appointment = appointments[index];
+              final patient = viewModel.getPatientById(appointment.patientId);
+
+              final isNow = index == 0 ? true : false;
+
+              return SizedBox(
+                height: 160,
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: TimeWidget(appointment: appointment),
+                    ),
+                    Expanded(
+                      flex: 5,
+                      child: AppointmentCard(
+                        patient: patient!,
+                        appointment: appointment,
+                        isSelected: isNow,
+                        onTap: () {
+                          _navigateToDetailPage(appointment);
+                        },
+                        onTapEdit: () {
+                          _navigateToEditPage(appointment);
+                        },
+                        onTapDelete: () {
+                          _confirmDeleteAppointment(appointment);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -149,7 +175,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
 
     DeleteDialog.showDeleteConfirmation(
       context: context,
-      title: 'Excluir Paciente',
+      title: 'Excluir Agendamento',
       entityName:
           'o agendamento de $patientName em $appointmentDate às $appointmentTime?',
       onConfirm: () {
