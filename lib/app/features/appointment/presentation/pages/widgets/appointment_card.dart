@@ -1,5 +1,6 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../patient/domain/entities/patient_entity.dart';
 import '../../../domain/entities/appointment_entity.dart';
@@ -28,7 +29,7 @@ class AppointmentCard extends StatelessWidget {
     final cardColor =
         isSelected ? AppColors.primaryColor : AppColors.primaryLigth;
     final textCardColor =
-        isSelected ? AppColors.whiteColor : AppColors.greyDark;
+        isSelected ? AppColors.whiteColor : AppColors.primaryColor;
 
     final isRecurring = appointment.recurrenceType != RecurrenceType.none;
 
@@ -67,6 +68,22 @@ class AppointmentCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         patient.address.city,
+                        style: TextStyle(
+                          color: textCardColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_month_outlined,
+                        color: textCardColor,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        DateFormat('dd/MM/yyyy HH:mm').format(appointment.date),
                         style: TextStyle(
                           color: textCardColor,
                         ),

@@ -180,7 +180,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
               final isNow = isAppointmentNow(appointment);
 
               return SizedBox(
-                height: 120,
+                height: 150,
                 child: Row(
                   children: [
                     Expanded(

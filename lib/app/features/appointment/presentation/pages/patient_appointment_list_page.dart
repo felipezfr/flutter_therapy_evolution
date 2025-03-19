@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_therapy_evolution/app/core/widgets/result_handler.dart';
 import 'package:flutter_therapy_evolution/app/features/appointment/domain/entities/appointment_entity.dart';
+import 'package:flutter_therapy_evolution/app/features/appointment/presentation/pages/widgets/appointment_card.dart';
 import 'package:flutter_therapy_evolution/app/features/patient/domain/entities/patient_entity.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/command/command_stream_listenable_builder.dart';
 import '../../../../core/widgets/delete_dialog.dart';
 import '../viewmodels/appointment_viewmodel.dart';
+import '../../domain/enums/recurrence_type_enum.dart';
 
 class PatientAppointmentListPage extends StatefulWidget {
   final String patientId;
@@ -32,6 +35,8 @@ class _PatientAppointmentListPageState
     viewModel.patientAppointmentsStreamCommand.execute(widget.patientId);
     viewModel.patientStreamCommand.execute(widget.patientId);
     viewModel.deleteAppointmentCommand.addListener(_onDeleteAppointment);
+    viewModel.deleteRecurringAppointmentsCommand
+        .addListener(_onDeleteRecurringAppointment);
   }
 
   @override
@@ -41,6 +46,8 @@ class _PatientAppointmentListPageState
     viewModel.patientStreamCommand.execute(widget.patientId);
     //Delete appointment
     viewModel.deleteAppointmentCommand.removeListener(_onDeleteAppointment);
+    viewModel.deleteRecurringAppointmentsCommand
+        .removeListener(_onDeleteRecurringAppointment);
     super.dispose();
   }
 
@@ -79,58 +86,20 @@ class _PatientAppointmentListPageState
       itemCount: appointments.length,
       itemBuilder: (context, index) {
         final appointment = appointments[index];
-        final patientName = patient.name;
 
-        return Card(
-          elevation: 2,
-          margin: const EdgeInsets.only(bottom: 16),
-          child: ListTile(
-            onTap: () => _navigateToDetailPage(appointment),
-            contentPadding: const EdgeInsets.all(16),
-            leading: CircleAvatar(
-              backgroundColor: Theme.of(context).primaryColor,
-              child: const Icon(Icons.calendar_today, color: Colors.white),
-            ),
-            title: Text(
-              patientName,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 4),
-                Text(
-                  'Data: ${appointment.date}',
-                ),
-                Text(
-                  'Horário: ${appointment.date}',
-                ),
-                Text(
-                  'Status: ${appointment.status}',
-                ),
-                if (appointment.notes != null &&
-                    appointment.notes!.isNotEmpty) ...[
-                  const SizedBox(height: 4),
-                  Text('Obs: ${appointment.notes}'),
-                ],
-              ],
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                    icon: const Icon(Icons.edit, color: Colors.blue),
-                    onPressed: () => _navigateToEditAppointment(appointment)),
-                IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => _confirmDeleteAppointment(appointment),
-                ),
-              ],
-            ),
-          ),
+        return AppointmentCard(
+          patient: patient,
+          appointment: appointment,
+          onTap: () {
+            _navigateToDetailPage(appointment);
+          },
+          onTapEdit: () {
+            _navigateToEditAppointment(appointment);
+          },
+          onTapDelete: () {
+            _confirmDeleteAppointment(appointment);
+          },
+          isSelected: false,
         );
       },
     );
@@ -166,20 +135,65 @@ class _PatientAppointmentListPageState
     );
   }
 
+  void _onDeleteRecurringAppointment() {
+    ResultHandler.showAlert(
+      context: context,
+      result: viewModel.deleteRecurringAppointmentsCommand.result,
+      successMessage: 'Série de agendamentos excluída com sucesso!',
+    );
+  }
+
   void _confirmDeleteAppointment(AppointmentEntity appointment) {
     final patientName = viewModel.getPatientNameById(appointment.patientId);
     final appointmentDate = appointment.date;
-    // final appointmentTime = appointment.startTime;
 
-    DeleteDialog.showDeleteConfirmation(
-      context: context,
-      title: 'Excluir Agendamento',
-      entityName:
-          //TODO AJUSTAR HORA
-          'o agendamento de $patientName em $appointmentDate às ...?',
-      onConfirm: () {
-        viewModel.deleteAppointmentCommand.execute(appointment.id);
-      },
-    );
+    // Check if this is a recurring appointment
+    if (appointment.recurringGroupId != null &&
+        appointment.recurrenceType != RecurrenceType.none) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Excluir Agendamento'),
+          content: Text(
+            'Deseja realmente excluir o agendamento de $patientName em ${DateFormat('dd/MM/yyyy HH:mm').format(appointmentDate)}?'
+            '\n\nDeseja excluir apenas este agendamento ou toda a série?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // Delete just this appointment
+                viewModel.deleteAppointmentCommand.execute(appointment.id);
+              },
+              child: const Text('Apenas Este'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // Delete all recurring appointments
+                viewModel.deleteRecurringAppointmentsCommand
+                    .execute(appointment.recurringGroupId!);
+              },
+              child: const Text('Toda a Série'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancelar'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      // Regular non-recurring appointment deletion
+      DeleteDialog.showDeleteConfirmation(
+        context: context,
+        title: 'Excluir Agendamento',
+        entityName:
+            'o agendamento de $patientName em ${DateFormat('dd/MM/yyyy HH:mm').format(appointmentDate)}',
+        onConfirm: () {
+          viewModel.deleteAppointmentCommand.execute(appointment.id);
+        },
+      );
+    }
   }
 }
