@@ -5,6 +5,7 @@ import '../../../../core/typedefs/result_typedef.dart';
 import '../../../patient/domain/entities/patient_entity.dart';
 import '../../../patient/data/repositories/patient_repository.dart';
 import '../../domain/entities/appointment_entity.dart';
+import '../../domain/enums/recurrence_type_enum.dart';
 import '../../data/repositories/appointment_repository.dart';
 
 class AppointmentViewmodel {
@@ -20,7 +21,10 @@ class AppointmentViewmodel {
     appointmentStreamCommand = CommandStream1(_repository.getAppointmentStream);
     //Create update delete
     saveAppointmentCommand = Command1(_repository.saveAppointment);
+    saveRecurringAppointmentsCommand = Command1(_saveRecurringAppointments);
     deleteAppointmentCommand = Command1(_repository.deleteAppointment);
+    deleteRecurringAppointmentsCommand =
+        Command1(_repository.deleteRecurringAppointments);
     //Adicional data
     patientsStreamCommand =
         CommandStream0(_patientRepository.getPatientsStream);
@@ -39,7 +43,10 @@ class AppointmentViewmodel {
 
   //Create update delete
   late final Command1<Unit, AppointmentEntity> saveAppointmentCommand;
+  late final Command1<Unit, (AppointmentEntity, RecurrenceType, int)>
+      saveRecurringAppointmentsCommand;
   late final Command1<Unit, String> deleteAppointmentCommand;
+  late final Command1<Unit, String> deleteRecurringAppointmentsCommand;
   //Adicional data
   late final CommandStream0<List<PatientEntity>> patientsStreamCommand;
   late final CommandStream1<PatientEntity, String> patientStreamCommand;
@@ -48,6 +55,16 @@ class AppointmentViewmodel {
       (int year, int month) date) {
     final (year, month) = (date.$1, date.$2);
     return _repository.getAllAppointmentsStream(year, month);
+  }
+
+  Output<Unit> _saveRecurringAppointments(
+      (
+        AppointmentEntity appointment,
+        RecurrenceType recurrenceType,
+        int count
+      ) params) {
+    return _repository.saveRecurringAppointments(
+        params.$1, params.$2, params.$3);
   }
 
   String getPatientNameById(String patientId) {

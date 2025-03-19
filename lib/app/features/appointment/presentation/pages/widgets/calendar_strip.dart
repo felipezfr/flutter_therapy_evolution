@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 class CalendarStrip extends StatefulWidget {
   final Function(DateTime date)? onDateSelected;
   final DateTime? initialDate;
-  final List<DateTime>? checkedDays;
+  final List<int>? checkedDays;
 
   const CalendarStrip({
     super.key,
@@ -24,12 +24,9 @@ class _CalendarStripState extends State<CalendarStrip> {
   late DateTime _selectedDate;
   late int _monthDays;
 
-  late List<int>? checkedDays;
-
   @override
   void initState() {
     super.initState();
-    checkedDays = widget.checkedDays?.map((e) => e.day).toList();
     // Scroll to today's position after render
   }
 
@@ -86,8 +83,7 @@ class _CalendarStripState extends State<CalendarStrip> {
           final bool isToday = _isToday(date);
           final bool isSelected = _isSameDay(date, _selectedDate);
 
-          final bool hasDate = checkedDays?.contains(date.day) ?? false;
-          // print(hasDate);
+          final bool hasDate = widget.checkedDays?.contains(date.day) ?? false;
 
           return GestureDetector(
             onTap: () {

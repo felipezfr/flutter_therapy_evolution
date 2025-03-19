@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'appointment_status_enum.dart';
+import '../enums/appointment_status_enum.dart';
+import '../enums/recurrence_type_enum.dart';
 
 class AppointmentEntity {
   final String id;
@@ -13,6 +14,9 @@ class AppointmentEntity {
   final bool reminderSent;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final RecurrenceType recurrenceType;
+  final int? recurrenceCount;
+  final String? recurringGroupId;
 
   AppointmentEntity({
     required this.id,
@@ -25,6 +29,9 @@ class AppointmentEntity {
     required this.reminderSent,
     this.createdAt,
     this.updatedAt,
+    this.recurrenceType = RecurrenceType.none,
+    this.recurrenceCount,
+    this.recurringGroupId,
   });
 
   static AppointmentEntity fromMap(Map<String, dynamic> data) {
@@ -43,6 +50,11 @@ class AppointmentEntity {
       updatedAt: data['updatedAt'] != null
           ? (data['updatedAt'] as Timestamp).toDate()
           : DateTime.now(),
+      recurrenceType: data['recurrenceType'] != null
+          ? RecurrenceType.fromString(data['recurrenceType'])
+          : RecurrenceType.none,
+      recurrenceCount: data['recurrenceCount'],
+      recurringGroupId: data['recurringGroupId'],
     );
   }
 
@@ -55,6 +67,9 @@ class AppointmentEntity {
       'status': entity.status.value,
       'notes': entity.notes,
       'reminderSent': entity.reminderSent,
+      'recurrenceType': entity.recurrenceType.value,
+      'recurrenceCount': entity.recurrenceCount,
+      'recurringGroupId': entity.recurringGroupId,
     };
   }
 }

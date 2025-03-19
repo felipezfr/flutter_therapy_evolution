@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../patient/domain/entities/patient_entity.dart';
 import '../../../domain/entities/appointment_entity.dart';
+import '../../../domain/enums/recurrence_type_enum.dart';
 
 class AppointmentCard extends StatelessWidget {
   final PatientEntity patient;
@@ -28,6 +29,8 @@ class AppointmentCard extends StatelessWidget {
         isSelected ? AppColors.primaryColor : AppColors.primaryLigth;
     final textCardColor =
         isSelected ? AppColors.whiteColor : AppColors.greyDark;
+
+    final isRecurring = appointment.recurrenceType != RecurrenceType.none;
 
     return Container(
       decoration: BoxDecoration(
@@ -87,33 +90,46 @@ class AppointmentCard extends StatelessWidget {
           Positioned(
             right: 10,
             top: 10,
-            child: PopupMenuButton<String>(
-              icon: Icon(
-                Icons.more_vert_rounded,
-                color: textCardColor,
-              ),
-              onSelected: (String value) {
-                if (value == 'edit') {
-                  onTapEdit();
-                } else if (value == 'delete') {
-                  onTapDelete();
-                }
-              },
-              itemBuilder: (BuildContext context) => [
-                const PopupMenuItem(
-                  value: 'edit',
-                  child: ListTile(
-                    leading: Icon(Icons.edit),
-                    title: Text('Editar'),
+            child: Column(
+              children: [
+                PopupMenuButton<String>(
+                  icon: Icon(
+                    Icons.more_vert_rounded,
+                    color: textCardColor,
                   ),
+                  onSelected: (String value) {
+                    if (value == 'edit') {
+                      onTapEdit();
+                    } else if (value == 'delete') {
+                      onTapDelete();
+                    }
+                  },
+                  itemBuilder: (BuildContext context) => [
+                    const PopupMenuItem(
+                      value: 'edit',
+                      child: ListTile(
+                        leading: Icon(Icons.edit),
+                        title: Text('Editar'),
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'delete',
+                      child: ListTile(
+                        leading: Icon(Icons.delete),
+                        title: Text('Excluir'),
+                      ),
+                    ),
+                  ],
                 ),
-                const PopupMenuItem(
-                  value: 'delete',
-                  child: ListTile(
-                    leading: Icon(Icons.delete),
-                    title: Text('Excluir'),
+                if (isRecurring)
+                  Tooltip(
+                    message: 'Agendamento Recorrente',
+                    child: Icon(
+                      Icons.repeat,
+                      color: textCardColor,
+                      size: 20,
+                    ),
                   ),
-                ),
               ],
             ),
           ),

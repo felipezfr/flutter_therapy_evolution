@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/command/command_stream_listenable_builder.dart';
 import '../viewmodels/appointment_viewmodel.dart';
+import '../../domain/enums/recurrence_type_enum.dart';
 
 class AppointmentDetailPage extends StatefulWidget {
   final String appointmentId;
@@ -80,6 +81,14 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                           'Atualizado em: ${DateFormat('dd/MM/yyyy HH:mm').format(appointment.createdAt!)}',
                           style: theme.textTheme.bodyMedium,
                         ),
+                      if (appointment.recurrenceType !=
+                          RecurrenceType.none) ...[
+                        ListTile(
+                          leading: const Icon(Icons.repeat),
+                          title: const Text('Recorrência'),
+                          subtitle: Text(appointment.recurrenceType.label),
+                        ),
+                      ],
                     ],
                   ),
                 ),

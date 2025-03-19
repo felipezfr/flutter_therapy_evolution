@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:result_dart/result_dart.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../../core/log/log_manager.dart';
 import '../../../../core/session/logged_user.dart';
 import '../../../../core/errors/repository_exception.dart';
 import '../../../../core/typedefs/result_typedef.dart';
 import '../../domain/entities/appointment_entity.dart';
+import '../../domain/enums/recurrence_type_enum.dart';
 import 'appointment_repository.dart';
 
 class AppointmentRepositoryImpl implements IAppointmentRepository {
@@ -201,6 +203,149 @@ class AppointmentRepositoryImpl implements IAppointmentRepository {
           message: 'Erro ao excluir agendamento',
         ),
       );
+    }
+  }
+
+  @override
+  Output<Unit> saveRecurringAppointments(AppointmentEntity appointment,
+      RecurrenceType recurrenceType, int count) async {
+    try {
+      if (count <= 0) {
+        return Failure(
+          RepositoryException(
+            message: 'O número de recorrências deve ser maior que zero',
+          ),
+        );
+      }
+
+      // Generate a group ID for all recurring appointments
+      final recurringGroupId = const Uuid().v4();
+
+      // Create a batch to save all appointments at once
+      final batch = _firestore.batch();
+
+      for (int i = 0; i < count; i++) {
+        // Calculate the date for this occurrence based on recurrence type
+        final DateTime occurrenceDate = _calculateRecurrenceDate(
+          appointment.date,
+          recurrenceType,
+          i,
+        );
+
+        // Create a new appointment entity for this occurrence
+        final appointmentData = AppointmentEntity.toMap(
+          AppointmentEntity(
+            id: '',
+            patientId: appointment.patientId,
+            date: occurrenceDate,
+            durationMinutes: appointment.durationMinutes,
+            type: appointment.type,
+            status: appointment.status,
+            notes: appointment.notes,
+            reminderSent: false,
+            recurrenceType: recurrenceType,
+            recurrenceCount: count,
+            recurringGroupId: recurringGroupId,
+          ),
+        );
+
+        // Add common fields
+        appointmentData['userId'] = LoggedUser.id;
+        appointmentData['isDeleted'] = false;
+        appointmentData['createdAt'] = DateTime.now();
+        appointmentData['updatedAt'] = DateTime.now();
+
+        // Add this appointment to the batch
+        final docRef = _firestore.collection('appointments').doc();
+        batch.set(docRef, appointmentData);
+      }
+
+      // Commit the batch
+      await batch.commit();
+      return Success(unit);
+    } catch (e, s) {
+      Log.error('Error saving recurring appointments', error: e, stackTrace: s);
+      return Failure(
+        RepositoryException(
+          message: 'Erro ao salvar agendamentos recorrentes',
+        ),
+      );
+    }
+  }
+
+  @override
+  Output<Unit> deleteRecurringAppointments(String recurringGroupId) async {
+    try {
+      // Get all appointments with the specified recurring group ID
+      final querySnapshot = await _firestore
+          .collection('appointments')
+          .where('userId', isEqualTo: LoggedUser.id)
+          .where('recurringGroupId', isEqualTo: recurringGroupId)
+          .where('isDeleted', isEqualTo: false)
+          .get();
+
+      // If no appointments found, return success
+      if (querySnapshot.docs.isEmpty) {
+        return Success(unit);
+      }
+
+      // Create a batch to delete all appointments at once
+      final batch = _firestore.batch();
+
+      for (var doc in querySnapshot.docs) {
+        batch.update(doc.reference, {
+          'isDeleted': true,
+          'deletedAt': DateTime.now(),
+        });
+      }
+
+      // Commit the batch
+      await batch.commit();
+      return Success(unit);
+    } catch (e, s) {
+      Log.error('Error deleting recurring appointments',
+          error: e, stackTrace: s);
+      return Failure(
+        RepositoryException(
+          message: 'Erro ao excluir agendamentos recorrentes',
+        ),
+      );
+    }
+  }
+
+  DateTime _calculateRecurrenceDate(
+      DateTime baseDate, RecurrenceType recurrenceType, int index) {
+    if (index == 0) {
+      return baseDate; // First occurrence is the original date
+    }
+
+    switch (recurrenceType) {
+      case RecurrenceType.daily:
+        return baseDate.add(Duration(days: index));
+      case RecurrenceType.weekly:
+        return baseDate.add(Duration(days: 7 * index));
+      case RecurrenceType.biweekly:
+        return baseDate.add(Duration(days: 14 * index));
+      case RecurrenceType.monthly:
+        // Add months by calculating new date
+        int year = baseDate.year;
+        int month = baseDate.month + index;
+
+        // Adjust for overflow
+        year += (month - 1) ~/ 12;
+        month = ((month - 1) % 12) + 1;
+
+        // Create a new DateTime with the same day, hour, minute, second
+        return DateTime(
+          year,
+          month,
+          baseDate.day, // This might need adjustment for months with fewer days
+          baseDate.hour,
+          baseDate.minute,
+          baseDate.second,
+        );
+      case RecurrenceType.none:
+        return baseDate;
     }
   }
 }

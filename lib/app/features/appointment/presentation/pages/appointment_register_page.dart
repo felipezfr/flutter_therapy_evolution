@@ -8,7 +8,8 @@ import 'package:intl/intl.dart';
 import '../../../../core/alert/alerts.dart';
 import '../../../patient/domain/entities/patient_entity.dart';
 import '../../domain/entities/appointment_entity.dart';
-import '../../domain/entities/appointment_status_enum.dart';
+import '../../domain/enums/appointment_status_enum.dart';
+import '../../domain/enums/recurrence_type_enum.dart';
 import '../viewmodels/appointment_viewmodel.dart';
 
 class AppointmentRegisterPage extends StatefulWidget {
@@ -50,12 +51,18 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
   bool _isCustomDuration = false;
   final _customDurationController = TextEditingController();
 
+  // Recurrence
+  RecurrenceType _recurrenceType = RecurrenceType.none;
+  final _recurrenceCountController = TextEditingController(text: '1');
+  bool _showRecurrenceOptions = false;
+
   @override
   void initState() {
     super.initState();
     _isEditing = widget.appointment != null;
     _isRegisterByPatient = widget.patient != null;
     viewModel.saveAppointmentCommand.addListener(_listener);
+    viewModel.saveRecurringAppointmentsCommand.addListener(_recurringListener);
 
     if (_isEditing) {
       _loadAppointmentData();
@@ -71,6 +78,12 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
       _typeController.text = appointment!.type;
       _notesController.text = appointment!.notes ?? '';
       _appointmentStatus = appointment!.status;
+      _recurrenceType = appointment!.recurrenceType;
+
+      if (appointment!.recurrenceCount != null) {
+        _recurrenceCountController.text =
+            appointment!.recurrenceCount.toString();
+      }
 
       if (_durationsDefault.contains(appointment!.durationMinutes)) {
         _durationMinutes = appointment!.durationMinutes;
@@ -106,7 +119,10 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
     _notesController.dispose();
     _typeController.dispose();
     _customDurationController.dispose();
+    _recurrenceCountController.dispose();
     viewModel.saveAppointmentCommand.removeListener(_listener);
+    viewModel.saveRecurringAppointmentsCommand
+        .removeListener(_recurringListener);
     super.dispose();
   }
 
@@ -134,8 +150,21 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
         status: _appointmentStatus,
         notes: _notesController.text.trim(),
         reminderSent: _isEditing ? _appointmentToEdit!.reminderSent : false,
+        recurrenceType: _recurrenceType,
       );
 
+      // If recurring appointment, save as recurring
+      if (_recurrenceType != RecurrenceType.none) {
+        final recurrenceCount =
+            int.tryParse(_recurrenceCountController.text) ?? 1;
+        if (recurrenceCount > 0) {
+          viewModel.saveRecurringAppointmentsCommand
+              .execute((appointment, _recurrenceType, recurrenceCount));
+          return;
+        }
+      }
+
+      // Otherwise save as normal appointment
       viewModel.saveAppointmentCommand.execute(appointment);
     }
   }
@@ -250,6 +279,10 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
             ),
             const SizedBox(height: 16),
 
+            // Recurrence Type
+            if (!_isEditing) // Only show recurrence options for new appointments
+              _buildRecurrenceTypeField(),
+
             // Notes
             TextFormField(
               controller: _notesController,
@@ -264,7 +297,8 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
             // Save button
             PrimaryButtonDs(
               onPressed: _saveAppointment,
-              isLoading: viewModel.saveAppointmentCommand.running,
+              isLoading: viewModel.saveAppointmentCommand.running ||
+                  viewModel.saveRecurringAppointmentsCommand.running,
               title:
                   _isEditing ? 'Atualizar agendamento' : 'Salvar agendamento',
             ),
@@ -338,11 +372,107 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
     );
   }
 
+  Widget _buildRecurrenceTypeField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        DropdownButtonFormField<RecurrenceType>(
+          decoration: const InputDecoration(
+            labelText: 'Recorrência',
+            border: OutlineInputBorder(),
+          ),
+          value: _recurrenceType,
+          items: RecurrenceType.values.map((type) {
+            return DropdownMenuItem<RecurrenceType>(
+              value: type,
+              child: Text(type.label),
+            );
+          }).toList(),
+          onChanged: (value) {
+            setState(() {
+              _recurrenceType = value!;
+              _showRecurrenceOptions = value != RecurrenceType.none;
+            });
+          },
+        ),
+        if (_showRecurrenceOptions) ...[
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _recurrenceCountController,
+            decoration: const InputDecoration(
+              labelText: 'Número de ocorrências',
+              border: OutlineInputBorder(),
+              hintText: 'Ex: 10 para 10 consultas',
+            ),
+            keyboardType: TextInputType.number,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Digite o número de ocorrências';
+              }
+              final count = int.tryParse(value);
+              if (count == null || count <= 0) {
+                return 'Digite um valor válido';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 8),
+          Text(
+            _getRecurrenceDescription(),
+            style: TextStyle(
+              color: Colors.grey[600],
+              fontSize: 12,
+            ),
+          ),
+        ],
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  String _getRecurrenceDescription() {
+    final count = int.tryParse(_recurrenceCountController.text) ?? 0;
+    if (count <= 0) return '';
+
+    String description = '';
+    switch (_recurrenceType) {
+      case RecurrenceType.daily:
+        description = 'Serão criadas $count consultas diárias consecutivas';
+        break;
+      case RecurrenceType.weekly:
+        description =
+            'Serão criadas $count consultas semanais, no mesmo dia da semana';
+        break;
+      case RecurrenceType.biweekly:
+        description =
+            'Serão criadas $count consultas quinzenais, a cada 2 semanas';
+        break;
+      case RecurrenceType.monthly:
+        description =
+            'Serão criadas $count consultas mensais, no mesmo dia do mês';
+        break;
+      default:
+        description = '';
+    }
+    return description;
+  }
+
   void _listener() {
     ResultHandler.showAlert(
       context: context,
       result: viewModel.saveAppointmentCommand.result,
       successMessage: 'Agendamento salvo com sucesso!',
+      onSuccess: (value) {
+        Modular.to.pop();
+      },
+    );
+  }
+
+  void _recurringListener() {
+    ResultHandler.showAlert(
+      context: context,
+      result: viewModel.saveRecurringAppointmentsCommand.result,
+      successMessage: 'Agendamentos recorrentes criados com sucesso!',
       onSuccess: (value) {
         Modular.to.pop();
       },
