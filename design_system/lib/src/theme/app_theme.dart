@@ -70,7 +70,6 @@ class AppTheme {
       displayLarge: GoogleFonts.montserrat(
         fontWeight: FontWeight.w700,
         color: AppColors.textBlackColor,
-        fontSize: 140,
       ),
       headlineSmall: GoogleFonts.montserrat(
         fontWeight: FontWeight.w300,

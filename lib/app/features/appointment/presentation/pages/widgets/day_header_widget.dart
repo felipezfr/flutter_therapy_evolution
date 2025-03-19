@@ -4,9 +4,11 @@ import 'package:intl/intl.dart';
 
 class DayHeaderWidget extends StatelessWidget {
   final DateTime date;
+  final Function(DateTime) onDateChanged;
   const DayHeaderWidget({
     super.key,
     required this.date,
+    required this.onDateChanged,
   });
 
   bool _isToday(DateTime date) {
@@ -33,23 +35,43 @@ class DayHeaderWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 4),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
                 children: [
-                  Text(
-                    DateFormat('E').format(date),
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.primaryColor,
-                    ),
+                  IconButton(
+                    icon: const Icon(Icons.chevron_left),
+                    onPressed: () {
+                      final newDate =
+                          DateTime(date.year, date.month - 1, date.day);
+                      onDateChanged(newDate);
+                    },
                   ),
-                  Text(
-                    DateFormat('MMM yyyy').format(date),
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.primaryColor,
-                    ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        DateFormat('EEEE').format(date),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                      Text(
+                        DateFormat('MMM yyyy').format(date),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.chevron_right),
+                    onPressed: () {
+                      final newDate =
+                          DateTime(date.year, date.month + 1, date.day);
+                      onDateChanged(newDate);
+                    },
                   ),
                 ],
               ),
@@ -74,7 +96,7 @@ class DayHeaderWidget extends StatelessWidget {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

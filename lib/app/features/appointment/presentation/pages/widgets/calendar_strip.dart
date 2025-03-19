@@ -25,6 +25,9 @@ class _CalendarStripState extends State<CalendarStrip> {
   @override
   void initState() {
     super.initState();
+  }
+
+  void initialize() {
     _scrollController = ScrollController();
     _selectedDate = widget.initialDate ?? DateTime.now();
     _dates = _getDaysInMonth(_selectedDate);
@@ -63,6 +66,7 @@ class _CalendarStripState extends State<CalendarStrip> {
 
   @override
   Widget build(BuildContext context) {
+    initialize();
     return _buildDateList();
   }
 

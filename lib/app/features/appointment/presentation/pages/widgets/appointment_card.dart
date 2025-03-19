@@ -53,7 +53,7 @@ class AppointmentCard extends StatelessWidget {
                       color: textCardColor,
                     ),
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 4),
                   Row(
                     children: [
                       Icon(

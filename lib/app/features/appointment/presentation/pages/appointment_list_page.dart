@@ -52,6 +52,11 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
           children: [
             DayHeaderWidget(
               date: selectedDate,
+              onDateChanged: (date) {
+                setState(() {
+                  selectedDate = date;
+                });
+              },
             ),
             const SizedBox(height: 14),
             Expanded(
@@ -67,6 +72,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
                   children: [
                     const SizedBox(height: 18),
                     CalendarStrip(
+                      initialDate: selectedDate,
                       onDateSelected: (date) {
                         setState(() {
                           selectedDate = date;
@@ -153,10 +159,10 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
               final appointment = appointmentsFiltered[index];
               final patient = viewModel.getPatientById(appointment.patientId);
 
-              final isNow = index == 0 ? true : false;
+              final isNow = isAppointmentNow(appointment);
 
               return SizedBox(
-                height: 160,
+                height: 120,
                 child: Row(
                   children: [
                     Expanded(
@@ -188,6 +194,20 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
         ),
       ],
     );
+  }
+
+  bool isAppointmentNow(AppointmentEntity appointment) {
+    final now = DateTime.now();
+
+    // Horário de início da consulta
+    final startTime = appointment.date;
+
+    // Horário de término (data inicial + duração em minutos)
+    final endTime =
+        startTime.add(Duration(minutes: appointment.durationMinutes));
+
+    // Verifica se o horário atual está entre o início e fim da consulta
+    return now.isAfter(startTime) && now.isBefore(endTime);
   }
 
   void _navigateToEditPage(AppointmentEntity appointment) {

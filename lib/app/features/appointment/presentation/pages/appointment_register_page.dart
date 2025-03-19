@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/alert/alerts.dart';
 import '../../../patient/domain/entities/patient_entity.dart';
 import '../../domain/entities/appointment_entity.dart';
+import '../../domain/entities/appointment_status_enum.dart';
 import '../viewmodels/appointment_viewmodel.dart';
 
 class AppointmentRegisterPage extends StatefulWidget {
@@ -36,16 +37,18 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
 
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedStartTime = TimeOfDay.now();
-  TimeOfDay _selectedEndTime = TimeOfDay(
-    hour: TimeOfDay.now().hour + 1,
-    minute: TimeOfDay.now().minute,
-  );
   String? _selectedPatientId;
-  String _appointmentStatus = 'scheduled';
+  AppointmentStatus _appointmentStatus = AppointmentStatus.scheduled;
 
   bool _isEditing = false;
   bool _isRegisterByPatient = false;
   AppointmentEntity? _appointmentToEdit;
+
+  // Duration
+  final List<int> _durationsDefault = [30, 45, 60, 90, 120];
+  int _durationMinutes = 60; // Default duration of 60 minutes
+  bool _isCustomDuration = false;
+  final _customDurationController = TextEditingController();
 
   @override
   void initState() {
@@ -69,6 +72,14 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
       _notesController.text = appointment!.notes ?? '';
       _appointmentStatus = appointment!.status;
 
+      if (_durationsDefault.contains(appointment!.durationMinutes)) {
+        _durationMinutes = appointment!.durationMinutes;
+      } else {
+        _isCustomDuration = true;
+        _customDurationController.text =
+            appointment!.durationMinutes.toString();
+      }
+
       // Converter a data de string para DateTime
       try {
         _selectedDate = appointment!.date;
@@ -83,19 +94,9 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
           hour: appointment!.date.hour,
           minute: appointment!.date.minute,
         );
-
-        //TODO Ajustar
-        _selectedEndTime = TimeOfDay(
-          hour: appointment!.date.hour,
-          minute: appointment!.date.minute,
-        );
       } catch (e) {
         // Fallback para horários padrão se houver erro de parsing
         _selectedStartTime = TimeOfDay.now();
-        _selectedEndTime = TimeOfDay(
-          hour: TimeOfDay.now().hour + 1,
-          minute: TimeOfDay.now().minute,
-        );
       }
     });
   }
@@ -104,6 +105,7 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
   void dispose() {
     _notesController.dispose();
     _typeController.dispose();
+    _customDurationController.dispose();
     viewModel.saveAppointmentCommand.removeListener(_listener);
     super.dispose();
   }
@@ -122,14 +124,12 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
         _selectedStartTime.hour,
         _selectedStartTime.minute,
       );
-      // dateFormatted = dateFormatted. + _selectedStartTime.hour;
-      // final endTimeFormatted = _selectedEndTime.format(context);
 
       final appointment = AppointmentEntity(
         id: _isEditing ? _appointmentToEdit!.id : '',
         patientId: _selectedPatientId!,
         date: date,
-        durationMinutes: 60, //TODO AJUSTAR
+        durationMinutes: _durationMinutes, // Use the selected duration
         type: _typeController.text.trim(),
         status: _appointmentStatus,
         notes: _notesController.text.trim(),
@@ -216,7 +216,7 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
               onTap: () => _selectStartTime(context),
               child: InputDecorator(
                 decoration: const InputDecoration(
-                  labelText: 'Horário de Início',
+                  labelText: 'Horário',
                   border: OutlineInputBorder(),
                   suffixIcon: Icon(Icons.access_time),
                 ),
@@ -226,54 +226,22 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
               ),
             ),
             const SizedBox(height: 16),
-
-            // End Time selection
-            InkWell(
-              onTap: () => _selectEndTime(context),
-              child: InputDecorator(
-                decoration: const InputDecoration(
-                  labelText: 'Horário de Término',
-                  border: OutlineInputBorder(),
-                  suffixIcon: Icon(Icons.access_time),
-                ),
-                child: Text(
-                  _selectedEndTime.format(context),
-                ),
-              ),
-            ),
+            // Duration selection
+            _buildDurationField(),
             const SizedBox(height: 16),
-
-            // Appointment Type
-            TextFormField(
-              controller: _typeController,
-              decoration: const InputDecoration(
-                labelText: 'Tipo de Consulta',
-                border: OutlineInputBorder(),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Informe o tipo de consulta';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-
             // Appointment Status
-            DropdownButtonFormField<String>(
+            DropdownButtonFormField<AppointmentStatus>(
               decoration: const InputDecoration(
                 labelText: 'Status',
                 border: OutlineInputBorder(),
               ),
               value: _appointmentStatus,
-              items: const [
-                DropdownMenuItem(value: 'scheduled', child: Text('Agendado')),
-                DropdownMenuItem(value: 'confirmed', child: Text('Confirmado')),
-                DropdownMenuItem(value: 'completed', child: Text('Concluído')),
-                DropdownMenuItem(value: 'canceled', child: Text('Cancelado')),
-                DropdownMenuItem(
-                    value: 'noShow', child: Text('Não Compareceu')),
-              ],
+              items: AppointmentStatus.values.map((status) {
+                return DropdownMenuItem<AppointmentStatus>(
+                  value: status,
+                  child: Text(status.label),
+                );
+              }).toList(),
               onChanged: (value) {
                 setState(() {
                   _appointmentStatus = value!;
@@ -303,6 +271,70 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildDurationField() {
+    return Column(
+      children: [
+        DropdownButtonFormField<dynamic>(
+          decoration: const InputDecoration(
+            labelText: 'Duração (minutos)',
+            border: OutlineInputBorder(),
+          ),
+          value: _isCustomDuration ? 'custom' : _durationMinutes,
+          items: [
+            ...(_durationsDefault.map((duration) {
+              return DropdownMenuItem<int>(
+                value: duration,
+                child: Text('$duration minutos'),
+              );
+            })),
+            const DropdownMenuItem<String>(
+              value: 'custom',
+              child: Text('Personalizado'),
+            ),
+          ],
+          onChanged: (value) {
+            setState(() {
+              if (value == 'custom') {
+                _isCustomDuration = true;
+                _customDurationController.text = _durationMinutes.toString();
+              } else {
+                _isCustomDuration = false;
+                _durationMinutes = value as int;
+              }
+            });
+          },
+        ),
+        if (_isCustomDuration) ...[
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _customDurationController,
+            decoration: const InputDecoration(
+              labelText: 'Digite a duração em minutos',
+              border: OutlineInputBorder(),
+            ),
+            keyboardType: TextInputType.number,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Digite a duração';
+              }
+              final duration = int.tryParse(value);
+              if (duration == null || duration <= 0) {
+                return 'Digite um valor válido';
+              }
+              return null;
+            },
+            onChanged: (value) {
+              final duration = int.tryParse(value);
+              if (duration != null && duration > 0) {
+                _durationMinutes = duration;
+              }
+            },
+          ),
+        ],
+      ],
     );
   }
 
@@ -339,24 +371,6 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
     if (picked != null && picked != _selectedStartTime) {
       setState(() {
         _selectedStartTime = picked;
-
-        // Automatically set end time 1 hour after start time
-        _selectedEndTime = TimeOfDay(
-          hour: picked.hour + 1,
-          minute: picked.minute,
-        );
-      });
-    }
-  }
-
-  Future<void> _selectEndTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: _selectedEndTime,
-    );
-    if (picked != null && picked != _selectedEndTime) {
-      setState(() {
-        _selectedEndTime = picked;
       });
     }
   }

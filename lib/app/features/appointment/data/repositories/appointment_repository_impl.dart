@@ -34,7 +34,7 @@ class AppointmentRepositoryImpl implements IAppointmentRepository {
           .where('isDeleted', isEqualTo: false)
           // .where('date', isGreaterThanOrEqualTo: dataInicio)
           // .where('date', isLessThanOrEqualTo: dataFim)
-          .orderBy('createdAt', descending: true)
+          .orderBy('createdAt', descending: false)
           .snapshots()
           .map((snapshot) {
         try {

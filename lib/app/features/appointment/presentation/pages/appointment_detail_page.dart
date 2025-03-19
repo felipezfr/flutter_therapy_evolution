@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_therapy_evolution/app/features/appointment/domain/entities/appointment_entity.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/command/command_stream_listenable_builder.dart';
 import '../viewmodels/appointment_viewmodel.dart';
@@ -49,16 +50,36 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                 margin: const EdgeInsets.all(8.0),
                 child: ListTile(
                   title: Text(
-                    appointment.date.day.toString(),
+                    appointment.status.label,
                     style: theme.textTheme.titleLarge,
                   ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Id: ${appointment.id}',
+                        'Horario: ${DateFormat('dd/MM/yyyy HH:mm').format(appointment.date)}',
                         style: theme.textTheme.bodyMedium,
                       ),
+                      Text(
+                        'Duração: ${appointment.durationMinutes}',
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                      if (appointment.notes != null)
+                        Text(
+                          'Observações: ${appointment.notes}',
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      const SizedBox(height: 20),
+                      if (appointment.createdAt != null)
+                        Text(
+                          'Criado em: ${DateFormat('dd/MM/yyyy HH:mm').format(appointment.createdAt!)}',
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      if (appointment.createdAt != null)
+                        Text(
+                          'Atualizado em: ${DateFormat('dd/MM/yyyy HH:mm').format(appointment.createdAt!)}',
+                          style: theme.textTheme.bodyMedium,
+                        ),
                     ],
                   ),
                 ),

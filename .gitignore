@@ -46,3 +46,4 @@ app.*.map.json
 
 mason-lock.json
 .mason
+settings.json

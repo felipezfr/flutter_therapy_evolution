@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'appointment_status_enum.dart';
+
 class AppointmentEntity {
   final String id;
   final String patientId;
   final DateTime date;
   final int durationMinutes;
   final String type;
-  final String status; // scheduled, confirmed, completed, canceled, noShow
+  final AppointmentStatus status;
   final String? notes;
   final bool reminderSent;
   final DateTime? createdAt;
@@ -32,7 +34,7 @@ class AppointmentEntity {
       date: (data['date'] as Timestamp).toDate(),
       durationMinutes: data['durationMinutes'],
       type: data['type'] ?? '',
-      status: data['status'] ?? 'scheduled',
+      status: AppointmentStatus.fromString(data['status']),
       notes: data['notes'],
       reminderSent: data['reminderSent'] ?? false,
       createdAt: data['createdAt'] != null
@@ -50,7 +52,7 @@ class AppointmentEntity {
       'date': entity.date,
       'durationMinutes': entity.durationMinutes,
       'type': entity.type,
-      'status': entity.status,
+      'status': entity.status.value,
       'notes': entity.notes,
       'reminderSent': entity.reminderSent,
     };
