@@ -4,7 +4,8 @@ import '../../../../core/typedefs/result_typedef.dart';
 import '../../domain/entities/appointment_entity.dart';
 
 abstract class IAppointmentRepository {
-  OutputStream<List<AppointmentEntity>> getAllAppointmentsStream();
+  OutputStream<List<AppointmentEntity>> getAllAppointmentsStream(
+      int year, int month);
   OutputStream<List<AppointmentEntity>> getPatientAppointmentsStream(
       String patientId);
   OutputStream<AppointmentEntity> getAppointmentStream(String appointmentId);

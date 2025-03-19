@@ -1,6 +1,7 @@
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../core/command/command.dart';
+import '../../../../core/typedefs/result_typedef.dart';
 import '../../../patient/domain/entities/patient_entity.dart';
 import '../../../patient/data/repositories/patient_repository.dart';
 import '../../domain/entities/appointment_entity.dart';
@@ -12,8 +13,7 @@ class AppointmentViewmodel {
 
   AppointmentViewmodel(this._repository, this._patientRepository) {
     //List
-    allAppointmentsStreamCommand =
-        CommandStream0(_repository.getAllAppointmentsStream);
+    allAppointmentsStreamCommand = CommandStream1(getAllAppointmentsStream);
     patientAppointmentsStreamCommand =
         CommandStream1(_repository.getPatientAppointmentsStream);
     //Detail Appointment
@@ -30,7 +30,7 @@ class AppointmentViewmodel {
   }
 
   //List
-  late final CommandStream0<List<AppointmentEntity>>
+  late final CommandStream1<List<AppointmentEntity>, (int, int)>
       allAppointmentsStreamCommand;
   late final CommandStream1<List<AppointmentEntity>, String>
       patientAppointmentsStreamCommand;
@@ -43,6 +43,12 @@ class AppointmentViewmodel {
   //Adicional data
   late final CommandStream0<List<PatientEntity>> patientsStreamCommand;
   late final CommandStream1<PatientEntity, String> patientStreamCommand;
+
+  OutputStream<List<AppointmentEntity>> getAllAppointmentsStream(
+      (int year, int month) date) {
+    final (year, month) = (date.$1, date.$2);
+    return _repository.getAllAppointmentsStream(year, month);
+  }
 
   String getPatientNameById(String patientId) {
     final patients = patientsStreamCommand.result?.getOrNull();

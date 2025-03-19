@@ -88,7 +88,7 @@ class DayHeaderWidget extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  'Today',
+                  'Hoje',
                   style: TextStyle(
                     color: AppColors.primaryColor,
                     fontWeight: FontWeight.bold,

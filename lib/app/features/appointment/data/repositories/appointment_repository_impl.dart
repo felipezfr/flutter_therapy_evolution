@@ -16,24 +16,21 @@ class AppointmentRepositoryImpl implements IAppointmentRepository {
   final String loggedUserId = LoggedUser.id;
 
   @override
-  OutputStream<List<AppointmentEntity>> getAllAppointmentsStream() {
+  OutputStream<List<AppointmentEntity>> getAllAppointmentsStream(
+      int year, int month) {
     try {
-      // final now = DateTime.now();
-      // final lastDay = DateTime(now.year, now.month + 1, 0);
+      final dateInit = DateTime(year, month);
+      final dateEnd = DateTime(year, month + 1, 0, 23, 59, 59);
 
-      // Timestamp dataInicio = Timestamp.fromDate(
-      //   DateTime(now.year, now.month, 0),
-      // );
-      // Timestamp dataFim = Timestamp.fromDate(
-      //   DateTime(now.year, now.month, lastDay.day, 23, 59, 59),
-      // );
+      Timestamp dataInicio = Timestamp.fromDate(dateInit);
+      Timestamp dataFim = Timestamp.fromDate(dateEnd);
 
       return _firestore
           .collection('appointments')
           .where('userId', isEqualTo: LoggedUser.id)
           .where('isDeleted', isEqualTo: false)
-          // .where('date', isGreaterThanOrEqualTo: dataInicio)
-          // .where('date', isLessThanOrEqualTo: dataFim)
+          .where('date', isGreaterThanOrEqualTo: dataInicio)
+          .where('date', isLessThanOrEqualTo: dataFim)
           .orderBy('createdAt', descending: false)
           .snapshots()
           .map((snapshot) {

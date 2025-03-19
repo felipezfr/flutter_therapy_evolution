@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_therapy_evolution/app/core/widgets/delete_dialog.dart';
 import 'package:flutter_therapy_evolution/app/features/appointment/domain/entities/appointment_entity.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/command/command_stream_listenable_builder.dart';
 import '../../../../core/widgets/result_handler.dart';
 import '../../../home/presentation/widgets/custom_bottom_navigator_bar.dart';
@@ -25,12 +26,15 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
   final viewModel = Modular.get<AppointmentViewmodel>();
 
   DateTime selectedDate = DateTime.now();
+  int? _currentYear;
+  int? _currentMonth;
 
   @override
   void initState() {
     super.initState();
 
-    viewModel.allAppointmentsStreamCommand.execute();
+    viewModel.allAppointmentsStreamCommand
+        .execute((selectedDate.year, selectedDate.month));
     viewModel.deleteAppointmentCommand.addListener(_listener);
   }
 
@@ -41,6 +45,15 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
     //Delete
     viewModel.deleteAppointmentCommand.removeListener(_listener);
     super.dispose();
+  }
+
+  void _onSelectedDateChanged() {
+    final date = selectedDate;
+    if (_currentYear != date.year || _currentMonth != date.month) {
+      _currentYear = date.year;
+      _currentMonth = date.month;
+      viewModel.allAppointmentsStreamCommand.execute((date.year, date.month));
+    }
   }
 
   @override
@@ -55,6 +68,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
               onDateChanged: (date) {
                 setState(() {
                   selectedDate = date;
+                  _onSelectedDateChanged();
                 });
               },
             ),
@@ -68,30 +82,28 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
                     topRight: Radius.circular(28),
                   ),
                 ),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 18),
-                    CalendarStrip(
-                      initialDate: selectedDate,
-                      onDateSelected: (date) {
-                        setState(() {
-                          selectedDate = date;
-                        });
-                      },
-                    ),
-                    Expanded(
-                      child: CommandStreamListenableBuilder<
-                          List<AppointmentEntity>>(
-                        stream: viewModel.allAppointmentsStreamCommand,
-                        emptyMessage:
-                            'Voce não possui nenhum agendamento cadastrado',
-                        emptyIconData: Icons.calendar_month_rounded,
-                        builder: (context, value) {
-                          return _buildAppointmentList(value);
-                        },
-                      ),
-                    ),
-                  ],
+                child: CommandStreamListenableBuilder<List<AppointmentEntity>>(
+                  stream: viewModel.allAppointmentsStreamCommand,
+                  emptyMessage: 'Voce não possui nenhum agendamento cadastrado',
+                  emptyIconData: Icons.calendar_month_rounded,
+                  builder: (context, value) {
+                    return Column(
+                      children: [
+                        const SizedBox(height: 18),
+                        CalendarStrip(
+                          initialDate: selectedDate,
+                          checkedDays: value.map((e) => e.date).toList(),
+                          onDateSelected: (date) {
+                            setState(() {
+                              selectedDate = date;
+                              _onSelectedDateChanged();
+                            });
+                          },
+                        ),
+                        Expanded(child: _buildAppointmentList(value)),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
@@ -240,7 +252,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
       context: context,
       title: 'Excluir Agendamento',
       entityName:
-          'o agendamento de $patientName em $appointmentDate às ${appointmentDate.hour}?',
+          'o agendamento de $patientName em ${DateFormat('dd/MM/yyyy HH:mm').format(appointmentDate)}',
       onConfirm: () {
         viewModel.deleteAppointmentCommand.execute(appointment.id);
       },

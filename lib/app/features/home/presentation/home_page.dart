@@ -42,13 +42,6 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 20),
             PrimaryButtonDs(
               onPressed: () {
-                Modular.to.pushNamed('/appointment/');
-              },
-              title: 'Agendamentos',
-            ),
-            const SizedBox(height: 20),
-            PrimaryButtonDs(
-              onPressed: () {
                 Modular.to.pushNamed('/consultation/');
               },
               title: 'Consultas',

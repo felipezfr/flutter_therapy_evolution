@@ -5,11 +5,13 @@ import 'package:intl/intl.dart';
 class CalendarStrip extends StatefulWidget {
   final Function(DateTime date)? onDateSelected;
   final DateTime? initialDate;
+  final List<DateTime>? checkedDays;
 
   const CalendarStrip({
     super.key,
     this.onDateSelected,
     this.initialDate,
+    this.checkedDays,
   });
 
   @override
@@ -22,9 +24,13 @@ class _CalendarStripState extends State<CalendarStrip> {
   late DateTime _selectedDate;
   late int _monthDays;
 
+  late List<int>? checkedDays;
+
   @override
   void initState() {
     super.initState();
+    checkedDays = widget.checkedDays?.map((e) => e.day).toList();
+    // Scroll to today's position after render
   }
 
   void initialize() {
@@ -32,16 +38,14 @@ class _CalendarStripState extends State<CalendarStrip> {
     _selectedDate = widget.initialDate ?? DateTime.now();
     _dates = _getDaysInMonth(_selectedDate);
     _monthDays = _dates.length;
-
-    // Scroll to today's position after render
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelectedDate();
     });
   }
 
   void _scrollToSelectedDate() {
-    final int today = DateTime.now().day;
-    final double position = (today - 1) * 54.0; // Each date item width
+    final int today = _selectedDate.day;
+    final double position = (today - 1) * 52.0; // Each date item width
 
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
@@ -82,6 +86,9 @@ class _CalendarStripState extends State<CalendarStrip> {
           final bool isToday = _isToday(date);
           final bool isSelected = _isSameDay(date, _selectedDate);
 
+          final bool hasDate = checkedDays?.contains(date.day) ?? false;
+          // print(hasDate);
+
           return GestureDetector(
             onTap: () {
               setState(() {
@@ -92,44 +99,62 @@ class _CalendarStripState extends State<CalendarStrip> {
                 widget.onDateSelected!(date);
               }
             },
-            child: Container(
-              width: 60,
-              margin: const EdgeInsets.symmetric(horizontal: 2),
-              decoration: BoxDecoration(
-                color: isSelected ? AppColors.primaryColor : Colors.transparent,
-                borderRadius: BorderRadius.circular(18),
-                border: isToday && !isSelected
-                    ? Border.all(
-                        color: AppColors.primaryColor,
-                        width: 1,
-                      )
-                    : null,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    DateFormat('E').format(date).substring(0, 1),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isSelected ? Colors.white : Colors.grey,
+            child: Stack(
+              children: [
+                Container(
+                  width: 60,
+                  margin: const EdgeInsets.symmetric(horizontal: 2),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? AppColors.primaryColor
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(18),
+                    border: isToday && !isSelected
+                        ? Border.all(
+                            color: AppColors.primaryColor,
+                            width: 1,
+                          )
+                        : null,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        DateFormat('E').format(date).substring(0, 1),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isSelected ? Colors.white : Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        date.day.toString(),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: isSelected
+                              ? Colors.white
+                              : isToday
+                                  ? AppColors.primaryColor
+                                  : Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  right: 10,
+                  top: 8,
+                  child: Visibility(
+                    visible: hasDate,
+                    child: Icon(
+                      Icons.check_circle,
+                      color: AppColors.green,
+                      size: 12,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    date.day.toString(),
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: isSelected
-                          ? Colors.white
-                          : isToday
-                              ? AppColors.primaryColor
-                              : Colors.black,
-                    ),
-                  ),
-                ],
-              ),
+                )
+              ],
             ),
           );
         },
