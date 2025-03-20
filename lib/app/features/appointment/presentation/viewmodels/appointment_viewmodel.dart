@@ -14,8 +14,8 @@ class AppointmentViewmodel {
 
   AppointmentViewmodel(this._repository, this._patientRepository) {
     //List
-    allAppointmentsStreamCommand = CommandStream1(getAllAppointmentsStream);
-    patientAppointmentsStreamCommand =
+    allAppointmentsStreamCommand = CommandStream1(_getAllAppointmentsStream);
+    appointmentsPatientStreamCommand =
         CommandStream1(_repository.getPatientAppointmentsStream);
     //Detail Appointment
     appointmentStreamCommand = CommandStream1(_repository.getAppointmentStream);
@@ -37,7 +37,7 @@ class AppointmentViewmodel {
   late final CommandStream1<List<AppointmentEntity>, (int, int)>
       allAppointmentsStreamCommand;
   late final CommandStream1<List<AppointmentEntity>, String>
-      patientAppointmentsStreamCommand;
+      appointmentsPatientStreamCommand;
   //Detail Appointment
   late final CommandStream1<AppointmentEntity, String> appointmentStreamCommand;
 
@@ -51,7 +51,7 @@ class AppointmentViewmodel {
   late final CommandStream0<List<PatientEntity>> patientsStreamCommand;
   late final CommandStream1<PatientEntity, String> patientStreamCommand;
 
-  OutputStream<List<AppointmentEntity>> getAllAppointmentsStream(
+  OutputStream<List<AppointmentEntity>> _getAllAppointmentsStream(
       (int year, int month) date) {
     final (year, month) = (date.$1, date.$2);
     return _repository.getAllAppointmentsStream(year, month);

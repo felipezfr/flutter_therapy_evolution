@@ -10,6 +10,7 @@ import '../../../../core/command/command_stream_listenable_builder.dart';
 import '../../../../core/widgets/delete_dialog.dart';
 import '../viewmodels/appointment_viewmodel.dart';
 import '../../domain/enums/recurrence_type_enum.dart';
+import 'widgets/delete_appointment_dialog.dart';
 
 class PatientAppointmentListPage extends StatefulWidget {
   final String patientId;
@@ -27,13 +28,17 @@ class PatientAppointmentListPage extends StatefulWidget {
 class _PatientAppointmentListPageState
     extends State<PatientAppointmentListPage> {
   final viewModel = Modular.get<AppointmentViewmodel>();
+  PatientEntity? _patient;
 
   @override
   void initState() {
     super.initState();
 
-    viewModel.patientAppointmentsStreamCommand.execute(widget.patientId);
+    //List patient appointments
+    viewModel.appointmentsPatientStreamCommand.execute(widget.patientId);
+    //Patient
     viewModel.patientStreamCommand.execute(widget.patientId);
+    //Delete appointment
     viewModel.deleteAppointmentCommand.addListener(_onDeleteAppointment);
     viewModel.deleteRecurringAppointmentsCommand
         .addListener(_onDeleteRecurringAppointment);
@@ -42,7 +47,8 @@ class _PatientAppointmentListPageState
   @override
   void dispose() {
     //List patient appointments
-    viewModel.patientAppointmentsStreamCommand.dispose();
+    viewModel.appointmentsPatientStreamCommand.dispose();
+    //Patient
     viewModel.patientStreamCommand.execute(widget.patientId);
     //Delete appointment
     viewModel.deleteAppointmentCommand.removeListener(_onDeleteAppointment);
@@ -53,29 +59,37 @@ class _PatientAppointmentListPageState
 
   @override
   Widget build(BuildContext context) {
-    //TODO Ajustar para scafold ficar antes, se der erro fica tudo preto
-    return CommandStreamListenableBuilder<PatientEntity>(
-      stream: viewModel.patientStreamCommand,
-      builder: (context, patient) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text('Agendamentos de ${patient.name}'),
-          ),
-          body: CommandStreamListenableBuilder<List<AppointmentEntity>>(
-            stream: viewModel.patientAppointmentsStreamCommand,
+    return Scaffold(
+      appBar: AppBar(
+        title:
+            Text(_patient != null ? 'Agendamentos de ${_patient!.name}' : ''),
+      ),
+      body: CommandStreamListenableBuilder<PatientEntity>(
+        stream: viewModel.patientStreamCommand,
+        builder: (context, patient) {
+          _patient = patient;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              setState(() {});
+            }
+          });
+          return CommandStreamListenableBuilder<List<AppointmentEntity>>(
+            stream: viewModel.appointmentsPatientStreamCommand,
             emptyMessage:
                 '${patient.name} não possui nenhum agendamento cadastrado',
             emptyIconData: Icons.calendar_month_rounded,
             builder: (context, value) {
               return _buildAppointmentList(value, patient);
             },
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () => _navigateToRegisterAppointment(patient),
-            child: const Icon(Icons.add),
-          ),
-        );
-      },
+          );
+        },
+      ),
+      floatingActionButton: _patient != null
+          ? FloatingActionButton(
+              onPressed: () => _navigateToRegisterAppointment(_patient!),
+              child: const Icon(Icons.add),
+            )
+          : null,
     );
   }
 
@@ -150,38 +164,17 @@ class _PatientAppointmentListPageState
     // Check if this is a recurring appointment
     if (appointment.recurringGroupId != null &&
         appointment.recurrenceType != RecurrenceType.none) {
-      showDialog(
+      DeleteAppointmentDialog.showRecurringDelete(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Excluir Agendamento'),
-          content: Text(
-            'Deseja realmente excluir o agendamento de $patientName em ${DateFormat('dd/MM/yyyy HH:mm').format(appointmentDate)}?'
-            '\n\nDeseja excluir apenas este agendamento ou toda a série?',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                // Delete just this appointment
-                viewModel.deleteAppointmentCommand.execute(appointment.id);
-              },
-              child: const Text('Apenas Este'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                // Delete all recurring appointments
-                viewModel.deleteRecurringAppointmentsCommand
-                    .execute(appointment.recurringGroupId!);
-              },
-              child: const Text('Toda a Série'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancelar'),
-            ),
-          ],
-        ),
+        patientName: patientName,
+        appointmentDate: appointmentDate,
+        onConfirmOnlyThis: () {
+          viewModel.deleteAppointmentCommand.execute(appointment.id);
+        },
+        onConfirmAll: () {
+          viewModel.deleteRecurringAppointmentsCommand
+              .execute(appointment.recurringGroupId!);
+        },
       );
     } else {
       // Regular non-recurring appointment deletion

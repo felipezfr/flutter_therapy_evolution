@@ -57,7 +57,7 @@ class DayHeaderWidget extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        DateFormat('MMM yyyy').format(date),
+                        DateFormat('MMMM yyyy').format(date),
                         style: TextStyle(
                           fontSize: 14,
                           color: AppColors.primaryColor,

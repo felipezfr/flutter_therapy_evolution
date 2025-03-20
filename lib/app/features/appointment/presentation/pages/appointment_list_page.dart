@@ -11,6 +11,7 @@ import '../viewmodels/appointment_viewmodel.dart';
 import 'widgets/appointment_card.dart';
 import 'widgets/calendar_strip.dart';
 import 'widgets/day_header_widget.dart';
+import 'widgets/delete_appointment_dialog.dart';
 import 'widgets/time_widget.dart';
 import '../../domain/enums/recurrence_type_enum.dart';
 
@@ -265,37 +266,17 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
     // Check if this is a recurring appointment
     if (appointment.recurringGroupId != null &&
         appointment.recurrenceType != RecurrenceType.none) {
-      showDialog(
+      DeleteAppointmentDialog.showRecurringDelete(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Excluir Agendamento'),
-          content: Text(
-              'Deseja excluir apenas este agendamento ou toda a série?'
-              '\n\nAgendamento de $patientName em ${DateFormat('dd/MM/yyyy HH:mm').format(appointmentDate)}'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                // Delete just this appointment
-                viewModel.deleteAppointmentCommand.execute(appointment.id);
-              },
-              child: const Text('Apenas Este'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                // Delete all recurring appointments
-                viewModel.deleteRecurringAppointmentsCommand
-                    .execute(appointment.recurringGroupId!);
-              },
-              child: const Text('Toda a Série'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancelar'),
-            ),
-          ],
-        ),
+        patientName: patientName,
+        appointmentDate: appointmentDate,
+        onConfirmOnlyThis: () {
+          viewModel.deleteAppointmentCommand.execute(appointment.id);
+        },
+        onConfirmAll: () {
+          viewModel.deleteRecurringAppointmentsCommand
+              .execute(appointment.recurringGroupId!);
+        },
       );
     } else {
       // Regular non-recurring appointment deletion
