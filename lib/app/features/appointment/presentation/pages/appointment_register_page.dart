@@ -43,6 +43,7 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
 
   bool _isEditing = false;
   bool _isRegisterByPatient = false;
+  bool _isDropDownEnable = true;
   AppointmentEntity? _appointmentToEdit;
 
   // Duration
@@ -73,6 +74,8 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
 
   void _loadAppointmentData() {
     setState(() {
+      _isDropDownEnable = false;
+
       _appointmentToEdit = appointment;
       _selectedPatientId = appointment!.patientId;
       _typeController.text = appointment!.type;
@@ -206,6 +209,7 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
               value: _selectedPatientId,
               items: patients.map((patient) {
                 return DropdownMenuItem<String>(
+                  enabled: _isDropDownEnable,
                   value: patient.id,
                   child: Text(patient.name),
                 );
@@ -483,7 +487,7 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
-      firstDate: DateTime.now(),
+      firstDate: DateTime(2025),
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
     if (picked != null && picked != _selectedDate) {
@@ -508,6 +512,7 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
   void _selectPatientAndBlockDropdown() {
     setState(() {
       _selectedPatientId = widget.patient!.id;
+      _isDropDownEnable = false;
     });
   }
 }

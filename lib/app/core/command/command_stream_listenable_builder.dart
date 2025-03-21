@@ -12,6 +12,7 @@ class CommandStreamListenableBuilder<Out> extends StatelessWidget {
   final String? emptyMessage;
   final String? emptyHowRegisterMessage;
   final IconData? emptyIconData;
+  final bool showEmptyState;
 
   //Error state message
   final String? errorMessage;
@@ -26,13 +27,14 @@ class CommandStreamListenableBuilder<Out> extends StatelessWidget {
     this.emptyHowRegisterMessage,
     this.emptyIconData,
     this.refresh,
+    this.showEmptyState = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
       listenable: stream,
-      builder: (context, _) {
+      builder: (context, child) {
         if (stream.running) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -49,7 +51,7 @@ class CommandStreamListenableBuilder<Out> extends StatelessWidget {
 
         return streamResult.fold(
           (result) {
-            if (result is List && result.isEmpty) {
+            if (result is List && result.isEmpty && showEmptyState) {
               return EmptyIndicatorWidget(
                 emptyMessage: emptyMessage,
                 iconData: emptyIconData,

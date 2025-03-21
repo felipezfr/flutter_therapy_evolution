@@ -62,7 +62,7 @@ class _PatientAppointmentListPageState
     return Scaffold(
       appBar: AppBar(
         title:
-            Text(_patient != null ? 'Agendamentos de ${_patient!.name}' : ''),
+            Text(_patient != null ? 'Agendamentos de ${_patient?.name}' : ''),
       ),
       body: CommandStreamListenableBuilder<PatientEntity>(
         stream: viewModel.patientStreamCommand,

@@ -6,7 +6,7 @@ class ClinicalRecordEntity {
   final String id;
   final String patientId;
   final String? appointmentId;
-  final String date;
+  final DateTime date;
   final String? chiefComplaint;
   final String? presentIllness;
   final String? physicalExam;
@@ -40,7 +40,7 @@ class ClinicalRecordEntity {
       id: data['id'] ?? '',
       patientId: data['patientId'] ?? '',
       appointmentId: data['appointmentId'],
-      date: data['date'] ?? '',
+      date: (data['date'] as Timestamp).toDate(),
       chiefComplaint: data['chiefComplaint'],
       presentIllness: data['presentIllness'],
       physicalExam: data['physicalExam'],
@@ -57,10 +57,10 @@ class ClinicalRecordEntity {
           : null,
       createdAt: data['createdAt'] != null
           ? (data['createdAt'] as Timestamp).toDate()
-          : DateTime.now(),
+          : null,
       updatedAt: data['updatedAt'] != null
           ? (data['updatedAt'] as Timestamp).toDate()
-          : DateTime.now(),
+          : null,
     );
   }
 

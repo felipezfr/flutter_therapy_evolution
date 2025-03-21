@@ -119,7 +119,7 @@ abstract class CommandStream<Out extends Object> extends ChangeNotifier {
         final exception = error is BaseException
             ? error
             : DefaultException(
-                message: error.toString(),
+                message: 'Algo deu errado. Tente novamente mais tarde.',
               );
         _result = Failure(exception);
         _running = false;

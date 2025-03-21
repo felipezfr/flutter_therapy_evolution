@@ -113,6 +113,7 @@ class AppointmentRepositoryImpl implements IAppointmentRepository {
           .where('userId', isEqualTo: LoggedUser.id)
           .where('patientId', isEqualTo: patientId)
           .where('isDeleted', isEqualTo: false)
+          .orderBy('date', descending: true)
           .snapshots()
           .map((snapshot) {
         try {

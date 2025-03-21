@@ -1,7 +1,10 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_therapy_evolution/app/core/command/command_stream_listenable_builder.dart';
+import 'package:flutter_therapy_evolution/app/core/utils/date_time_utils.dart';
 import 'package:flutter_therapy_evolution/app/core/widgets/result_handler.dart';
+import 'package:flutter_therapy_evolution/app/features/appointment/domain/entities/appointment_entity.dart';
 import 'package:flutter_therapy_evolution/app/features/patient/domain/entities/patient_entity.dart';
 import '../../domain/entities/clinical_record_entity.dart';
 import '../../domain/entities/prescription_entity.dart';
@@ -42,10 +45,14 @@ class _PatientClinicalRecordRegisterPageState
   // Attachments list
   final List<String> _attachments = [];
 
+  String? _selectedAppointmentId;
+  DateTime? _consultationDate;
+
   @override
   void initState() {
     super.initState();
-
+    //Commands
+    viewModel.appointmentsPatientStream.execute(patient.id);
     viewModel.savePatientClinicalRecordCommand
         .addListener(_saveClinicalRecordListener);
 
@@ -58,6 +65,9 @@ class _PatientClinicalRecordRegisterPageState
 
   void _loadClinicalRecord() {
     final clinicalRecord = widget.clinicalRecord!;
+
+    _selectedAppointmentId = clinicalRecord.appointmentId;
+
     _chiefComplaintController.text = clinicalRecord.chiefComplaint ?? '';
     _presentIllnessController.text = clinicalRecord.presentIllness ?? '';
     _physicalExamController.text = clinicalRecord.physicalExam ?? '';
@@ -72,6 +82,7 @@ class _PatientClinicalRecordRegisterPageState
     if (clinicalRecord.attachments != null) {
       _attachments.addAll(clinicalRecord.attachments!);
     }
+    setState(() {});
   }
 
   @override
@@ -82,6 +93,8 @@ class _PatientClinicalRecordRegisterPageState
     _diagnosisController.dispose();
     _planController.dispose();
     _recommendationsController.dispose();
+    //Commands
+    viewModel.appointmentsPatientStream.dispose();
     viewModel.savePatientClinicalRecordCommand
         .removeListener(_saveClinicalRecord);
     super.dispose();
@@ -116,25 +129,142 @@ class _PatientClinicalRecordRegisterPageState
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Patient info card
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Paciente: ${patient.name}',
-                        style: Theme.of(context).textTheme.titleLarge,
+              CommandStreamListenableBuilder<List<AppointmentEntity>>(
+                  stream: viewModel.appointmentsPatientStream,
+                  showEmptyState: false,
+                  builder: (context, appointments) {
+                    List<AppointmentEntity> filteredAppointments = [];
+                    if (appointments.isNotEmpty) {
+                      appointments.sort((a, b) => b.date.compareTo(a.date));
+                      filteredAppointments = appointments
+                          .where(
+                            (e) => e.date.isBefore(DateTime.now()),
+                          )
+                          .toList();
+
+                      _selectedAppointmentId ??= filteredAppointments.first.id;
+                    } else {
+                      _selectedAppointmentId = 'anotherDate';
+                    }
+
+                    return Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Paciente: ${patient.name}',
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              'Selecione a data do atendimento:',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 12),
+                            if (filteredAppointments.isNotEmpty) ...[
+                              Column(
+                                children: [
+                                  DropdownButtonFormField<String>(
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'Data do atendimento',
+                                    ),
+                                    value: _selectedAppointmentId,
+                                    items: [
+                                      DropdownMenuItem<String>(
+                                        value: 'anotherDate',
+                                        child: Text('Outra data'),
+                                      ),
+                                      ...filteredAppointments
+                                          .map((appointment) {
+                                        return DropdownMenuItem<String>(
+                                          value: appointment.id,
+                                          child: Text(
+                                            DateTimeUtils
+                                                .formateDateWithWeekName(
+                                              appointment.date,
+                                            ),
+                                          ),
+                                        );
+                                      })
+                                    ],
+                                    onChanged: (String? appointmentId) {
+                                      _selectedAppointmentId = appointmentId;
+                                      final appointment = filteredAppointments
+                                          .where(
+                                            (element) =>
+                                                element.id == appointmentId,
+                                          )
+                                          .firstOrNull;
+                                      _consultationDate = appointment?.date;
+                                      setState(() {});
+                                    },
+                                  ),
+                                  const SizedBox(height: 12),
+                                ],
+                              ),
+                            ],
+                            if (_selectedAppointmentId == 'anotherDate') ...[
+                              Column(
+                                children: [
+                                  PrimaryButtonDs(
+                                    onPressed: () async {
+                                      DateTime? selectedDate =
+                                          await showDatePicker(
+                                        context: context,
+                                        initialDate: DateTime.now(),
+                                        firstDate: DateTime(2025),
+                                        lastDate: DateTime(2030),
+                                      );
+
+                                      if (selectedDate != null) {
+                                        TimeOfDay? selectedTime =
+                                            await showTimePicker(
+                                          // ignore: use_build_context_synchronously
+                                          context: context,
+                                          initialTime: TimeOfDay.now(),
+                                        );
+
+                                        if (selectedTime != null) {
+                                          // Combine date and time into a single DateTime object
+                                          final dateTime = DateTime(
+                                            selectedDate.year,
+                                            selectedDate.month,
+                                            selectedDate.day,
+                                            selectedTime.hour,
+                                            selectedTime.minute,
+                                          );
+                                          setState(() {
+                                            _consultationDate = dateTime;
+                                          });
+                                        }
+                                      }
+                                    },
+                                    title: 'Escolher data e horário',
+                                  ),
+                                  if (_consultationDate != null) ...[
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      DateTimeUtils.formateDate(
+                                          _consultationDate!),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    )
+                                  ]
+                                ],
+                              ),
+                            ]
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Data de nascimento: ${patient.birthDate.day}/${patient.birthDate.month}/${patient.birthDate.year}',
-                      ),
-                      Text('Documento: ${patient.documentId}'),
-                    ],
-                  ),
-                ),
-              ),
+                    );
+                  }),
               const SizedBox(height: 16),
               // Clinical record form
               Text(
@@ -200,9 +330,8 @@ class _PatientClinicalRecordRegisterPageState
     final clinicalRecord = ClinicalRecordEntity(
       id: isEditMode ? widget.clinicalRecord!.id : '',
       patientId: patient.id,
-      date: isEditMode
-          ? widget.clinicalRecord!.date
-          : DateTime.now().toIso8601String(),
+      appointmentId: _selectedAppointmentId,
+      date: _consultationDate!,
       chiefComplaint: _chiefComplaintController.text,
       presentIllness: _presentIllnessController.text,
       physicalExam: _physicalExamController.text,

@@ -9,6 +9,7 @@ class AppTheme {
     colorSchemeSeed: AppColors.primaryColor,
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.whiteColor,
+      centerTitle: true,
       iconTheme: IconThemeData(
         color: AppColors.primaryColor,
         size: 30,

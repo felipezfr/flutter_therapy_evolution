@@ -42,64 +42,66 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
       ),
       body: SizedBox(
         width: size.width,
-        child: CommandStreamListenableBuilder<PatientEntity>(
-          stream: viewModel.patientStreamCommand,
-          builder: (context, value) {
-            final PatientEntity patient = value;
-            return Column(
-              children: [
-                Card(
-                  margin: const EdgeInsets.all(8.0),
-                  child: ListTile(
-                    title: Text(
-                      patient.name,
-                      style: theme.textTheme.titleLarge,
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Telefone: ${patient.phone}',
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                        Text(
-                          'Email: ${patient.email}',
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                        Text(
-                          'Gênero: ${patient.gender}',
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                        Text(
-                          'Data de Nascimento: ${patient.birthDate.toLocal().toString().split(' ')[0]}',
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                        Text(
-                          'Endereço: ${patient.address.street}',
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ],
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: CommandStreamListenableBuilder<PatientEntity>(
+            stream: viewModel.patientStreamCommand,
+            builder: (context, value) {
+              final PatientEntity patient = value;
+              return Column(
+                children: [
+                  Card(
+                    child: ListTile(
+                      title: Text(
+                        patient.name,
+                        style: theme.textTheme.titleLarge,
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Telefone: ${patient.phone}',
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                          Text(
+                            'Email: ${patient.email}',
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                          Text(
+                            'Gênero: ${patient.gender}',
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                          Text(
+                            'Data de Nascimento: ${patient.birthDate.toLocal().toString().split(' ')[0]}',
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                          Text(
+                            'Endereço: ${patient.address.street}, ${patient.address.city}, ${patient.address.state}, ${patient.address.number}, ${patient.address.district}, ${patient.address.zipCode}, ${patient.address.complement}',
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                PrimaryButtonDs(
-                  title: 'Consultas',
-                  onPressed: () => _navigateToConsultation(patient),
-                ),
-                const SizedBox(height: 20),
-                PrimaryButtonDs(
-                  title: 'Evoluções',
-                  onPressed: () => _navigateToClinicalRecord(patient),
-                ),
-                const SizedBox(height: 20),
-                PrimaryButtonDs(
-                  title: 'Agendamentos',
-                  onPressed: () => _navigateAppointment(patient),
-                ),
-              ],
-            );
-          },
+                  const SizedBox(height: 20),
+                  PrimaryButtonDs(
+                    title: 'Consultas',
+                    onPressed: () => _navigateToConsultation(patient),
+                  ),
+                  const SizedBox(height: 20),
+                  PrimaryButtonDs(
+                    title: 'Evoluções',
+                    onPressed: () => _navigateToClinicalRecord(patient),
+                  ),
+                  const SizedBox(height: 20),
+                  PrimaryButtonDs(
+                    title: 'Agendamentos',
+                    onPressed: () => _navigateAppointment(patient),
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

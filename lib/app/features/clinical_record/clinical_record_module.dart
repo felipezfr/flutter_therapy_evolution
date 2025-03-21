@@ -1,4 +1,6 @@
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_therapy_evolution/app/features/appointment/data/repositories/appointment_repository.dart';
+import 'package:flutter_therapy_evolution/app/features/appointment/data/repositories/appointment_repository_impl.dart';
 import 'package:flutter_therapy_evolution/app/features/clinical_record/presentation/pages/clinical_record_detail_page.dart';
 import 'package:flutter_therapy_evolution/app/features/patient/data/repositories/patient_repository.dart';
 import 'package:flutter_therapy_evolution/app/features/patient/data/repositories/patient_repository_impl.dart';
@@ -19,6 +21,7 @@ class ClinicalRecordModule extends Module {
     i.addLazySingleton<IClinicalRecordRepository>(
         ClinicalRecordRepositoryImpl.new);
     i.addLazySingleton<IPatientRepository>(PatientRepositoryImpl.new);
+    i.addLazySingleton<IAppointmentRepository>(AppointmentRepositoryImpl.new);
     i.addLazySingleton(ClinicalRecordViewmodel.new);
   }
 
@@ -30,9 +33,11 @@ class ClinicalRecordModule extends Module {
           PatientClinicalRecordListPage(patientId: r.args.params['patientId']),
     );
     r.child(
-      '/detail/:clinicalRecordId',
+      '/detail',
       child: (context) => PatientClinicalRecordDetailPage(
-          clinicalRecordId: r.args.params['clinicalRecordId']),
+        clinicalRecordId: r.args.data['clinicalRecordId'],
+        patientId: r.args.data['patientId'],
+      ),
     );
     r.child(
       '/register',
