@@ -8,48 +8,82 @@ class AuthBasePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final theme = Theme.of(context);
+    // final theme = Theme.of(context);
     return Scaffold(
       body: SafeArea(
-        child: SizedBox(
-          width: size.width,
-          height: size.height,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(height: size.height * .15),
-              Hero(
-                tag: 'auth-logo',
-                child: const Image(
-                  image: AppImages.logo,
-                  fit: BoxFit.fill,
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: Text(
-                    "Bem-vindo ao aplicativo...",
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.displaySmall,
+        child: Padding(
+          padding: const EdgeInsets.all(AppTheme.padding),
+          child: SizedBox(
+            width: size.width,
+            height: size.height,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: size.height * .11),
+                Hero(
+                  tag: 'auth-logo',
+                  child: const Image(
+                    image: AppImages.logo,
+                    fit: BoxFit.fill,
                   ),
                 ),
-              ),
-              PrimaryButtonDs(
-                title: 'Login',
-                onPressed: () {
-                  Modular.to.pushNamed('/auth/login');
-                },
-              ),
-              const SizedBox(height: 20),
-              PrimaryButtonDs.secondary(
-                title: 'Registrar',
-                onPressed: () {
-                  Modular.to.pushNamed('/auth/register');
-                },
-              ),
-              SizedBox(height: size.height * .05),
-            ],
+                SizedBox(height: size.height * .11),
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      children: [
+                        Text(
+                          "Oque nos fazemos",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 24),
+                        ),
+                        const SizedBox(height: 15),
+                        Text(
+                          "Milhares de fonoaudiólogos confiam no Therapy Evolution para gerenciar pacientes, consultas, registros clínicos e atendimentos.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w300,
+                            fontSize: 14,
+                            color: AppColors.textGrey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                PrimaryButtonDs(
+                  title: 'Cadastre-se',
+                  onPressed: () {
+                    Modular.to.pushNamed('/auth/register');
+                  },
+                ),
+                TextButton(
+                  onPressed: () {
+                    Modular.to.pushNamed('/auth/login');
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'JÁ TEM UMA CONTA?',
+                        style: TextStyle(
+                          color: AppColors.textGrey,
+                        ),
+                      ),
+                      Text(
+                        ' FAÇA LOGIN',
+                        style: TextStyle(
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: size.height * .05),
+              ],
+            ),
           ),
         ),
       ),

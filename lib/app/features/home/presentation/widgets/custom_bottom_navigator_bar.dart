@@ -38,7 +38,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
             height: 70,
             margin: EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
-              color: AppColors.primaryLigth,
+              color: AppColors.greyLigth,
               borderRadius: BorderRadius.circular(18),
             ),
             child: Row(

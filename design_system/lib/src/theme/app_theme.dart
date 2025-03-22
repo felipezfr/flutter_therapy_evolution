@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../design_system.dart';
 
 class AppTheme {
+  static const double borderRadius = 19;
+  static const double padding = 20;
+
   static final theme = ThemeData(
     scaffoldBackgroundColor: AppColors.whiteColor,
     colorSchemeSeed: AppColors.primaryColor,
+    fontFamily: 'Poppins',
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.whiteColor,
       centerTitle: true,
@@ -23,7 +26,7 @@ class AppTheme {
         foregroundColor: AppColors.whiteColor,
         backgroundColor: AppColors.primaryColor,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(borderRadius),
         ),
       ),
     ),
@@ -31,56 +34,7 @@ class AppTheme {
       backgroundColor: AppColors.primaryColor,
       foregroundColor: AppColors.whiteColor,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-    ),
-    textTheme: TextTheme(
-      labelLarge: GoogleFonts.montserrat(
-        fontWeight: FontWeight.w400,
-        color: AppColors.textBlackColor,
-      ),
-      labelMedium: GoogleFonts.montserrat(
-        fontWeight: FontWeight.w400,
-        color: AppColors.textBlackColor,
-      ),
-      labelSmall: GoogleFonts.montserrat(
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        color: AppColors.textBlackColor,
-      ),
-      titleMedium: GoogleFonts.montserrat(
-        fontWeight: FontWeight.w700,
-        color: AppColors.primaryColor,
-      ),
-      titleSmall: GoogleFonts.montserrat(
-        fontWeight: FontWeight.w600,
-        color: AppColors.textBlackColor,
-      ),
-      bodyLarge: GoogleFonts.montserrat(
-        fontWeight: FontWeight.w400,
-        color: AppColors.textBlackColor,
-      ),
-      bodySmall: GoogleFonts.montserrat(
-        fontWeight: FontWeight.w400,
-        color: AppColors.textBlackColor,
-      ),
-      displaySmall: GoogleFonts.montserrat(
-        fontWeight: FontWeight.bold,
-        color: AppColors.primaryColor,
-      ),
-      displayLarge: GoogleFonts.montserrat(
-        fontWeight: FontWeight.w700,
-        color: AppColors.textBlackColor,
-      ),
-      headlineSmall: GoogleFonts.montserrat(
-        fontWeight: FontWeight.w300,
-        color: AppColors.textBlackColor,
-      ),
-      headlineMedium: GoogleFonts.sourceSans3(
-        fontSize: 24,
-        fontWeight: FontWeight.w700,
-        color: AppColors.textBlackColor,
-        fontStyle: FontStyle.normal,
+        borderRadius: BorderRadius.circular(borderRadius),
       ),
     ),
   );

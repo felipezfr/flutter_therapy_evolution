@@ -51,7 +51,7 @@ class PrimaryButtonDs extends StatelessWidget {
     final theme = Theme.of(context);
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         fixedSize: Size(width, height),
         backgroundColor: backgroundColor,
         foregroundColor: foregroundColor,

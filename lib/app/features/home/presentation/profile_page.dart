@@ -136,7 +136,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ElevatedButton.icon(
                     icon: const Icon(
                       Icons.logout,
-                      color: AppColors.primaryLigth,
+                      color: AppColors.greyLigth,
                     ),
                     label: Text('Sair da conta'),
                     onPressed: _logoutDialog,

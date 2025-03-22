@@ -65,7 +65,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primaryLigth,
+      // backgroundColor: AppColors.primaryLigth,
       body: SafeArea(
         child: Column(
           children: [
