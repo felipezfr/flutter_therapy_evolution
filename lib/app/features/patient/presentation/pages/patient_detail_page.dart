@@ -2,6 +2,7 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_therapy_evolution/app/core/command/command_stream_listenable_builder.dart';
+import 'package:flutter_therapy_evolution/app/core/utils/date_time_utils.dart';
 import 'package:flutter_therapy_evolution/app/features/patient/domain/entities/patient_entity.dart';
 
 import '../viewmodels/patient_viewmodel.dart';
@@ -33,7 +34,7 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final theme = Theme.of(context);
+    // final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -50,43 +51,21 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
               final PatientEntity patient = value;
               return Column(
                 children: [
-                  Card(
-                    child: ListTile(
-                      title: Text(
-                        patient.name,
-                        style: theme.textTheme.titleLarge,
+                  CustomCard(
+                    title: patient.name,
+                    children: [
+                      CardTile(title: 'Telefone: ', text: patient.phone),
+                      CardTile(title: 'Email: ', text: patient.email),
+                      CardTile(title: 'Gênero: ', text: patient.gender),
+                      CardTile(
+                          title: 'Data de Nascimento: ',
+                          text: DateTimeUtils.formateDate(patient.birthDate)),
+                      CardTile(
+                        title: 'Endereço: ',
+                        text:
+                            '${patient.address.street}, ${patient.address.city}, ${patient.address.state}, ${patient.address.number}, ${patient.address.district}, ${patient.address.zipCode}, ${patient.address.complement}',
                       ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Telefone: ${patient.phone}',
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                          Text(
-                            'Email: ${patient.email}',
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                          Text(
-                            'Gênero: ${patient.gender}',
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                          Text(
-                            'Data de Nascimento: ${patient.birthDate.toLocal().toString().split(' ')[0]}',
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                          Text(
-                            'Endereço: ${patient.address.street}, ${patient.address.city}, ${patient.address.state}, ${patient.address.number}, ${patient.address.district}, ${patient.address.zipCode}, ${patient.address.complement}',
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  PrimaryButtonDs(
-                    title: 'Consultas',
-                    onPressed: () => _navigateToConsultation(patient),
+                    ],
                   ),
                   const SizedBox(height: 20),
                   PrimaryButtonDs(
@@ -105,10 +84,6 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
         ),
       ),
     );
-  }
-
-  void _navigateToConsultation(PatientEntity patient) {
-    Modular.to.pushNamed('/consultation/patient/${patient.id}');
   }
 
   void _navigateAppointment(PatientEntity patient) {

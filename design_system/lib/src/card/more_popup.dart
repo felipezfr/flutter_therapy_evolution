@@ -2,8 +2,8 @@ import '../../design_system.dart';
 import 'package:flutter/material.dart';
 
 class MorePopup extends StatelessWidget {
-  final VoidCallback onTapEdit;
-  final VoidCallback onTapDelete;
+  final VoidCallback? onTapEdit;
+  final VoidCallback? onTapDelete;
 
   const MorePopup({
     super.key,
@@ -19,27 +19,29 @@ class MorePopup extends StatelessWidget {
         color: AppColors.textGreyDark,
       ),
       onSelected: (String value) {
-        if (value == 'edit') {
-          onTapEdit();
-        } else if (value == 'delete') {
-          onTapDelete();
+        if (value == 'edit' && onTapEdit != null) {
+          onTapEdit!();
+        } else if (value == 'delete' && onTapDelete != null) {
+          onTapDelete!();
         }
       },
       itemBuilder: (BuildContext context) => [
-        const PopupMenuItem(
-          value: 'edit',
-          child: ListTile(
-            leading: Icon(Icons.edit),
-            title: Text('Editar'),
+        if (onTapEdit != null)
+          const PopupMenuItem(
+            value: 'edit',
+            child: ListTile(
+              leading: Icon(Icons.edit),
+              title: Text('Editar'),
+            ),
           ),
-        ),
-        const PopupMenuItem(
-          value: 'delete',
-          child: ListTile(
-            leading: Icon(Icons.delete),
-            title: Text('Excluir'),
+        if (onTapDelete != null)
+          const PopupMenuItem(
+            value: 'delete',
+            child: ListTile(
+              leading: Icon(Icons.delete),
+              title: Text('Excluir'),
+            ),
           ),
-        ),
       ],
     );
   }

@@ -4,28 +4,29 @@ import '../../design_system.dart';
 
 class CustomCard extends StatelessWidget {
   final String title;
-  final VoidCallback onTap;
-  final VoidCallback onTapEdit;
-  final VoidCallback onTapDelete;
+  final VoidCallback? onTap;
+  final VoidCallback? onTapEdit;
+  final VoidCallback? onTapDelete;
   final List<Widget>? children;
   final bool? titleIcon;
 
   const CustomCard({
     super.key,
     required this.title,
-    required this.onTapEdit,
-    required this.onTapDelete,
+    this.onTap,
+    this.onTapEdit,
+    this.onTapDelete,
     this.children,
-    required this.onTap,
     this.titleIcon = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding:
+          const EdgeInsets.symmetric(vertical: AppTheme.inputSeparator / 2),
       child: Material(
-        elevation: 2,
+        elevation: 0,
         color: AppColors.greyLigth,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
@@ -77,14 +78,15 @@ class CustomCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Positioned(
-                right: 0,
-                top: 0,
-                child: MorePopup(
-                  onTapEdit: onTapEdit,
-                  onTapDelete: onTapDelete,
+              if (onTapEdit != null || onTapDelete != null)
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: MorePopup(
+                    onTapEdit: onTapEdit,
+                    onTapDelete: onTapDelete,
+                  ),
                 ),
-              ),
             ],
           ),
         ),

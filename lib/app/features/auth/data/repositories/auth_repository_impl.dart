@@ -68,12 +68,6 @@ class AuthRepositoryImpl extends IAuthRepository {
       notifyListeners();
 
       return Success(unit);
-
-      // return await _getUserById(userCredential.user!.uid).onSuccess(
-      //   (success) {
-      //     _saveLastLoginDate(success.id);
-      //   },
-      // );
     } on FirebaseAuthException catch (e, s) {
       Log.error('Error login', error: e, stackTrace: s);
 
@@ -120,13 +114,6 @@ class AuthRepositoryImpl extends IAuthRepository {
       }
       notifyListeners();
       return Success(unit);
-
-      // final userData = registerParams.toMap();
-      // userData['id'] = userCredential.user!.uid;
-
-      // await _firestore.collection('users').doc(userData['id']).set(userData);
-
-      // return Success(UserEntity.fromMap(userData));
     } on FirebaseAuthException catch (e, s) {
       Log.error('Error register', error: e, stackTrace: s);
 

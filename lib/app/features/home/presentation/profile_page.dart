@@ -72,21 +72,12 @@ class _ProfilePageState extends State<ProfilePage> {
                       radius: 60,
                       child: Icon(Icons.person, size: 60),
                     ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
                   Text(
                     user.name,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                    style: AppStyle.textTitle,
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    user.specialty,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Colors.grey[600],
-                        ),
-                  ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
                   Card(
                     elevation: 2,
                     child: Padding(
@@ -161,7 +152,7 @@ class _ProfilePageState extends State<ProfilePage> {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Icon(icon, color: Theme.of(context).primaryColor, size: 24),
+          Icon(icon, color: AppColors.primaryColor, size: 24),
           const SizedBox(width: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,7 +161,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 label,
                 style: const TextStyle(
                   fontSize: 12,
-                  color: Colors.grey,
+                  color: AppColors.textGrey,
                 ),
               ),
               Text(
@@ -178,6 +169,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
+                  color: AppColors.textGrey,
                 ),
               ),
             ],

@@ -113,24 +113,28 @@ class _PatientListPageState extends State<PatientListPage> {
       appBar: CustomAppBar(
         title: 'Pacientes',
       ),
-      body: Column(
-        children: [
-          _buildSearchBar(),
-          Expanded(
-            child: CommandStreamListenableBuilder<List<PatientEntity>>(
-              stream: viewModel.patientsStreamCommand,
-              emptyMessage: 'Nenhum paciente cadastrado',
-              emptyIconData: Icons.person_add_alt_1_rounded,
-              builder: (context, patients) {
-                _allPatients = patients;
-                if (!_isSearching) {
-                  _filteredPatients = patients;
-                }
-                return _buildPatientList(_filteredPatients);
-              },
+      body: Padding(
+        padding: const EdgeInsets.all(AppTheme.borderRadius),
+        child: Column(
+          children: [
+            _buildSearchBar(),
+            const SizedBox(height: 10),
+            Expanded(
+              child: CommandStreamListenableBuilder<List<PatientEntity>>(
+                stream: viewModel.patientsStreamCommand,
+                emptyMessage: 'Nenhum paciente cadastrado',
+                emptyIconData: Icons.person_add_alt_1_rounded,
+                builder: (context, patients) {
+                  _allPatients = patients;
+                  if (!_isSearching) {
+                    _filteredPatients = patients;
+                  }
+                  return _buildPatientList(_filteredPatients);
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToRegisterPage,
@@ -140,29 +144,27 @@ class _PatientListPageState extends State<PatientListPage> {
   }
 
   Widget _buildSearchBar() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: TextField(
-        controller: _searchController,
-        decoration: InputDecoration(
-          hintText: 'Pesquisar pacientes...',
-          prefixIcon: const Icon(Icons.search),
-          suffixIcon: _searchController.text.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    _searchController.clear();
-                    _filterPatients('');
-                    FocusScope.of(context).unfocus();
-                  },
-                )
-              : null,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.0),
-          ),
+    return TextField(
+      controller: _searchController,
+      decoration: InputDecoration(
+        hintText: 'Pesquisar pacientes...',
+        fillColor: AppColors.greyCard,
+        prefixIcon: const Icon(Icons.search),
+        suffixIcon: _searchController.text.isNotEmpty
+            ? IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: () {
+                  _searchController.clear();
+                  _filterPatients('');
+                  FocusScope.of(context).unfocus();
+                },
+              )
+            : null,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.0),
         ),
-        onChanged: _filterPatients,
       ),
+      onChanged: _filterPatients,
     );
   }
 
@@ -191,7 +193,6 @@ class _PatientListPageState extends State<PatientListPage> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
       itemCount: patients.length,
       itemBuilder: (context, index) {
         final patient = patients[index];

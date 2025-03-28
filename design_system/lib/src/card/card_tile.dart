@@ -18,19 +18,22 @@ class CardTile extends StatelessWidget {
     }
 
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
           style: const TextStyle(
             fontWeight: FontWeight.w600,
-            color: AppColors.textGreyDark,
+            color: AppColors.textGrey,
           ),
         ),
         const SizedBox(width: 4),
-        Text(
-          text,
-          style: const TextStyle(
-            color: AppColors.textGrey,
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(
+              color: AppColors.textGrey,
+            ),
           ),
         ),
       ],
