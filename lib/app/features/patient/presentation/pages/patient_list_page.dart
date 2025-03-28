@@ -1,9 +1,9 @@
+import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_therapy_evolution/app/core/widgets/result_handler.dart';
 import '../../../../core/command/command_stream_listenable_builder.dart';
 import '../../../../core/widgets/delete_dialog.dart';
-import '../../../../core/widgets/more_popup.dart';
 import '../viewmodels/patient_viewmodel.dart';
 
 import '../../domain/entities/patient_entity.dart';
@@ -110,8 +110,8 @@ class _PatientListPageState extends State<PatientListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pacientes'),
+      appBar: CustomAppBar(
+        title: 'Pacientes',
       ),
       body: Column(
         children: [
@@ -195,48 +195,29 @@ class _PatientListPageState extends State<PatientListPage> {
       itemCount: patients.length,
       itemBuilder: (context, index) {
         final patient = patients[index];
-        return Card(
-          elevation: 2,
-          margin: const EdgeInsets.only(bottom: 16),
-          child: ListTile(
-            contentPadding: const EdgeInsets.all(16),
-            leading: CircleAvatar(
-              backgroundColor: Theme.of(context).primaryColor,
-              child: Text(
-                patient.name.isNotEmpty ? patient.name[0].toUpperCase() : '?',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+
+        return CustomCard(
+          title: patient.name,
+          titleIcon: true,
+          children: [
+            CardTile(
+              title: 'Idade:',
+              text: '${_calculateAge(patient.birthDate) ?? '-'}',
             ),
-            title: Text(
-              patient.name,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
+            CardTile(
+              title: 'Cidade:',
+              text: '${patient.address.city}, ${patient.address.state}',
             ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Idade: ${_calculateAge(patient.birthDate) ?? '-'}'),
-                Text('E-mail: ${patient.email}'),
-                Text('Telefone: ${patient.phone}'),
-                Text(
-                    'Cidade: ${patient.address.city}, ${patient.address.state}'),
-              ],
-            ),
-            trailing: MorePopup(
-              onTapEdit: () {
-                _navigateToEditPage(patient);
-              },
-              onTapDelete: () {
-                _confirmDeletePatient(patient);
-              },
-            ),
-            onTap: () => _navigateToDetailPage(patient),
-          ),
+          ],
+          onTapEdit: () {
+            _navigateToEditPage(patient);
+          },
+          onTapDelete: () {
+            _confirmDeletePatient(patient);
+          },
+          onTap: () {
+            _navigateToDetailPage(patient);
+          },
         );
       },
     );

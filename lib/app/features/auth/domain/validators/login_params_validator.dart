@@ -4,7 +4,7 @@ import '../../presentation/models/login_params.dart';
 
 class LoginParamsValidator extends LucidValidator<LoginParams> {
   LoginParamsValidator() {
-    ruleFor((user) => user.email, key: 'email', label: 'e-mail')
+    ruleFor((user) => user.email, key: 'email', label: 'Email')
         .notEmpty()
         .validEmail();
   }

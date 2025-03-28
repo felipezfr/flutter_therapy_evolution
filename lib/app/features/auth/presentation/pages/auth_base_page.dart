@@ -34,7 +34,7 @@ class AuthBasePage extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          "Oque nos fazemos",
+                          "O que nós fazemos",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 24),

@@ -31,7 +31,7 @@ class PrimaryButtonListenerDs extends StatelessWidget {
     required VoidCallback onPressed,
     required Listenable listenable,
     Color backgroundColor = AppColors.secondaryColor,
-    Color foregroundColor = AppColors.greyDark,
+    Color foregroundColor = AppColors.textGreyDark,
     Color textColor = AppColors.textBlackColor,
     double height = 48,
     double width = 220,

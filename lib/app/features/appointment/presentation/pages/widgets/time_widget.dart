@@ -28,13 +28,13 @@ class TimeWidget extends StatelessWidget {
               style: TextStyle(
                 color: AppColors.primaryColor,
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
+                fontSize: 15,
               ),
             ),
             Text(
               DateFormat('HH:mm').format(endData),
               style: TextStyle(
-                color: AppColors.greyDark,
+                color: AppColors.textGreyDark,
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
               ),

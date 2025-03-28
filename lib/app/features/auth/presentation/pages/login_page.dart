@@ -1,5 +1,4 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_therapy_evolution/app/core/widgets/result_handler.dart';
@@ -45,72 +44,102 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     // final size = MediaQuery.sizeOf(context);
-    final theme = Theme.of(context);
+    // final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(),
       body: Center(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          child: Form(
-            key: formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Hero(
-                  tag: 'auth-logo',
-                  child: const Image(image: AppImages.logo),
-                ),
-                const SizedBox(height: 50),
-                TextInputDs(
-                  label: 'E-mail',
-                  onChanged: _loginParams.setEmail,
-                  validator: _validator.byField(_loginParams, 'email'),
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                ),
-                const SizedBox(height: 20),
-                TextInputDs(
-                  label: 'Senha',
-                  isPassword: true,
-                  onChanged: _loginParams.setPassword,
-                  validator: _validator.byField(_loginParams, 'password'),
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                ),
-                const SizedBox(height: 20),
-                ListenableBuilder(
-                  listenable: authViewModel.loginCommand,
-                  builder: (context, child) {
-                    return PrimaryButtonDs(
-                      title: 'Login',
-                      isLoading: authViewModel.loginCommand.running,
-                      onPressed: () {
-                        if (formKey.currentState!.validate()) {
-                          authViewModel.loginCommand.execute(_loginParams);
-                        }
-                      },
-                    );
-                  },
-                ),
-                const SizedBox(height: 18),
-                RichText(
-                  text: TextSpan(
-                    text: 'Esqueceu a Senha? ',
-                    style: theme.textTheme.bodySmall,
-                    children: [
-                      TextSpan(
-                        text: 'Recupere aqui!',
-                        style: theme.textTheme.bodySmall!.copyWith(
-                          color: AppColors.blueColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        // TODO: Reset Password redirect
-                        recognizer: TapGestureRecognizer()..onTap = () {},
-                      ),
-                    ],
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Hero(
+                    tag: 'auth-logo',
+                    child: const Image(image: AppImages.logo),
                   ),
-                )
-              ],
+                  const SizedBox(height: 50),
+                  Text(
+                    'Bem-vindo de volta!',
+                    style: AppStyle.textTitle,
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Entre com seu email e senha',
+                    style: AppStyle.textSubTitle,
+                  ),
+                  const SizedBox(height: 40),
+                  TextInputDs(
+                    label: 'Email',
+                    onChanged: _loginParams.setEmail,
+                    validator: _validator.byField(_loginParams, 'email'),
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                  ),
+                  const SizedBox(height: AppTheme.inputSeparator),
+                  TextInputDs(
+                    label: 'Senha',
+                    isPassword: true,
+                    onChanged: _loginParams.setPassword,
+                    validator: _validator.byField(_loginParams, 'password'),
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                  ),
+                  const SizedBox(height: 10),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      'Esqueceu a Senha? ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 16,
+                        color: AppColors.textGrey,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 34),
+                  ListenableBuilder(
+                    listenable: authViewModel.loginCommand,
+                    builder: (context, child) {
+                      return PrimaryButtonDs(
+                        title: 'Login',
+                        isLoading: authViewModel.loginCommand.running,
+                        onPressed: () {
+                          if (formKey.currentState!.validate()) {
+                            authViewModel.loginCommand.execute(_loginParams);
+                          }
+                        },
+                      );
+                    },
+                  ),
+                  // const SizedBox(height: 18),
+                  TextButton(
+                    onPressed: () {
+                      Modular.to.pushNamed('/auth/register');
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'NÃO POSSUI CONTA?',
+                          style: TextStyle(
+                            color: AppColors.textGrey,
+                          ),
+                        ),
+                        Text(
+                          ' REGISTRE-SE!',
+                          style: TextStyle(
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ),

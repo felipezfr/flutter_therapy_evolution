@@ -32,13 +32,14 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
     return Hero(
       tag: 'bottom-navigate',
       child: Material(
+        color: Colors.transparent,
         child: SafeArea(
           bottom: true,
           child: Container(
             height: 70,
             margin: EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
-              color: AppColors.greyLigth,
+              // color: AppColors.greyLigth,
               borderRadius: BorderRadius.circular(18),
             ),
             child: Row(
@@ -78,7 +79,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
               children: [
                 Icon(
                   icon,
-                  color: isSelected ? Colors.white : AppColors.primaryColor,
+                  color: isSelected ? Colors.white : AppColors.textGrey,
                   size: 22,
                 ),
               ],
@@ -87,8 +88,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
           Text(
             label,
             style: TextStyle(
-              color:
-                  isSelected ? AppColors.primaryColor : AppColors.primaryColor,
+              color: isSelected ? AppColors.primaryColor : AppColors.textGrey,
               fontSize: 12,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),

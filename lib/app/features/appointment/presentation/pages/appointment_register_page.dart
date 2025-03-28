@@ -175,8 +175,8 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_isEditing ? 'Editar Consulta' : 'Agendar Consulta'),
+      appBar: CustomAppBar(
+        title: _isEditing ? 'Editar Consulta' : 'Agendar Consulta',
       ),
       body: CommandStreamListenableBuilder<List<PatientEntity>>(
         stream: viewModel.patientsStreamCommand,
@@ -194,7 +194,7 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
 
   Widget _buildForm(List<PatientEntity> patients) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(AppTheme.padding),
       child: Form(
         key: _formKey,
         child: Column(
@@ -206,12 +206,16 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
                 labelText: 'Paciente',
                 border: OutlineInputBorder(),
               ),
+              style: AppStyle.inputText,
               value: _selectedPatientId,
               items: patients.map((patient) {
                 return DropdownMenuItem<String>(
                   enabled: _isDropDownEnable,
                   value: patient.id,
-                  child: Text(patient.name),
+                  child: Text(
+                    patient.name,
+                    style: AppStyle.inputText,
+                  ),
                 );
               }).toList(),
               onChanged: (value) {
@@ -226,9 +230,7 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
                 return null;
               },
             ),
-            const SizedBox(height: 16),
-
-            // Date selection
+            const SizedBox(height: AppTheme.inputSeparator),
             InkWell(
               onTap: () => _selectDate(context),
               child: InputDecorator(
@@ -239,12 +241,11 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
                 ),
                 child: Text(
                   DateFormat('dd/MM/yyyy').format(_selectedDate),
+                  style: AppStyle.inputText,
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-
-            // Start Time selection
+            const SizedBox(height: AppTheme.inputSeparator),
             InkWell(
               onTap: () => _selectStartTime(context),
               child: InputDecorator(
@@ -255,19 +256,21 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
                 ),
                 child: Text(
                   _selectedStartTime.format(context),
+                  style: AppStyle.inputText,
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppTheme.inputSeparator),
             // Duration selection
             _buildDurationField(),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppTheme.inputSeparator),
             // Appointment Status
             DropdownButtonFormField<AppointmentStatus>(
               decoration: const InputDecoration(
                 labelText: 'Status',
                 border: OutlineInputBorder(),
               ),
+              style: AppStyle.inputText,
               value: _appointmentStatus,
               items: AppointmentStatus.values.map((status) {
                 return DropdownMenuItem<AppointmentStatus>(
@@ -281,7 +284,7 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
                 });
               },
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppTheme.inputSeparator),
 
             // Recurrence Type
             if (!_isEditing) // Only show recurrence options for new appointments
@@ -306,6 +309,7 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
               title:
                   _isEditing ? 'Atualizar agendamento' : 'Salvar agendamento',
             ),
+            const SizedBox(height: 24),
           ],
         ),
       ),
@@ -321,6 +325,7 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
             border: OutlineInputBorder(),
           ),
           value: _isCustomDuration ? 'custom' : _durationMinutes,
+          style: AppStyle.inputText,
           items: [
             ...(_durationsDefault.map((duration) {
               return DropdownMenuItem<int>(
@@ -385,6 +390,7 @@ class _AppointmentRegisterPageState extends State<AppointmentRegisterPage> {
             labelText: 'Recorrência',
             border: OutlineInputBorder(),
           ),
+          style: AppStyle.inputText,
           value: _recurrenceType,
           items: RecurrenceType.values.map((type) {
             return DropdownMenuItem<RecurrenceType>(

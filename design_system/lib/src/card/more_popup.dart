@@ -1,3 +1,4 @@
+import '../../design_system.dart';
 import 'package:flutter/material.dart';
 
 class MorePopup extends StatelessWidget {
@@ -13,8 +14,9 @@ class MorePopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
-      icon: Icon(
+      icon: const Icon(
         Icons.more_vert_rounded,
+        color: AppColors.textGreyDark,
       ),
       onSelected: (String value) {
         if (value == 'edit') {

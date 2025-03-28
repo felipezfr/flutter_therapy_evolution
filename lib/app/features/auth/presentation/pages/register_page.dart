@@ -50,7 +50,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final theme = Theme.of(context);
+    // final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(),
       body: Container(
@@ -61,13 +61,17 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Form(
             key: formKey,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  'Cadastro',
-                  style: theme.textTheme.displaySmall,
+                  'Crie sua conta',
+                  style: AppStyle.textTitle,
                 ),
-                const SizedBox(height: 29),
+                Text(
+                  'Digite seus dados para criar uma conta',
+                  style: AppStyle.textSubTitle,
+                ),
+                const SizedBox(height: 30),
                 TextInputDs(
                   label: 'Nome',
                   width: size.width,
@@ -75,7 +79,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   validator: _validator.byField(_registerParams, 'name'),
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: AppTheme.inputSeparator),
                 TextInputDs(
                   label: 'E-mail',
                   textInputType: TextInputType.emailAddress,
@@ -84,7 +88,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   validator: _validator.byField(_registerParams, 'email'),
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: AppTheme.inputSeparator),
                 TextInputDs(
                   width: size.width,
                   label: 'Senha',
@@ -93,7 +97,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   validator: _validator.byField(_registerParams, 'password'),
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: AppTheme.inputSeparator),
                 TextInputDs(
                   width: size.width,
                   label: 'Confirmar senha',
@@ -103,7 +107,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       _validator.byField(_registerParams, 'confirmPassword'),
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: AppTheme.inputSeparator),
                 const SizedBox(height: 40),
                 Align(
                   alignment: Alignment.center,
@@ -122,7 +126,29 @@ class _RegisterPageState extends State<RegisterPage> {
                       );
                     },
                   ),
-                )
+                ),
+                TextButton(
+                  onPressed: () {
+                    Modular.to.pushNamed('/auth/login');
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'JÁ TEM UMA CONTA?',
+                        style: TextStyle(
+                          color: AppColors.textGrey,
+                        ),
+                      ),
+                      Text(
+                        ' FAÇA LOGIN',
+                        style: TextStyle(
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),

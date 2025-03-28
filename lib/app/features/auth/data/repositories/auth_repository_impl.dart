@@ -65,7 +65,10 @@ class AuthRepositoryImpl extends IAuthRepository {
           ),
         );
       }
+      notifyListeners();
+
       return Success(unit);
+
       // return await _getUserById(userCredential.user!.uid).onSuccess(
       //   (success) {
       //     _saveLastLoginDate(success.id);
@@ -96,8 +99,6 @@ class AuthRepositoryImpl extends IAuthRepository {
           message: 'Erro inesperado ao fazer login',
         ),
       );
-    } finally {
-      notifyListeners();
     }
   }
 
@@ -117,7 +118,7 @@ class AuthRepositoryImpl extends IAuthRepository {
           RepositoryException(message: 'Erro ao criar usuário'),
         );
       }
-
+      notifyListeners();
       return Success(unit);
 
       // final userData = registerParams.toMap();
@@ -158,8 +159,6 @@ class AuthRepositoryImpl extends IAuthRepository {
           message: 'Erro inesperado ao criar conta',
         ),
       );
-    } finally {
-      notifyListeners();
     }
   }
 

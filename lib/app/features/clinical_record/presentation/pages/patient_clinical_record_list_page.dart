@@ -1,3 +1,4 @@
+import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_therapy_evolution/app/core/utils/date_time_utils.dart';
@@ -5,7 +6,6 @@ import 'package:flutter_therapy_evolution/app/core/widgets/delete_dialog.dart';
 import 'package:flutter_therapy_evolution/app/core/widgets/result_handler.dart';
 import 'package:flutter_therapy_evolution/app/features/patient/domain/entities/patient_entity.dart';
 import '../../../../core/command/command_stream_listenable_builder.dart';
-import '../../../../core/widgets/more_popup.dart';
 import '../../domain/entities/clinical_record_entity.dart';
 import '../viewmodels/clinical_record_viewmodel.dart';
 
@@ -109,80 +109,40 @@ class _PatientClinicalRecordListPageState
       itemBuilder: (context, index) {
         final patientClinicalRecord = patientClinicalRecords[index];
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Material(
-            elevation: 2,
-            borderRadius: BorderRadius.circular(12),
-            child: InkWell(
-              onTap: () {
-                _navigateToDetailPage(patientClinicalRecord.id, patient.id);
-              },
-              child: Stack(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '${DateTimeUtils.formateDate(patientClinicalRecord.date)}\n'
-                                '${DateTimeUtils.dayOfTheWeekName(patientClinicalRecord.date)}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              if (patientClinicalRecord.chiefComplaint != null)
-                                Text(
-                                    'Queixa Principal: ${patientClinicalRecord.chiefComplaint}'),
-                              if (patientClinicalRecord.presentIllness != null)
-                                Text(
-                                    'Doença Atual: ${patientClinicalRecord.presentIllness}'),
-                              if (patientClinicalRecord.diagnosis != null)
-                                Text(
-                                    'Diagnóstico: ${patientClinicalRecord.diagnosis}'),
-                              Text(
-                                  'Exame Fisico: ${patientClinicalRecord.physicalExam}'),
-                              Text(
-                                  'Recomentações: ${patientClinicalRecord.recommendations}'),
-                              const SizedBox(height: 8),
-                              if (patientClinicalRecord.createdAt != null)
-                                Text(
-                                    'Criado em: ${DateTimeUtils.formateDate(patientClinicalRecord.createdAt!)}',
-                                    style: const TextStyle(
-                                        fontSize: 12, color: Colors.grey)),
-                              if (patientClinicalRecord.updatedAt != null)
-                                Text(
-                                    'Atualizado em: ${DateTimeUtils.formateDate(patientClinicalRecord.updatedAt!)}',
-                                    style: const TextStyle(
-                                        fontSize: 12, color: Colors.grey)),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: MorePopup(
-                      onTapEdit: () {
-                        _navigateToEditPage(patientClinicalRecord, patient);
-                      },
-                      onTapDelete: () {
-                        _confirmDeleteClinicalRecord(
-                            patientClinicalRecord, patient);
-                      },
-                    ),
-                  ),
-                ],
-              ),
+        return CustomCard(
+          title:
+              '${DateTimeUtils.formateDate(patientClinicalRecord.date)} - ${DateTimeUtils.dayOfTheWeekName(patientClinicalRecord.date)}',
+          children: [
+            CardTile(
+              title: 'Queixa Principal:',
+              text: '${patientClinicalRecord.chiefComplaint}',
             ),
-          ),
+            CardTile(
+              title: 'Doença Atual:',
+              text: '${patientClinicalRecord.presentIllness}',
+            ),
+            CardTile(
+              title: 'Diagnóstico:',
+              text: '${patientClinicalRecord.diagnosis}',
+            ),
+            CardTile(
+              title: 'Exame Fisico:',
+              text: '${patientClinicalRecord.physicalExam}',
+            ),
+            CardTile(
+              title: 'Recomentações:',
+              text: '${patientClinicalRecord.recommendations}',
+            ),
+          ],
+          onTap: () {
+            _navigateToDetailPage(patientClinicalRecord.id, patient.id);
+          },
+          onTapEdit: () {
+            _navigateToEditPage(patientClinicalRecord, patient);
+          },
+          onTapDelete: () {
+            _confirmDeleteClinicalRecord(patientClinicalRecord, patient);
+          },
         );
       },
     );

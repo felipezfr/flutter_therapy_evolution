@@ -177,8 +177,8 @@ class _PatientRegisterPageState extends State<PatientRegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_isEditMode ? 'Editar Paciente' : 'Cadastrar Paciente'),
+      appBar: CustomAppBar(
+        title: _isEditMode ? 'Editar Paciente' : 'Cadastrar Paciente',
       ),
       body: _buildForm(),
     );
@@ -195,10 +195,7 @@ class _PatientRegisterPageState extends State<PatientRegisterPage> {
             // Personal Information Section
             const Text(
               'Informações Pessoais',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: AppStyle.inputTextTitle,
             ),
             const SizedBox(height: 16),
 
@@ -239,6 +236,7 @@ class _PatientRegisterPageState extends State<PatientRegisterPage> {
                 labelText: 'Gênero',
                 border: OutlineInputBorder(),
               ),
+              style: AppStyle.inputText,
               value: _gender,
               items: const [
                 DropdownMenuItem(value: 'Male', child: Text('Masculino')),
@@ -299,13 +297,7 @@ class _PatientRegisterPageState extends State<PatientRegisterPage> {
             const SizedBox(height: 24),
 
             // Address Section
-            const Text(
-              'Endereço',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            const Text('Endereço', style: AppStyle.inputTextTitle),
             const SizedBox(height: 16),
 
             TextFormField(
@@ -428,10 +420,7 @@ class _PatientRegisterPageState extends State<PatientRegisterPage> {
             // Insurance Section
             const Text(
               'Plano de Saúde (Opcional)',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: AppStyle.inputTextTitle,
             ),
             const SizedBox(height: 16),
 
@@ -456,10 +445,7 @@ class _PatientRegisterPageState extends State<PatientRegisterPage> {
             // Additional Information
             const Text(
               'Informações Adicionais',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: AppStyle.inputTextTitle,
             ),
             const SizedBox(height: 16),
 
@@ -470,6 +456,7 @@ class _PatientRegisterPageState extends State<PatientRegisterPage> {
                 border: OutlineInputBorder(),
               ),
               value: _status,
+              style: AppStyle.inputText,
               items: const [
                 DropdownMenuItem(value: 'active', child: Text('Ativo')),
                 DropdownMenuItem(value: 'inactive', child: Text('Inativo')),

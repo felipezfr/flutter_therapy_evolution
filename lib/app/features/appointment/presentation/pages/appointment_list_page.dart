@@ -151,7 +151,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
                   'Horário',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: AppColors.greyDark,
+                    color: AppColors.textGreyDark,
                   ),
                 ),
               ),
@@ -162,7 +162,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
                     'Consultas',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: AppColors.greyDark,
+                      color: AppColors.textGreyDark,
                     ),
                   ),
                 ),
