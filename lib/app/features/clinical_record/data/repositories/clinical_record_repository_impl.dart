@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../core/log/log_manager.dart';
-import '../../../../core/session/logged_user.dart';
+import '../../../../core/session/session.dart';
 import '../../../../core/errors/base_exception.dart';
 import '../../../../core/errors/repository_exception.dart';
 import '../../../../core/typedefs/result_typedef.dart';
@@ -19,7 +19,7 @@ class ClinicalRecordRepositoryImpl implements IClinicalRecordRepository {
     try {
       return _firestore
           .collection('clinicalRecords')
-          .where('userId', isEqualTo: LoggedUser.id)
+          .where('userId', isEqualTo: Session.id)
           .where('isDeleted', isEqualTo: false)
           .orderBy('createdAt', descending: true)
           .snapshots()
@@ -65,7 +65,7 @@ class ClinicalRecordRepositoryImpl implements IClinicalRecordRepository {
     try {
       return _firestore
           .collection('clinicalRecords')
-          .where('userId', isEqualTo: LoggedUser.id)
+          .where('userId', isEqualTo: Session.id)
           .where('patientId', isEqualTo: patientId)
           .where('isDeleted', isEqualTo: false)
           .orderBy('createdAt', descending: true)
@@ -151,7 +151,7 @@ class ClinicalRecordRepositoryImpl implements IClinicalRecordRepository {
 
       // If id is empty, create a new document with auto-generated ID
       if (record.id.isEmpty) {
-        saveMap['userId'] = LoggedUser.id;
+        saveMap['userId'] = Session.id;
         saveMap['isDeleted'] = false;
         saveMap['createdAt'] = DateTime.now();
         saveMap['updatedAt'] = DateTime.now();

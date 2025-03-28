@@ -1,7 +1,7 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:flutter_therapy_evolution/app/core/session/logged_user.dart';
+import 'package:flutter_therapy_evolution/app/core/session/session.dart';
 import 'package:flutter_therapy_evolution/app/core/entities/user_entity.dart';
 import 'package:flutter_therapy_evolution/app/features/auth/data/repositories/auth_repository.dart';
 
@@ -54,9 +54,9 @@ class _ProfilePageState extends State<ProfilePage> {
         width: double.infinity,
         padding: const EdgeInsets.all(16),
         child: ListenableBuilder(
-          listenable: LoggedUser.instance,
+          listenable: Session.instance,
           builder: (context, child) {
-            final UserEntity user = LoggedUser.loggedUser!;
+            final UserEntity user = Session.loggedUser!;
 
             return SingleChildScrollView(
               child: Column(

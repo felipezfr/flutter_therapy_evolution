@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../core/log/log_manager.dart';
-import '../../../../core/session/logged_user.dart';
+import '../../../../core/session/session.dart';
 import '../../../../core/errors/repository_exception.dart';
 import '../../../../core/typedefs/result_typedef.dart';
 import '../../domain/entities/patient_entity.dart';
@@ -18,7 +18,7 @@ class PatientRepositoryImpl implements IPatientRepository {
     try {
       return _firestore
           .collection('patients')
-          .where('userId', isEqualTo: LoggedUser.id)
+          .where('userId', isEqualTo: Session.id)
           .where('isDeleted', isEqualTo: false)
           .orderBy('createdAt', descending: true)
           .snapshots()
@@ -100,7 +100,7 @@ class PatientRepositoryImpl implements IPatientRepository {
 
       // If id is empty, create a new document with auto-generated ID
       if (patient.id.isEmpty) {
-        saveMap['userId'] = LoggedUser.id;
+        saveMap['userId'] = Session.id;
         saveMap['isDeleted'] = false;
         saveMap['createdAt'] = DateTime.now();
         saveMap['updatedAt'] = DateTime.now();

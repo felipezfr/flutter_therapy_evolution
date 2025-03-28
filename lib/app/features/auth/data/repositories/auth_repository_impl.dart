@@ -5,7 +5,7 @@ import 'package:flutter_therapy_evolution/app/core/errors/repository_exception.d
 import 'package:flutter_therapy_evolution/app/features/auth/presentation/models/login_params.dart';
 import 'package:result_dart/result_dart.dart';
 
-import '../../../../core/session/logged_user.dart';
+import '../../../../core/session/session.dart';
 import '../../../../core/errors/auth_exception.dart';
 import '../../../../core/typedefs/result_typedef.dart';
 import 'auth_repository.dart';
@@ -27,26 +27,15 @@ class AuthRepositoryImpl extends IAuthRepository {
     return _auth.currentUser!.uid;
   }
 
-  // @override
-  // Output<String> userLoggedId() async {
-  //   try {
-  //     final userId = _auth.currentUser?.uid;
-  //     return Success(userId!);
-  //   } catch (e) {
-  //     return Failure(AuthException(message: 'Usuário não está logado'));
-  //   }
-  // }
-
   @override
   Output<void> logout() async {
     try {
-      LoggedUser.logOut();
+      Session.logOut();
       await _auth.signOut();
+      notifyListeners();
       return Success(unit);
     } catch (e) {
       return Failure(AuthException(message: 'Erro ao fazer logout'));
-    } finally {
-      notifyListeners();
     }
   }
 

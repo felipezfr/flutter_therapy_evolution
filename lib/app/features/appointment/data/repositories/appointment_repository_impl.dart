@@ -3,7 +3,7 @@ import 'package:result_dart/result_dart.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/log/log_manager.dart';
-import '../../../../core/session/logged_user.dart';
+import '../../../../core/session/session.dart';
 import '../../../../core/errors/repository_exception.dart';
 import '../../../../core/typedefs/result_typedef.dart';
 import '../../domain/entities/appointment_entity.dart';
@@ -15,7 +15,7 @@ class AppointmentRepositoryImpl implements IAppointmentRepository {
 
   AppointmentRepositoryImpl(this._firestore);
 
-  final String loggedUserId = LoggedUser.id;
+  final String loggedUserId = Session.id;
 
   @override
   OutputStream<List<AppointmentEntity>> getAllAppointmentsStream(
@@ -29,7 +29,7 @@ class AppointmentRepositoryImpl implements IAppointmentRepository {
 
       return _firestore
           .collection('appointments')
-          .where('userId', isEqualTo: LoggedUser.id)
+          .where('userId', isEqualTo: Session.id)
           .where('isDeleted', isEqualTo: false)
           .where('date', isGreaterThanOrEqualTo: dataInicio)
           .where('date', isLessThanOrEqualTo: dataFim)
@@ -110,7 +110,7 @@ class AppointmentRepositoryImpl implements IAppointmentRepository {
     try {
       return _firestore
           .collection('appointments')
-          .where('userId', isEqualTo: LoggedUser.id)
+          .where('userId', isEqualTo: Session.id)
           .where('patientId', isEqualTo: patientId)
           .where('isDeleted', isEqualTo: false)
           .orderBy('date', descending: true)
@@ -158,7 +158,7 @@ class AppointmentRepositoryImpl implements IAppointmentRepository {
 
       // If id is empty, create a new document with auto-generated ID
       if (appointment.id.isEmpty) {
-        saveMap['userId'] = LoggedUser.id;
+        saveMap['userId'] = Session.id;
         saveMap['isDeleted'] = false;
         saveMap['createdAt'] = DateTime.now();
         saveMap['updatedAt'] = DateTime.now();
@@ -251,7 +251,7 @@ class AppointmentRepositoryImpl implements IAppointmentRepository {
         );
 
         // Add common fields
-        appointmentData['userId'] = LoggedUser.id;
+        appointmentData['userId'] = Session.id;
         appointmentData['isDeleted'] = false;
         appointmentData['createdAt'] = DateTime.now();
         appointmentData['updatedAt'] = DateTime.now();
@@ -280,7 +280,7 @@ class AppointmentRepositoryImpl implements IAppointmentRepository {
       // Get all appointments with the specified recurring group ID
       final querySnapshot = await _firestore
           .collection('appointments')
-          .where('userId', isEqualTo: LoggedUser.id)
+          .where('userId', isEqualTo: Session.id)
           .where('recurringGroupId', isEqualTo: recurringGroupId)
           .where('isDeleted', isEqualTo: false)
           .get();

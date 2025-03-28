@@ -1,7 +1,5 @@
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:flutter_therapy_evolution/app/core/repositories/user/user_repository.dart';
-import 'package:flutter_therapy_evolution/app/core/repositories/user/user_repository_impl.dart';
-import 'package:flutter_therapy_evolution/app/core/session/logged_user_usecase.dart';
+
 import 'package:flutter_therapy_evolution/app/features/home/presentation/profile_page.dart';
 
 import '../../core/core_module.dart';
@@ -17,8 +15,7 @@ class HomeModule extends Module {
   @override
   void binds(Injector i) {
     i.addLazySingleton<IHomeRepository>(HomeRepositoryImpl.new);
-    i.addLazySingleton<IUserRepository>(UserRepositoryImpl.new);
-    i.addLazySingleton(LoggedUserUsecase.new);
+
     i.addLazySingleton(HomeViewmodel.new);
   }
 

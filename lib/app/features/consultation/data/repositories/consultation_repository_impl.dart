@@ -3,7 +3,7 @@ import 'package:result_dart/result_dart.dart';
 
 import '../../../../core/errors/repository_exception.dart';
 import '../../../../core/log/log_manager.dart';
-import '../../../../core/session/logged_user.dart';
+import '../../../../core/session/session.dart';
 import '../../../../core/typedefs/result_typedef.dart';
 import '../../domain/entities/consultation_entity.dart';
 import 'consultation_repository.dart';
@@ -13,14 +13,14 @@ class ConsultationRepositoryImpl implements IConsultationRepository {
 
   ConsultationRepositoryImpl(this._firestore);
 
-  final String loggedUserId = LoggedUser.id;
+  final String loggedUserId = Session.id;
 
   @override
   OutputStream<List<ConsultationEntity>> getConsultationsStream() {
     try {
       return _firestore
           .collection('consultations')
-          .where('userId', isEqualTo: LoggedUser.id)
+          .where('userId', isEqualTo: Session.id)
           .where('isDeleted', isEqualTo: false)
           .snapshots()
           .map((snapshot) {
@@ -64,7 +64,7 @@ class ConsultationRepositoryImpl implements IConsultationRepository {
     try {
       return _firestore
           .collection('consultations')
-          .where('userId', isEqualTo: LoggedUser.id)
+          .where('userId', isEqualTo: Session.id)
           .where('patientId', isEqualTo: patientId)
           .where('isDeleted', isEqualTo: false)
           .snapshots()
@@ -147,7 +147,7 @@ class ConsultationRepositoryImpl implements IConsultationRepository {
 
       // If id is empty, create a new document with auto-generated ID
       if (consultation.id.isEmpty) {
-        saveMap['userId'] = LoggedUser.id;
+        saveMap['userId'] = Session.id;
         saveMap['isDeleted'] = false;
         saveMap['createdAt'] = DateTime.now();
         saveMap['updatedAt'] = DateTime.now();

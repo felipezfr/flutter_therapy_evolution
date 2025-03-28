@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:flutter_therapy_evolution/app/core/session/logged_user.dart';
+import 'package:flutter_therapy_evolution/app/core/session/session_usecase.dart';
 
 import '../../auth/data/repositories/auth_repository.dart';
 
@@ -13,6 +13,7 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
   final authRepository = Modular.get<IAuthRepository>();
+  final sessionUsecase = Modular.get<SessionUsecase>();
 
   @override
   void initState() {
@@ -27,7 +28,7 @@ class _SplashPageState extends State<SplashPage> {
     if (isAuthenticated) {
       final userId = await authRepository.userLoggedId;
       authRepository.saveLastLoginDate(userId);
-      LoggedUser.setUserId = userId;
+      sessionUsecase.execute(userId);
       Modular.to.navigate('/home/');
     } else {
       Modular.to.navigate('/auth/');
